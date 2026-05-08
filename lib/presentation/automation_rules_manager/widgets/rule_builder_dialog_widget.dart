@@ -212,7 +212,7 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
           children: [
             Expanded(
               child: DropdownButtonFormField<String>(
-                initialValue: _selectedTriggerType,
+                value: _selectedTriggerType,
                 decoration: const InputDecoration(
                   labelText: 'Trigger Type',
                   border: OutlineInputBorder(),
@@ -297,7 +297,7 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            initialValue: condition['condition_field'],
+                            value: condition['condition_field'],
                             decoration: const InputDecoration(
                                 labelText: 'Field', isDense: true),
                             items: const [
@@ -323,7 +323,7 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
                         SizedBox(width: 2.w),
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            initialValue: condition['condition_operator'],
+                            value: condition['condition_operator'],
                             decoration: const InputDecoration(
                                 labelText: 'Operator', isDense: true),
                             items: const [
@@ -362,7 +362,7 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
                     ),
                     if (index < _conditions.length - 1)
                       DropdownButtonFormField<String>(
-                        initialValue: condition['logical_operator'],
+                        value: condition['logical_operator'],
                         decoration: const InputDecoration(
                             labelText: 'Logic', isDense: true),
                         items: const [
@@ -427,7 +427,7 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
                     SizedBox(width: 2.w),
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        initialValue: action['action_type'],
+                        value: action['action_type'],
                         decoration: const InputDecoration(
                             labelText: 'Action Type', isDense: true),
                         items: const [

@@ -125,7 +125,7 @@ class AppTheme {
     dividerColor: dividerLight,
 
     // AppBar Theme - Professional depth
-    appBarTheme: AppBarThemeData(
+    appBarTheme: AppBarTheme(
       backgroundColor: surfaceLight,
       foregroundColor: textPrimaryLight,
       elevation: 0,
@@ -241,7 +241,7 @@ class AppTheme {
     textTheme: _buildTextTheme(isLight: true),
 
     // Input Decoration Theme
-    inputDecorationTheme: InputDecorationThemeData(
+    inputDecorationTheme: InputDecorationTheme(
       fillColor: surfaceLight,
       filled: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -478,7 +478,7 @@ class AppTheme {
     scaffoldBackgroundColor: backgroundDark,
     cardColor: cardDark,
     dividerColor: dividerDark,
-    appBarTheme: AppBarThemeData(
+    appBarTheme: AppBarTheme(
       backgroundColor: surfaceDark,
       foregroundColor: textPrimaryDark,
       elevation: 0,
@@ -578,7 +578,7 @@ class AppTheme {
       ),
     ),
     textTheme: _buildTextTheme(isLight: false),
-    inputDecorationTheme: InputDecorationThemeData(
+    inputDecorationTheme: InputDecorationTheme(
       fillColor: surfaceDark,
       filled: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
