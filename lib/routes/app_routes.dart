@@ -52,6 +52,7 @@ class AppRoutes {
   static const String automationRulesManager = '/automation-rules-manager';
   static const String incidentManagementCenter = '/incident-management-center';
   static const String incidentInvestigationWorkspace = '/incident-investigation-workspace';
+  static const String productDetail = '/product-detail';
 
   static Map<String, WidgetBuilder> get routes => {
   initial: (context) => const SplashScreen(),
@@ -95,5 +96,6 @@ class AppRoutes {
       severity: args['severity'],
     );
   },
+  productDetail: (context) => const ProductCatalog(),
 };
 }

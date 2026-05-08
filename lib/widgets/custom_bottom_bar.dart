@@ -124,8 +124,7 @@ class CustomBottomBar extends StatelessWidget {
             if (onTap != null) {
               onTap!(index);
             } else {
-              // Default navigation behavior
-              Navigator.pushNamed(context, item.route);
+              Navigator.pushReplacementNamed(context, item.route);
             }
           },
           borderRadius: BorderRadius.circular(12),
@@ -278,7 +277,7 @@ class CustomBottomBarWithFAB extends StatelessWidget {
           if (onTap != null) {
             onTap!(index);
           } else {
-            Navigator.pushNamed(context, item.route);
+            Navigator.pushReplacementNamed(context, item.route);
           }
         },
         borderRadius: BorderRadius.circular(12),
