@@ -5,6 +5,7 @@ import 'package:sizer/sizer.dart';
 import '../core/app_export.dart';
 import '../widgets/custom_error_widget.dart';
 import './services/supabase_service.dart';
+import './services/theme_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +16,9 @@ void main() async {
   } catch (e) {
     debugPrint('Failed to initialize Supabase: $e');
   }
+
+  // Initialize ThemeService
+  await ThemeService.instance.initialize();
 
   bool _hasShownError = false;
 
@@ -44,26 +48,31 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Sizer(
-      builder: (context, orientation, screenType) {
-        return MaterialApp(
-          title: 'loliexpress_erp',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: ThemeMode.light,
-          // 🚨 CRITICAL: NEVER REMOVE OR MODIFY
-          builder: (context, child) {
-            return MediaQuery(
-              data: MediaQuery.of(
-                context,
-              ).copyWith(textScaler: TextScaler.linear(1.0)),
-              child: child!,
+    return ListenableBuilder(
+      listenable: ThemeService.instance,
+      builder: (context, _) {
+        return Sizer(
+          builder: (context, orientation, screenType) {
+            return MaterialApp(
+              title: 'loliexpress_erp',
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: ThemeService.instance.themeMode,
+              // 🚨 CRITICAL: NEVER REMOVE OR MODIFY
+              builder: (context, child) {
+                return MediaQuery(
+                  data: MediaQuery.of(
+                    context,
+                  ).copyWith(textScaler: TextScaler.linear(1.0)),
+                  child: child!,
+                );
+              },
+              // 🚨 END CRITICAL SECTION
+              debugShowCheckedModeBanner: false,
+              routes: AppRoutes.routes,
+              initialRoute: AppRoutes.initial,
             );
           },
-          // 🚨 END CRITICAL SECTION
-          debugShowCheckedModeBanner: false,
-          routes: AppRoutes.routes,
-          initialRoute: AppRoutes.initial,
         );
       },
     );
