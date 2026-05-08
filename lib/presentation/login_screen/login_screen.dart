@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
+import '../../services/auth_service.dart';
 import '../../widgets/custom_icon_widget.dart';
 import './widgets/email_input_widget.dart';
 import './widgets/login_button_widget.dart';
@@ -31,26 +32,6 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _roleError;
   String? _generalError;
 
-  // Mock credentials for different roles
-  final Map<String, Map<String, String>> _mockCredentials = {
-    'admin': {
-      'email': 'admin@loliexpress.com',
-      'password': 'Admin@2024',
-    },
-    'sales': {
-      'email': 'sales@loliexpress.com',
-      'password': 'Sales@2024',
-    },
-    'warehouse': {
-      'email': 'warehouse@loliexpress.com',
-      'password': 'Warehouse@2024',
-    },
-    'customer': {
-      'email': 'customer@loliexpress.com',
-      'password': 'Customer@2024',
-    },
-  };
-
   @override
   void dispose() {
     _emailController.dispose();
@@ -67,7 +48,6 @@ class _LoginScreenState extends State<LoginScreen> {
       _generalError = null;
     });
 
-    // Validate email
     if (_emailController.text.trim().isEmpty) {
       setState(() {
         _emailError = 'L\'email ou nom d\'utilisateur est requis';
@@ -81,7 +61,6 @@ class _LoginScreenState extends State<LoginScreen> {
       isValid = false;
     }
 
-    // Validate password
     if (_passwordController.text.isEmpty) {
       setState(() {
         _passwordError = 'Le mot de passe est requis';
@@ -90,14 +69,6 @@ class _LoginScreenState extends State<LoginScreen> {
     } else if (_passwordController.text.length < 6) {
       setState(() {
         _passwordError = 'Le mot de passe doit contenir au moins 6 caractères';
-      });
-      isValid = false;
-    }
-
-    // Validate role
-    if (_selectedRole == null) {
-      setState(() {
-        _roleError = 'Veuillez sélectionner un rôle';
       });
       isValid = false;
     }
@@ -115,57 +86,107 @@ class _LoginScreenState extends State<LoginScreen> {
       _generalError = null;
     });
 
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 2));
-
-    // Validate credentials
-    final credentials = _mockCredentials[_selectedRole];
-    if (credentials != null &&
-        credentials['email'] == _emailController.text.trim() &&
-        credentials['password'] == _passwordController.text) {
-      // Success - trigger haptic feedback
-      HapticFeedback.mediumImpact();
+    try {
+      await AuthService.instance.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
 
       if (!mounted) return;
 
-      // Navigate to appropriate dashboard based on role
+      HapticFeedback.mediumImpact();
+
+      final role = await AuthService.instance.getUserRole();
+      if (!mounted) return;
+
       String route = '/main-dashboard';
-      if (_selectedRole == 'customer') {
+      if (role == 'customer') {
         route = '/customer-portal';
       }
 
       Navigator.pushReplacementNamed(context, route);
-    } else {
+    } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _generalError =
-            'Email, mot de passe ou rôle incorrect. Veuillez réessayer.';
+        _generalError = e.toString().replaceFirst('Exception: ', '');
       });
-
-      // Error haptic feedback
       HapticFeedback.lightImpact();
     }
   }
 
   void _handleForgotPassword() {
+    final resetEmailController = TextEditingController();
     showDialog(
       context: context,
-      builder: (context) {
-        final theme = Theme.of(context);
+      builder: (dialogContext) {
+        final theme = Theme.of(dialogContext);
         return AlertDialog(
           title: Text(
             'Mot de passe oublié',
             style: theme.textTheme.titleLarge,
           ),
-          content: Text(
-            'Veuillez contacter votre administrateur système pour réinitialiser votre mot de passe.',
-            style: theme.textTheme.bodyMedium,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Entrez votre adresse email pour recevoir un lien de réinitialisation.',
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: resetEmailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'votre@email.com',
+                ),
+              ),
+            ],
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pop(dialogContext),
               child: Text(
-                'Fermer',
+                'Annuler',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                final email = resetEmailController.text.trim();
+                if (email.isEmpty) return;
+                try {
+                  await AuthService.instance.resetPassword(email);
+                  if (dialogContext.mounted) {
+                    Navigator.pop(dialogContext);
+                  }
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Email de réinitialisation envoyé.'),
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (dialogContext.mounted) {
+                    Navigator.pop(dialogContext);
+                  }
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          e.toString().replaceFirst('Exception: ', ''),
+                        ),
+                      ),
+                    );
+                  }
+                }
+              },
+              child: Text(
+                'Envoyer',
                 style: theme.textTheme.labelLarge?.copyWith(
                   color: theme.colorScheme.primary,
                 ),
@@ -318,8 +339,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: _handleLogin,
                             isLoading: _isLoading,
                             isEnabled: _emailController.text.isNotEmpty &&
-                                _passwordController.text.isNotEmpty &&
-                                _selectedRole != null,
+                                _passwordController.text.isNotEmpty,
                           ),
                         ],
                       ),
