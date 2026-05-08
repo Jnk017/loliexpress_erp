@@ -3,9 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
+import '../../services/product_service.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_bottom_bar.dart';
 import '../../widgets/custom_icon_widget.dart';
+import './widgets/add_product_dialog_widget.dart';
 import './widgets/empty_state_widget.dart';
 import './widgets/filter_bottom_sheet_widget.dart';
 import './widgets/product_card_widget.dart';
@@ -20,191 +22,95 @@ class ProductCatalog extends StatefulWidget {
 
 class _ProductCatalogState extends State<ProductCatalog> {
   final TextEditingController _searchController = TextEditingController();
-  final Set<int> _selectedProducts = {};
+  final ProductService _productService = ProductService.instance;
+  final Set<String> _selectedProducts = {};
+
   bool _isMultiSelectMode = false;
-  bool _isLoading = false;
+  bool _isLoading = true;
+  bool _hasError = false;
+  String _errorMessage = '';
   String _searchQuery = '';
+
+  List<Map<String, dynamic>> _allProducts = [];
 
   Map<String, dynamic> _currentFilters = {
     'category': 'Toutes',
     'supplier': 'Tous',
     'stockStatus': 'Tous',
-    'sortBy': 'FIFO (Premier entré, premier sorti)',
+    'sortBy': 'Nom (A-Z)',
     'showExpiringSoon': false,
   };
 
-  final List<Map<String, dynamic>> _allProducts = [
-    {
-      'id': 1,
-      'name': 'Coca-Cola 1.5L',
-      'sku': 'CC-1500-001',
-      'currentStock': 150,
-      'minStock': 50,
-      'criticalStock': 20,
-      'price': '750',
-      'category': 'Boissons gazeuses',
-      'supplier': 'Coca-Cola',
-      'image':
-          'https://images.unsplash.com/photo-1592121667233-aa734bbcafb5',
-      'semanticLabel':
-          'Bouteille de Coca-Cola de 1,5 litre avec étiquette rouge et blanche sur fond blanc',
-      'lowStockAlertEnabled': true,
-      'expiryDate': DateTime.now().add(const Duration(days: 180)),
-    },
-    {
-      'id': 2,
-      'name': 'Pepsi 2L',
-      'sku': 'PP-2000-002',
-      'currentStock': 45,
-      'minStock': 50,
-      'criticalStock': 20,
-      'price': '800',
-      'category': 'Boissons gazeuses',
-      'supplier': 'PepsiCo',
-      'image':
-          'https://images.unsplash.com/photo-1616014725808-b51d4f365b8f',
-      'semanticLabel':
-          'Bouteille de Pepsi de 2 litres avec étiquette bleue et rouge sur fond blanc',
-      'lowStockAlertEnabled': true,
-      'expiryDate': DateTime.now().add(const Duration(days: 150)),
-    },
-    {
-      'id': 3,
-      'name': 'Jus d\'Orange Tropicana 1L',
-      'sku': 'TR-1000-003',
-      'currentStock': 15,
-      'minStock': 30,
-      'criticalStock': 10,
-      'price': '1200',
-      'category': 'Jus',
-      'supplier': 'PepsiCo',
-      'image':
-          'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400',
-      'semanticLabel':
-          'Carton de jus d\'orange Tropicana de 1 litre avec image d\'oranges fraîches',
-      'lowStockAlertEnabled': true,
-      'expiryDate': DateTime.now().add(const Duration(days: 45)),
-    },
-    {
-      'id': 4,
-      'name': 'Eau Minérale Evian 1.5L',
-      'sku': 'EV-1500-004',
-      'currentStock': 200,
-      'minStock': 100,
-      'criticalStock': 50,
-      'price': '500',
-      'category': 'Eau',
-      'supplier': 'Danone',
-      'image':
-          'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=400',
-      'semanticLabel':
-          'Bouteille d\'eau minérale Evian de 1,5 litre transparente avec étiquette rose',
-      'lowStockAlertEnabled': false,
-      'expiryDate': DateTime.now().add(const Duration(days: 365)),
-    },
-    {
-      'id': 5,
-      'name': 'Red Bull Energy Drink 250ml',
-      'sku': 'RB-250-005',
-      'currentStock': 80,
-      'minStock': 60,
-      'criticalStock': 30,
-      'price': '1500',
-      'category': 'Boissons énergétiques',
-      'supplier': 'Red Bull',
-      'image':
-          'https://images.unsplash.com/photo-1620785028101-2e388da4aaa8',
-      'semanticLabel':
-          'Canette de Red Bull de 250ml bleue et argentée avec logo de taureau',
-      'lowStockAlertEnabled': true,
-      'expiryDate': DateTime.now().add(const Duration(days: 270)),
-    },
-    {
-      'id': 6,
-      'name': 'Heineken Bière 330ml',
-      'sku': 'HK-330-006',
-      'currentStock': 120,
-      'minStock': 80,
-      'criticalStock': 40,
-      'price': '900',
-      'category': 'Bières',
-      'supplier': 'Heineken',
-      'image':
-          'https://images.unsplash.com/photo-1618885472179-5e474019f2a9',
-      'semanticLabel':
-          'Bouteille de bière Heineken de 330ml verte avec étiquette rouge et étoile',
-      'lowStockAlertEnabled': false,
-      'expiryDate': DateTime.now().add(const Duration(days: 210)),
-    },
-    {
-      'id': 7,
-      'name': 'Sprite 1L',
-      'sku': 'SP-1000-007',
-      'currentStock': 18,
-      'minStock': 40,
-      'criticalStock': 15,
-      'price': '650',
-      'category': 'Boissons gazeuses',
-      'supplier': 'Coca-Cola',
-      'image':
-          'https://images.unsplash.com/photo-1699543908097-3017da4d6859',
-      'semanticLabel':
-          'Bouteille de Sprite de 1 litre transparente avec étiquette verte et jaune',
-      'lowStockAlertEnabled': true,
-      'expiryDate': DateTime.now().add(const Duration(days: 25)),
-    },
-    {
-      'id': 8,
-      'name': 'Fanta Orange 2L',
-      'sku': 'FT-2000-008',
-      'currentStock': 95,
-      'minStock': 50,
-      'criticalStock': 25,
-      'price': '800',
-      'category': 'Boissons gazeuses',
-      'supplier': 'Coca-Cola',
-      'image':
-          'https://images.unsplash.com/photo-1670969658708-9542cd32a008',
-      'semanticLabel':
-          'Bouteille de Fanta Orange de 2 litres avec étiquette orange vif',
-      'lowStockAlertEnabled': false,
-      'expiryDate': DateTime.now().add(const Duration(days: 160)),
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadProducts();
+  }
+
+  Future<void> _loadProducts() async {
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
+
+    try {
+      final categoryId = _currentFilters['category'] != 'Toutes'
+          ? _currentFilters['category'] as String?
+          : null;
+
+      final products = await _productService.getProducts(
+        search: _searchQuery.isNotEmpty ? _searchQuery : null,
+        categoryId: categoryId is String && categoryId.contains('-')
+            ? categoryId
+            : null,
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _allProducts = products;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _hasError = true;
+        _errorMessage = e.toString();
+      });
+    }
+  }
 
   List<Map<String, dynamic>> get _filteredProducts {
     List<Map<String, dynamic>> filtered = List.from(_allProducts);
 
-    // Apply search filter
     if (_searchQuery.isNotEmpty) {
       filtered = filtered.where((product) {
-        final name = (product['name'] as String).toLowerCase();
-        final sku = (product['sku'] as String).toLowerCase();
+        final name = (product['name'] as String? ?? '').toLowerCase();
+        final sku = (product['sku'] as String? ?? '').toLowerCase();
+        final barcode = (product['barcode'] as String? ?? '').toLowerCase();
         final query = _searchQuery.toLowerCase();
-        return name.contains(query) || sku.contains(query);
+        return name.contains(query) ||
+            sku.contains(query) ||
+            barcode.contains(query);
       }).toList();
     }
 
-    // Apply category filter
     if (_currentFilters['category'] != 'Toutes') {
+      final filterCategory = _currentFilters['category'] as String;
       filtered = filtered.where((product) {
-        return product['category'] == _currentFilters['category'];
+        final catData = product['product_categories'];
+        if (catData is Map) {
+          return catData['name'] == filterCategory;
+        }
+        return false;
       }).toList();
     }
 
-    // Apply supplier filter
-    if (_currentFilters['supplier'] != 'Tous') {
-      filtered = filtered.where((product) {
-        return product['supplier'] == _currentFilters['supplier'];
-      }).toList();
-    }
-
-    // Apply stock status filter
     if (_currentFilters['stockStatus'] != 'Tous') {
       filtered = filtered.where((product) {
-        final stock = product['currentStock'] as int;
-        final minStock = product['minStock'] as int;
-        final criticalStock = product['criticalStock'] as int;
+        final stock = (product['current_stock'] ?? product['currentStock'] ?? 0) as num;
+        final minStock = (product['min_stock_level'] ?? product['minStock'] ?? 0) as num;
+        final criticalStock = (product['critical_stock_level'] ?? product['criticalStock'] ?? 0) as num;
 
         switch (_currentFilters['stockStatus']) {
           case 'Suffisant':
@@ -219,56 +125,48 @@ class _ProductCatalogState extends State<ProductCatalog> {
       }).toList();
     }
 
-    // Apply expiring soon filter
-    if (_currentFilters['showExpiringSoon'] == true) {
-      final now = DateTime.now();
-      filtered = filtered.where((product) {
-        final expiryDate = product['expiryDate'] as DateTime;
-        return expiryDate.difference(now).inDays <= 30;
-      }).toList();
-    }
-
-    // Apply sorting
     final sortBy = _currentFilters['sortBy'] as String;
-    if (sortBy.contains('FIFO')) {
-      filtered.sort((a, b) {
-        final dateA = a['expiryDate'] as DateTime;
-        final dateB = b['expiryDate'] as DateTime;
-        return dateA.compareTo(dateB);
-      });
-    } else if (sortBy.contains('FEFO')) {
-      filtered.sort((a, b) {
-        final dateA = a['expiryDate'] as DateTime;
-        final dateB = b['expiryDate'] as DateTime;
-        return dateA.compareTo(dateB);
-      });
-    } else if (sortBy.contains('Nom (A-Z)')) {
-      filtered
-          .sort((a, b) => (a['name'] as String).compareTo(b['name'] as String));
+    if (sortBy.contains('Nom (A-Z)')) {
+      filtered.sort(
+          (a, b) => (a['name'] as String? ?? '').compareTo(b['name'] as String? ?? ''));
     } else if (sortBy.contains('Nom (Z-A)')) {
-      filtered
-          .sort((a, b) => (b['name'] as String).compareTo(a['name'] as String));
+      filtered.sort(
+          (a, b) => (b['name'] as String? ?? '').compareTo(a['name'] as String? ?? ''));
     } else if (sortBy.contains('Prix (Croissant)')) {
-      filtered.sort((a, b) => int.parse(a['price'] as String)
-          .compareTo(int.parse(b['price'] as String)));
+      filtered.sort((a, b) {
+        final priceA = (a['unit_price'] ?? a['price'] ?? 0) as num;
+        final priceB = (b['unit_price'] ?? b['price'] ?? 0) as num;
+        return priceA.compareTo(priceB);
+      });
     } else if (sortBy.contains('Prix (Décroissant)')) {
-      filtered.sort((a, b) => int.parse(b['price'] as String)
-          .compareTo(int.parse(a['price'] as String)));
+      filtered.sort((a, b) {
+        final priceA = (a['unit_price'] ?? a['price'] ?? 0) as num;
+        final priceB = (b['unit_price'] ?? b['price'] ?? 0) as num;
+        return priceB.compareTo(priceA);
+      });
     } else if (sortBy.contains('Stock (Croissant)')) {
-      filtered.sort((a, b) =>
-          (a['currentStock'] as int).compareTo(b['currentStock'] as int));
+      filtered.sort((a, b) {
+        final stockA = (a['current_stock'] ?? a['currentStock'] ?? 0) as num;
+        final stockB = (b['current_stock'] ?? b['currentStock'] ?? 0) as num;
+        return stockA.compareTo(stockB);
+      });
     } else if (sortBy.contains('Stock (Décroissant)')) {
-      filtered.sort((a, b) =>
-          (b['currentStock'] as int).compareTo(a['currentStock'] as int));
+      filtered.sort((a, b) {
+        final stockA = (a['current_stock'] ?? a['currentStock'] ?? 0) as num;
+        final stockB = (b['current_stock'] ?? b['currentStock'] ?? 0) as num;
+        return stockB.compareTo(stockA);
+      });
     }
 
     return filtered;
   }
 
   Future<void> _refreshProducts() async {
-    setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() => _isLoading = false);
+    await _loadProducts();
+  }
+
+  void _onSearchChanged(String value) {
+    setState(() => _searchQuery = value);
   }
 
   void _showFilterBottomSheet() {
@@ -302,6 +200,21 @@ class _ProductCatalogState extends State<ProductCatalog> {
     }
   }
 
+  Future<void> _openAddProductDialog({Map<String, dynamic>? product}) async {
+    final result = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => AddProductDialogWidget(
+          existingProduct: product,
+        ),
+      ),
+    );
+
+    if (result == true) {
+      _refreshProducts();
+    }
+  }
+
   void _toggleMultiSelectMode() {
     setState(() {
       _isMultiSelectMode = !_isMultiSelectMode;
@@ -311,7 +224,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
     });
   }
 
-  void _toggleProductSelection(int productId) {
+  void _toggleProductSelection(String productId) {
     setState(() {
       if (_selectedProducts.contains(productId)) {
         _selectedProducts.remove(productId);
@@ -332,6 +245,29 @@ class _ProductCatalogState extends State<ProductCatalog> {
       _isMultiSelectMode = false;
       _selectedProducts.clear();
     });
+  }
+
+  Map<String, dynamic> _adaptProductForCard(Map<String, dynamic> product) {
+    return {
+      'id': product['id'] ?? '',
+      'name': product['name'] ?? 'Sans nom',
+      'sku': product['sku'] ?? '',
+      'currentStock': product['current_stock'] ?? product['currentStock'] ?? 0,
+      'minStock': product['min_stock_level'] ?? product['minStock'] ?? 0,
+      'criticalStock':
+          product['critical_stock_level'] ?? product['criticalStock'] ?? 0,
+      'price': (product['unit_price'] ?? product['price'] ?? 0).toString(),
+      'category': product['product_categories'] is Map
+          ? product['product_categories']['name'] ?? 'Non classé'
+          : 'Non classé',
+      'supplier': product['supplier'] ?? '',
+      'image': product['image_url'] ?? product['image'] ?? '',
+      'semanticLabel': product['name'] ?? 'Image du produit',
+      'lowStockAlertEnabled': product['low_stock_alert_enabled'] ?? false,
+      'expiryDate': product['expiry_date'] != null
+          ? DateTime.tryParse(product['expiry_date']) ?? DateTime.now().add(const Duration(days: 365))
+          : DateTime.now().add(const Duration(days: 365)),
+    };
   }
 
   @override
@@ -392,128 +328,44 @@ class _ProductCatalogState extends State<ProductCatalog> {
       ),
       body: Column(
         children: [
-          // Search Bar
           SearchBarWidget(
             controller: _searchController,
-            onChanged: (value) => setState(() => _searchQuery = value),
+            onChanged: _onSearchChanged,
             onScanBarcode: _scanBarcode,
             onFilter: _showFilterBottomSheet,
           ),
-          // Product List
           Expanded(
-            child: _isLoading
-                ? Center(
-                    child: CircularProgressIndicator(
-                      color: colorScheme.primary,
-                    ),
-                  )
-                : filteredProducts.isEmpty
-                    ? EmptyStateWidget(
-                        message: _searchQuery.isNotEmpty ||
-                                _currentFilters['category'] != 'Toutes'
-                            ? 'Aucun produit trouvé'
-                            : 'Aucun produit dans le catalogue',
-                        actionText: _searchQuery.isNotEmpty ||
-                                _currentFilters['category'] != 'Toutes'
-                            ? 'Ajuster les filtres'
-                            : 'Ajouter un produit',
-                        showFilterAdjustment: _searchQuery.isNotEmpty ||
-                            _currentFilters['category'] != 'Toutes',
-                        onActionPressed: _searchQuery.isNotEmpty ||
-                                _currentFilters['category'] != 'Toutes'
-                            ? _showFilterBottomSheet
-                            : () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                        'Fonctionnalité d\'ajout de produit à venir'),
-                                  ),
-                                );
-                              },
-                      )
-                    : RefreshIndicator(
-                        onRefresh: _refreshProducts,
-                        color: colorScheme.primary,
-                        child: ListView.builder(
-                          padding: EdgeInsets.only(bottom: 2.h),
-                          itemCount: filteredProducts.length,
-                          itemBuilder: (context, index) {
-                            final product = filteredProducts[index];
-                            final productId = product['id'] as int;
-                            final isSelected =
-                                _selectedProducts.contains(productId);
-
-                            return ProductCardWidget(
-                              product: product,
-                              isSelected: isSelected,
-                              onTap: () {
-                                if (_isMultiSelectMode) {
-                                  _toggleProductSelection(productId);
-                                } else {
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/product-detail',
-                                    arguments: product,
-                                  );
-                                }
-                              },
-                              onEdit: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content:
-                                        Text('Modifier ${product['name']}'),
-                                  ),
-                                );
-                              },
-                              onDuplicate: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content:
-                                        Text('Dupliquer ${product['name']}'),
-                                  ),
-                                );
-                              },
-                              onViewHistory: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        'Historique de ${product['name']}'),
-                                  ),
-                                );
-                              },
-                              onToggleLowStockAlert: () {
-                                setState(() {
-                                  product['lowStockAlertEnabled'] =
-                                      !(product['lowStockAlertEnabled']
-                                          as bool);
-                                });
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      product['lowStockAlertEnabled'] == true
-                                          ? 'Alerte de stock faible activée'
-                                          : 'Alerte de stock faible désactivée',
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ),
+            child: _buildBody(theme, colorScheme, filteredProducts),
           ),
         ],
       ),
       floatingActionButton: _isMultiSelectMode
           ? null
-          : FloatingActionButton(
-              onPressed: _scanBarcode,
-              tooltip: 'Scanner code-barres',
-              child: CustomIconWidget(
-                iconName: 'qr_code_scanner',
-                color: colorScheme.onPrimary,
-                size: 28,
-              ),
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FloatingActionButton(
+                  heroTag: 'add_product_fab',
+                  onPressed: () => _openAddProductDialog(),
+                  tooltip: 'Ajouter un produit',
+                  child: CustomIconWidget(
+                    iconName: 'add',
+                    color: colorScheme.onPrimary,
+                    size: 28,
+                  ),
+                ),
+                SizedBox(height: 1.5.h),
+                FloatingActionButton.small(
+                  heroTag: 'scan_barcode_fab',
+                  onPressed: _scanBarcode,
+                  tooltip: 'Scanner code-barres',
+                  child: CustomIconWidget(
+                    iconName: 'qr_code_scanner',
+                    color: colorScheme.onPrimary,
+                    size: 22,
+                  ),
+                ),
+              ],
             ),
       bottomNavigationBar: CustomBottomBar(
         currentIndex: 1,
@@ -523,7 +375,6 @@ class _ProductCatalogState extends State<ProductCatalog> {
               Navigator.pushReplacementNamed(context, '/main-dashboard');
               break;
             case 1:
-              // Current screen
               break;
             case 2:
               Navigator.pushReplacementNamed(
@@ -569,6 +420,127 @@ class _ProductCatalogState extends State<ProductCatalog> {
             route: '/financial-dashboard',
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBody(
+    ThemeData theme,
+    ColorScheme colorScheme,
+    List<Map<String, dynamic>> filteredProducts,
+  ) {
+    if (_isLoading) {
+      return Center(
+        child: CircularProgressIndicator(color: colorScheme.primary),
+      );
+    }
+
+    if (_hasError) {
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.all(8.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 60,
+                color: colorScheme.error,
+              ),
+              SizedBox(height: 2.h),
+              Text(
+                'Erreur de chargement',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: colorScheme.error,
+                ),
+              ),
+              SizedBox(height: 1.h),
+              Text(
+                _errorMessage,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 3.h),
+              ElevatedButton.icon(
+                onPressed: _refreshProducts,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Réessayer'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (filteredProducts.isEmpty) {
+      return EmptyStateWidget(
+        message: _searchQuery.isNotEmpty || _currentFilters['category'] != 'Toutes'
+            ? 'Aucun produit trouvé'
+            : 'Aucun produit dans le catalogue',
+        actionText: _searchQuery.isNotEmpty || _currentFilters['category'] != 'Toutes'
+            ? 'Ajuster les filtres'
+            : 'Ajouter un produit',
+        showFilterAdjustment:
+            _searchQuery.isNotEmpty || _currentFilters['category'] != 'Toutes',
+        onActionPressed: _searchQuery.isNotEmpty ||
+                _currentFilters['category'] != 'Toutes'
+            ? _showFilterBottomSheet
+            : () => _openAddProductDialog(),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _refreshProducts,
+      color: colorScheme.primary,
+      child: ListView.builder(
+        padding: EdgeInsets.only(bottom: 12.h),
+        itemCount: filteredProducts.length,
+        itemBuilder: (context, index) {
+          final product = filteredProducts[index];
+          final adaptedProduct = _adaptProductForCard(product);
+          final productId = (product['id'] ?? '').toString();
+          final isSelected = _selectedProducts.contains(productId);
+
+          return ProductCardWidget(
+            product: adaptedProduct,
+            isSelected: isSelected,
+            onTap: () {
+              if (_isMultiSelectMode) {
+                _toggleProductSelection(productId);
+              } else {
+                _openAddProductDialog(product: product);
+              }
+            },
+            onEdit: () => _openAddProductDialog(product: product),
+            onDuplicate: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Dupliquer ${product['name']}'),
+                ),
+              );
+            },
+            onViewHistory: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Historique de ${product['name']}'),
+                ),
+              );
+            },
+            onToggleLowStockAlert: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    adaptedProduct['lowStockAlertEnabled'] == true
+                        ? 'Alerte de stock faible désactivée'
+                        : 'Alerte de stock faible activée',
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
