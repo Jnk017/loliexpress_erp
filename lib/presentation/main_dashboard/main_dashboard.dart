@@ -7,6 +7,7 @@ import '../../services/customer_service.dart';
 import '../../services/inventory_service.dart';
 import '../../services/order_service.dart';
 import '../../services/product_service.dart';
+import '../../services/role_service.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_bottom_bar.dart';
 import './widgets/kpi_card_widget.dart';
@@ -33,10 +34,28 @@ class _MainDashboardState extends State<MainDashboard>
   List<Map<String, dynamic>> _kpiData = [];
   List<Map<String, dynamic>> _weeklyRevenue = [];
 
+  List<_TabInfo> get _visibleTabs {
+    final role = RoleService.instance.currentRole;
+    if (role == UserRole.salesRep) {
+      return const [
+        _TabInfo(label: 'Tableau de Bord', route: '/main-dashboard'),
+        _TabInfo(label: 'Ventes', route: '/sales-order-processing'),
+        _TabInfo(label: 'Clients', route: '/customer-management'),
+      ];
+    }
+    return const [
+      _TabInfo(label: 'Tableau de Bord', route: '/main-dashboard'),
+      _TabInfo(label: 'Inventaire', route: '/inventory-management'),
+      _TabInfo(label: 'Ventes', route: '/sales-order-processing'),
+      _TabInfo(label: 'Clients', route: '/customer-management'),
+      _TabInfo(label: 'Rapports', route: '/reports-analytics'),
+    ];
+  }
+
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: _visibleTabs.length, vsync: this);
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
         _handleTabChange(_tabController.index);
@@ -54,15 +73,9 @@ class _MainDashboardState extends State<MainDashboard>
   }
 
   void _handleTabChange(int index) {
-    final routes = [
-      '/main-dashboard',
-      '/inventory-management',
-      '/sales-order-processing',
-      '/customer-management',
-      '/reports-analytics',
-    ];
-    if (index != 0) {
-      Navigator.pushReplacementNamed(context, routes[index]);
+    final tabs = _visibleTabs;
+    if (index != 0 && index < tabs.length) {
+      Navigator.pushReplacementNamed(context, tabs[index].route);
     }
   }
 
@@ -92,45 +105,61 @@ class _MainDashboardState extends State<MainDashboard>
       final totalProducts = products.length;
       final inventoryValue = stockSummary['total_value'] as double? ?? 0;
 
+      final role = RoleService.instance.currentRole;
+      final kpis = <Map<String, dynamic>>[
+        {
+          "title": "Chiffre d'Affaires",
+          "value": _formatNumber(totalRevenue),
+          "currency": "FCFA",
+          "change": "${orderStats['delivered'] ?? 0} livrées",
+          "isPositive": true,
+          "icon": "trending_up",
+          "route": "/sales-order-processing",
+        },
+        {
+          "title": "Commandes en Attente",
+          "value": "$pendingOrders",
+          "subtitle": "commandes",
+          "change": "${orderStats['total'] ?? 0} total",
+          "isPositive": pendingOrders == 0,
+          "icon": "pending_actions",
+          "route": "/sales-order-processing",
+        },
+      ];
+
+      if (role != UserRole.salesRep) {
+        kpis.add({
+          "title": "Stock Faible",
+          "value": "$lowStockCount",
+          "subtitle": "produits",
+          "change": "$totalProducts total",
+          "isPositive": lowStockCount == 0,
+          "icon": "inventory_2",
+          "route": "/inventory-management",
+        });
+        kpis.add({
+          "title": "Valeur Inventaire",
+          "value": _formatNumber(inventoryValue),
+          "currency": "FCFA",
+          "change": "$totalCustomers clients",
+          "isPositive": true,
+          "icon": "payment",
+          "route": "/financial-dashboard",
+        });
+      } else {
+        kpis.add({
+          "title": "Clients",
+          "value": "$totalCustomers",
+          "subtitle": "clients",
+          "change": "",
+          "isPositive": true,
+          "icon": "people",
+          "route": "/customer-management",
+        });
+      }
+
       setState(() {
-        _kpiData = [
-          {
-            "title": "Chiffre d'Affaires",
-            "value": _formatNumber(totalRevenue),
-            "currency": "FCFA",
-            "change": "${orderStats['delivered'] ?? 0} livrées",
-            "isPositive": true,
-            "icon": "trending_up",
-            "route": "/sales-order-processing",
-          },
-          {
-            "title": "Commandes en Attente",
-            "value": "$pendingOrders",
-            "subtitle": "commandes",
-            "change": "${orderStats['total'] ?? 0} total",
-            "isPositive": pendingOrders == 0,
-            "icon": "pending_actions",
-            "route": "/sales-order-processing",
-          },
-          {
-            "title": "Stock Faible",
-            "value": "$lowStockCount",
-            "subtitle": "produits",
-            "change": "$totalProducts total",
-            "isPositive": lowStockCount == 0,
-            "icon": "inventory_2",
-            "route": "/inventory-management",
-          },
-          {
-            "title": "Valeur Inventaire",
-            "value": _formatNumber(inventoryValue),
-            "currency": "FCFA",
-            "change": "$totalCustomers clients",
-            "isPositive": true,
-            "icon": "payment",
-            "route": "/financial-dashboard",
-          },
-        ];
+        _kpiData = kpis;
 
         _weeklyRevenue = [
           {"day": "Lun", "amount": (totalRevenue * 0.12).round()},
@@ -416,13 +445,9 @@ class _MainDashboardState extends State<MainDashboard>
                     labelColor: theme.colorScheme.primary,
                     unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
                     indicatorColor: theme.colorScheme.primary,
-                    tabs: const [
-                      Tab(text: 'Tableau de Bord'),
-                      Tab(text: 'Inventaire'),
-                      Tab(text: 'Ventes'),
-                      Tab(text: 'Clients'),
-                      Tab(text: 'Rapports'),
-                    ],
+                    tabs: _visibleTabs
+                        .map((t) => Tab(text: t.label))
+                        .toList(),
                   ),
                 ),
                 SizedBox(height: 2.h),
@@ -469,4 +494,10 @@ class _MainDashboardState extends State<MainDashboard>
       ),
     );
   }
+}
+
+class _TabInfo {
+  final String label;
+  final String route;
+  const _TabInfo({required this.label, required this.route});
 }
