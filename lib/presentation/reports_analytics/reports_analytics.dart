@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../widgets/custom_app_bar.dart';
@@ -7,6 +10,8 @@ import '../../services/reports_analytics_service.dart';
 import './widgets/chart_widget.dart';
 import './widgets/date_range_selector_widget.dart';
 import './widgets/kpi_widget.dart';
+import './widgets/purchases_report_widget.dart';
+import './widgets/receivables_report_widget.dart';
 import './widgets/report_card_widget.dart';
 
 class ReportsAnalyticsScreen extends StatefulWidget {
@@ -36,7 +41,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 7, vsync: this);
     _initializeRealtimeData();
   }
 
@@ -128,19 +133,15 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
               title: Text('Export as PDF'),
               onTap: () {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text('Exporting as PDF...')));
+                _exportToPDF();
               },
             ),
             ListTile(
               leading: Icon(Icons.table_chart, color: Colors.green),
-              title: Text('Export as Excel'),
+              title: Text('Export as CSV'),
               onTap: () {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Exporting as Excel...')),
-                );
+                _exportToCSV();
               },
             ),
             ListTile(
@@ -148,9 +149,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
               title: Text('Email Report'),
               onTap: () {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text('Preparing email...')));
+                _exportToCSV();
               },
             ),
           ],
@@ -275,6 +274,8 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
                       Tab(text: 'Inventory'),
                       Tab(text: 'Financial'),
                       Tab(text: 'Customer'),
+                      Tab(text: 'Créances'),
+                      Tab(text: 'Achats'),
                     ],
                   ),
                 ],
@@ -291,6 +292,8 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
                         _buildInventoryTab(),
                         _buildFinancialTab(),
                         _buildCustomerTab(),
+                        const ReceivablesReportWidget(),
+                        const PurchasesReportWidget(),
                       ],
                     ),
             ),
@@ -421,21 +424,36 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             title: 'Sales by Product Category',
             subtitle: 'Top performing categories',
             icon: Icons.category,
-            onTap: () {},
+            onTap: () => _showReportDetail(
+              'Sales by Product Category',
+              'Répartition des ventes par catégorie de produits.\n\n'
+              'Total ventes: ${_salesMetrics?['totalSales'] ?? 0} FC\n'
+              'Catégories actives: ${_salesMetrics?['activeCategories'] ?? 'N/A'}',
+            ),
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
             title: 'Sales by Representative',
             subtitle: 'Performance by sales team',
             icon: Icons.people,
-            onTap: () {},
+            onTap: () => _showReportDetail(
+              'Sales by Representative',
+              'Performance de l\'équipe de vente.\n\n'
+              'Nombre de transactions: ${_salesMetrics?['transactionCount'] ?? 0}\n'
+              'Vente moyenne: ${_salesMetrics?['averageSale'] ?? 0} FC',
+            ),
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
             title: 'Sales Forecast',
             subtitle: 'Predicted sales for next period',
             icon: Icons.insights,
-            onTap: () {},
+            onTap: () => _showReportDetail(
+              'Sales Forecast',
+              'Prévisions de vente pour la prochaine période.\n\n'
+              'Tendance actuelle: ${_salesMetrics?['trend'] ?? 'Stable'}\n'
+              'Estimation: ${(_salesMetrics?['totalSales'] ?? 0) * 1.1} FC',
+            ),
           ),
         ],
       ),
@@ -463,21 +481,37 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             title: 'Inventory Turnover Analysis',
             subtitle: 'Fast vs slow moving items',
             icon: Icons.inventory,
-            onTap: () {},
+            onTap: () => _showReportDetail(
+              'Inventory Turnover Analysis',
+              'Analyse de rotation des stocks.\n\n'
+              'Produits total: ${_inventoryMetrics?['totalProducts'] ?? 0}\n'
+              'Ruptures de stock: ${_inventoryMetrics?['outOfStock'] ?? 0}\n'
+              'Stock faible: ${_inventoryMetrics?['lowStock'] ?? 0}',
+            ),
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
             title: 'Stock Valuation Report',
             subtitle: 'Current inventory value',
             icon: Icons.monetization_on,
-            onTap: () {},
+            onTap: () => _showReportDetail(
+              'Stock Valuation Report',
+              'Évaluation de la valeur du stock.\n\n'
+              'Valeur totale: ${_inventoryMetrics?['totalValue'] ?? 0} FC\n'
+              'Produits en stock: ${_inventoryMetrics?['totalProducts'] ?? 0}',
+            ),
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
             title: 'Warehouse Performance',
             subtitle: 'Multi-location analysis',
             icon: Icons.warehouse,
-            onTap: () {},
+            onTap: () => _showReportDetail(
+              'Warehouse Performance',
+              'Analyse multi-entrepôt.\n\n'
+              'Taux de rotation: ${_inventoryMetrics?['turnoverRate'] ?? 'N/A'}\n'
+              'Efficacité: ${_inventoryMetrics?['efficiency'] ?? 'N/A'}%',
+            ),
           ),
         ],
       ),
@@ -539,14 +573,46 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             title: 'Profit & Loss Statement',
             subtitle: 'Income and expenses breakdown',
             icon: Icons.account_balance,
-            onTap: () {},
+            onTap: () => _showReportDetail(
+              'Profit & Loss Statement',
+              'Compte de résultat.\n\n'
+              'Revenu Total: ${_financialMetrics?['totalRevenue'] ?? 0} FC\n'
+              'Dépenses Totales: ${_financialMetrics?['totalExpenses'] ?? 0} FC\n'
+              'Profit Net: ${_financialMetrics?['netProfit'] ?? 0} FC\n'
+              'Marge: ${_financialMetrics?['profitMargin'] ?? 0}%',
+            ),
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
             title: 'Expense Analysis',
             subtitle: 'Category-wise expenses',
             icon: Icons.pie_chart,
-            onTap: () {},
+            onTap: () => _showReportDetail(
+              'Expense Analysis',
+              'Analyse des dépenses par catégorie.\n\n'
+              'Dépenses Totales: ${_financialMetrics?['totalExpenses'] ?? 0} FC\n'
+              'Ratio dépenses/revenu: ${_financialMetrics?['totalRevenue'] != null && _financialMetrics!['totalRevenue'] != 0 ? ((_financialMetrics!['totalExpenses'] ?? 0) / _financialMetrics!['totalRevenue'] * 100).toStringAsFixed(1) : 'N/A'}%',
+            ),
+          ),
+          SizedBox(height: 3.h),
+          Text(
+            'Créances',
+            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 1.h),
+          SizedBox(
+            height: 400,
+            child: const ReceivablesReportWidget(),
+          ),
+          SizedBox(height: 3.h),
+          Text(
+            'Rapport Achats',
+            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 1.h),
+          SizedBox(
+            height: 500,
+            child: const PurchasesReportWidget(),
           ),
         ],
       ),
@@ -574,25 +640,104 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             title: 'Customer Segmentation',
             subtitle: 'High, medium, low value customers',
             icon: Icons.pie_chart_outline,
-            onTap: () {},
+            onTap: () => _showReportDetail(
+              'Customer Segmentation',
+              'Segmentation des clients.\n\n'
+              'Total clients: ${_customerMetrics?['totalCustomers'] ?? 0}\n'
+              'Clients actifs: ${_customerMetrics?['activeCustomers'] ?? 0}\n'
+              'Nouveaux ce mois: ${_customerMetrics?['newThisMonth'] ?? 0}',
+            ),
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
             title: 'Customer Lifetime Value',
             subtitle: 'Total revenue per customer',
             icon: Icons.person_outline,
-            onTap: () {},
+            onTap: () => _showReportDetail(
+              'Customer Lifetime Value',
+              'Valeur vie client (CLV).\n\n'
+              'CLV moyen: ${_customerMetrics?['averageCLV'] ?? 'N/A'} FC\n'
+              'Panier moyen: ${_customerMetrics?['averageOrderValue'] ?? 'N/A'} FC',
+            ),
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
             title: 'Customer Retention Rate',
             subtitle: 'Repeat purchase analysis',
             icon: Icons.repeat,
-            onTap: () {},
+            onTap: () => _showReportDetail(
+              'Customer Retention Rate',
+              'Taux de rétention des clients.\n\n'
+              'Taux de rétention: ${_customerMetrics?['retentionRate'] ?? 'N/A'}%\n'
+              'Clients récurrents: ${_customerMetrics?['returningCustomers'] ?? 0}',
+            ),
           ),
         ],
       ),
     );
+  }
+
+  void _showReportDetail(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: SingleChildScrollView(
+          child: Text(content, style: TextStyle(fontSize: 12.sp)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Fermer'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.pop(context);
+              _exportToPDF();
+            },
+            icon: const Icon(Icons.picture_as_pdf, size: 18),
+            label: const Text('Exporter PDF'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _exportToPDF() async {
+    final pdf = pw.Document();
+    pdf.addPage(
+      pw.Page(
+        build: (context) => pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Header(level: 0, text: 'LoliExpress - Rapport Analytique'),
+            pw.Header(level: 1, text: 'Date: ${DateTime.now().toString().substring(0, 10)}'),
+            pw.SizedBox(height: 20),
+            pw.TableHelper.fromTextArray(
+              headers: ['Indicateur', 'Valeur'],
+              data: [
+                ['Revenu Total', '${_financialMetrics?['totalRevenue'] ?? 0} FC'],
+                ['Marge Brute', '${_financialMetrics?['profitMargin'] ?? 0}%'],
+                ['Profit Net', '${_financialMetrics?['netProfit'] ?? 0} FC'],
+                ['Dépenses Totales', '${_financialMetrics?['totalExpenses'] ?? 0} FC'],
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+    await Printing.sharePdf(bytes: await pdf.save(), filename: 'rapport_loliexpress.pdf');
+  }
+
+  Future<void> _exportToCSV() async {
+    final buffer = StringBuffer();
+    buffer.writeln('Indicateur,Valeur,Devise');
+    buffer.writeln('Revenu Total,${_financialMetrics?['totalRevenue'] ?? 0},FC');
+    buffer.writeln('Marge Brute,${_financialMetrics?['profitMargin'] ?? 0},%');
+    buffer.writeln('Profit Net,${_financialMetrics?['netProfit'] ?? 0},FC');
+    buffer.writeln('Dépenses Totales,${_financialMetrics?['totalExpenses'] ?? 0},FC');
+
+    await SharePlus.instance.share(ShareParams(text: buffer.toString(), subject: 'Rapport LoliExpress CSV'));
   }
 
   Widget _buildAgingBucket(String label, double amount, {bool isBold = false}) {
