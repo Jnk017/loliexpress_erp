@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/app_export.dart';
+import '../../services/customer_service.dart';
 import '../../widgets/custom_bottom_bar.dart';
 import '../../widgets/custom_icon_widget.dart';
 import './widgets/customer_card_widget.dart';
@@ -17,102 +20,14 @@ class CustomerManagement extends StatefulWidget {
 
 class _CustomerManagementState extends State<CustomerManagement> {
   final TextEditingController _searchController = TextEditingController();
-  final List<Map<String, dynamic>> _allCustomers = [
-    {
-      "id": 1,
-      "companyName": "Supermarché Chez Fatou",
-      "contactPerson": "Fatou Diop",
-      "phone": "+221 77 123 45 67",
-      "email": "fatou.diop@chezfatou.sn",
-      "outstandingBalance": "1 250 000 FCFA",
-      "lastOrderDate": "15/11/2024",
-      "paymentStatus": "Current",
-      "location": "Dakar",
-      "paymentTerms": "30 jours",
-      "customerTier": "Premium",
-      "accountStatus": "Actif",
-      "accountNumber": "CL-001",
-    },
-    {
-      "id": 2,
-      "companyName": "Boutique Moderne",
-      "contactPerson": "Mamadou Sall",
-      "phone": "+221 76 234 56 78",
-      "email": "m.sall@boutiquemoderne.sn",
-      "outstandingBalance": "850 000 FCFA",
-      "lastOrderDate": "20/11/2024",
-      "paymentStatus": "Approaching",
-      "location": "Thiès",
-      "paymentTerms": "60 jours",
-      "customerTier": "Standard",
-      "accountStatus": "Actif",
-      "accountNumber": "CL-002",
-    },
-    {
-      "id": 3,
-      "companyName": "Alimentation Générale",
-      "contactPerson": "Aïssatou Ndiaye",
-      "phone": "+221 77 345 67 89",
-      "email": "a.ndiaye@aligen.sn",
-      "outstandingBalance": "2 100 000 FCFA",
-      "lastOrderDate": "05/10/2024",
-      "paymentStatus": "Overdue",
-      "location": "Saint-Louis",
-      "paymentTerms": "30 jours",
-      "customerTier": "Premium",
-      "accountStatus": "Actif",
-      "accountNumber": "CL-003",
-    },
-    {
-      "id": 4,
-      "companyName": "Épicerie du Coin",
-      "contactPerson": "Ousmane Ba",
-      "phone": "+221 76 456 78 90",
-      "email": "o.ba@epicerieducoin.sn",
-      "outstandingBalance": "450 000 FCFA",
-      "lastOrderDate": "22/11/2024",
-      "paymentStatus": "Current",
-      "location": "Kaolack",
-      "paymentTerms": "Comptant",
-      "customerTier": "Standard",
-      "accountStatus": "Actif",
-      "accountNumber": "CL-004",
-    },
-    {
-      "id": 5,
-      "companyName": "Distribution Sénégal",
-      "contactPerson": "Khady Sarr",
-      "phone": "+221 77 567 89 01",
-      "email": "k.sarr@distsenegal.sn",
-      "outstandingBalance": "3 500 000 FCFA",
-      "lastOrderDate": "18/11/2024",
-      "paymentStatus": "Current",
-      "location": "Dakar",
-      "paymentTerms": "90 jours",
-      "customerTier": "Premium",
-      "accountStatus": "Actif",
-      "accountNumber": "CL-005",
-    },
-    {
-      "id": 6,
-      "companyName": "Mini Market Express",
-      "contactPerson": "Ibrahima Diallo",
-      "phone": "+221 76 678 90 12",
-      "email": "i.diallo@minimarket.sn",
-      "outstandingBalance": "0 FCFA",
-      "lastOrderDate": "10/09/2024",
-      "paymentStatus": "Current",
-      "location": "Thiès",
-      "paymentTerms": "Comptant",
-      "customerTier": "Nouveau",
-      "accountStatus": "Inactif",
-      "accountNumber": "CL-006",
-    },
-  ];
 
-  List<Map<String, dynamic>> _filteredCustomers = [];
-  Set<int> _selectedCustomers = {};
+  List<Map<String, dynamic>> _customers = [];
+  bool _isLoading = true;
+  String? _errorMessage;
+  final Set<int> _selectedCustomers = {};
   bool _isMultiSelectMode = false;
+  Timer? _debounce;
+
   Map<String, dynamic> _currentFilters = {
     'location': 'Tous',
     'paymentTerms': 'Tous',
@@ -123,31 +38,114 @@ class _CustomerManagementState extends State<CustomerManagement> {
   @override
   void initState() {
     super.initState();
-    _filteredCustomers = List.from(_allCustomers);
     _searchController.addListener(_onSearchChanged);
+    _loadCustomers();
   }
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _searchController.dispose();
     super.dispose();
   }
 
   void _onSearchChanged() {
-    setState(() {
-      _applyFilters();
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 400), () {
+      _loadCustomers();
     });
   }
 
-  void _applyFilters() {
-    final query = _searchController.text.toLowerCase();
-    _filteredCustomers = _allCustomers.where((customer) {
-      final matchesSearch = query.isEmpty ||
-          (customer['companyName'] as String).toLowerCase().contains(query) ||
-          (customer['contactPerson'] as String).toLowerCase().contains(query) ||
-          (customer['phone'] as String).contains(query) ||
-          (customer['accountNumber'] as String).toLowerCase().contains(query);
+  Future<void> _loadCustomers() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
+    try {
+      final query = _searchController.text.trim();
+      final results = await CustomerService.instance.getCustomers(
+        search: query.isNotEmpty ? query : null,
+      );
+      if (!mounted) return;
+      setState(() {
+        _customers = results.map(_mapCustomerToUi).toList();
+        _applyLocalFilters();
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = e.toString().replaceFirst('Exception: ', '');
+        _isLoading = false;
+      });
+    }
+  }
+
+  Map<String, dynamic> _mapCustomerToUi(Map<String, dynamic> raw) {
+    final balance = (raw['current_balance'] as num?)?.toDouble() ?? 0;
+    final creditLimit = (raw['credit_limit'] as num?)?.toDouble() ?? 0;
+    final isActive = raw['is_active'] as bool? ?? true;
+
+    String paymentStatus = 'Current';
+    if (balance > 0 && creditLimit > 0) {
+      final ratio = balance / creditLimit;
+      if (ratio > 0.9) {
+        paymentStatus = 'Overdue';
+      } else if (ratio > 0.6) {
+        paymentStatus = 'Approaching';
+      }
+    }
+
+    final formattedBalance = '${_formatNumber(balance.toInt())} FCFA';
+
+    return {
+      'id': raw['id'],
+      'companyName': raw['company_name'] ?? '',
+      'contactPerson': raw['contact_person'] ?? raw['contact_name'] ?? '',
+      'phone': raw['phone'] ?? '',
+      'email': raw['email'] ?? '',
+      'outstandingBalance': formattedBalance,
+      'lastOrderDate': _formatDate(raw['updated_at']),
+      'paymentStatus': paymentStatus,
+      'location': raw['city'] ?? '',
+      'paymentTerms': '30 jours',
+      'customerTier': creditLimit >= 5000000
+          ? 'Premium'
+          : creditLimit >= 1000000
+              ? 'Standard'
+              : 'Nouveau',
+      'accountStatus': isActive ? 'Actif' : 'Inactif',
+      'accountNumber': 'CL-${(raw['id'] as String).substring(0, 4).toUpperCase()}',
+    };
+  }
+
+  String _formatNumber(int number) {
+    final str = number.toString();
+    final buffer = StringBuffer();
+    for (int i = 0; i < str.length; i++) {
+      if (i > 0 && (str.length - i) % 3 == 0) {
+        buffer.write(' ');
+      }
+      buffer.write(str[i]);
+    }
+    return buffer.toString();
+  }
+
+  String _formatDate(dynamic dateStr) {
+    if (dateStr == null) return '-';
+    try {
+      final date = DateTime.parse(dateStr.toString());
+      return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+    } catch (_) {
+      return '-';
+    }
+  }
+
+  List<Map<String, dynamic>> _filteredCustomers = [];
+
+  void _applyLocalFilters() {
+    _filteredCustomers = _customers.where((customer) {
       final matchesLocation = _currentFilters['location'] == 'Tous' ||
           customer['location'] == _currentFilters['location'];
 
@@ -160,8 +158,7 @@ class _CustomerManagementState extends State<CustomerManagement> {
       final matchesStatus = _currentFilters['accountStatus'] == 'Tous' ||
           customer['accountStatus'] == _currentFilters['accountStatus'];
 
-      return matchesSearch &&
-          matchesLocation &&
+      return matchesLocation &&
           matchesPaymentTerms &&
           matchesTier &&
           matchesStatus;
@@ -169,10 +166,7 @@ class _CustomerManagementState extends State<CustomerManagement> {
   }
 
   Future<void> _onRefresh() async {
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() {
-      _filteredCustomers = List.from(_allCustomers);
-    });
+    await _loadCustomers();
   }
 
   void _showFilterBottomSheet() {
@@ -185,22 +179,23 @@ class _CustomerManagementState extends State<CustomerManagement> {
         onApplyFilters: (filters) {
           setState(() {
             _currentFilters = filters;
-            _applyFilters();
+            _applyLocalFilters();
           });
         },
       ),
     );
   }
 
-  void _toggleMultiSelect(int customerId) {
+  void _toggleMultiSelect(dynamic customerId) {
     setState(() {
-      if (_selectedCustomers.contains(customerId)) {
-        _selectedCustomers.remove(customerId);
+      final id = customerId.hashCode;
+      if (_selectedCustomers.contains(id)) {
+        _selectedCustomers.remove(id);
         if (_selectedCustomers.isEmpty) {
           _isMultiSelectMode = false;
         }
       } else {
-        _selectedCustomers.add(customerId);
+        _selectedCustomers.add(id);
         _isMultiSelectMode = true;
       }
     });
@@ -208,27 +203,27 @@ class _CustomerManagementState extends State<CustomerManagement> {
 
   void _exportContacts() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Export de ${0} contacts en cours...'),
-        duration: Duration(seconds: 2),
+      SnackBar(
+        content: Text('Export de ${_selectedCustomers.length} contacts en cours...'),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
 
   void _sendStatements() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Envoi des relevés à ${0} clients...'),
-        duration: Duration(seconds: 2),
+      SnackBar(
+        content: Text('Envoi des relevés à ${_selectedCustomers.length} clients...'),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
 
   void _updateTerms() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Mise à jour des conditions pour ${0} clients...'),
-        duration: Duration(seconds: 2),
+      SnackBar(
+        content: Text('Mise à jour des conditions pour ${_selectedCustomers.length} clients...'),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -281,11 +276,137 @@ class _CustomerManagementState extends State<CustomerManagement> {
   }
 
   void _showNewCustomerForm() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Formulaire de nouveau client'),
-        duration: Duration(seconds: 2),
-      ),
+    final companyController = TextEditingController();
+    final contactController = TextEditingController();
+    final phoneController = TextEditingController();
+    final emailController = TextEditingController();
+    final cityController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        bool isCreating = false;
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Ajouter un client'),
+              content: SingleChildScrollView(
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: companyController,
+                        decoration: const InputDecoration(
+                          labelText: 'Nom de l\'entreprise *',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (v) =>
+                            v == null || v.isEmpty ? 'Champ requis' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: contactController,
+                        decoration: const InputDecoration(
+                          labelText: 'Personne de contact *',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (v) =>
+                            v == null || v.isEmpty ? 'Champ requis' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: phoneController,
+                        decoration: const InputDecoration(
+                          labelText: 'Téléphone *',
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.phone,
+                        validator: (v) =>
+                            v == null || v.isEmpty ? 'Champ requis' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: emailController,
+                        decoration: const InputDecoration(
+                          labelText: 'Email *',
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (v) =>
+                            v == null || v.isEmpty ? 'Champ requis' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: cityController,
+                        decoration: const InputDecoration(
+                          labelText: 'Ville',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isCreating ? null : () => Navigator.pop(context),
+                  child: const Text('Annuler'),
+                ),
+                ElevatedButton(
+                  onPressed: isCreating
+                      ? null
+                      : () async {
+                          if (!formKey.currentState!.validate()) return;
+                          setDialogState(() => isCreating = true);
+                          try {
+                            await CustomerService.instance.createCustomer({
+                              'company_name': companyController.text.trim(),
+                              'contact_person': contactController.text.trim(),
+                              'phone': phoneController.text.trim(),
+                              'email': emailController.text.trim(),
+                              'city': cityController.text.trim(),
+                            });
+                            if (context.mounted) Navigator.pop(context);
+                            _loadCustomers();
+                            if (mounted) {
+                              ScaffoldMessenger.of(this.context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Client créé avec succès'),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            setDialogState(() => isCreating = false);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    e.toString().replaceFirst('Exception: ', ''),
+                                  ),
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.error,
+                                ),
+                              );
+                            }
+                          }
+                        },
+                  child: isCreating
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Créer'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
@@ -428,115 +549,14 @@ class _CustomerManagementState extends State<CustomerManagement> {
               ),
             ),
           Expanded(
-            child: _filteredCustomers.isEmpty
-                ? EmptyStateWidget(
-                    onAddCustomer: _showNewCustomerForm,
-                    onImportContacts: _importContacts,
-                  )
-                : RefreshIndicator(
-                    onRefresh: _onRefresh,
-                    child: ListView.builder(
-                      itemCount: _filteredCustomers.length,
-                      itemBuilder: (context, index) {
-                        final customer = _filteredCustomers[index];
-                        final isSelected =
-                            _selectedCustomers.contains(customer['id'] as int);
-
-                        return GestureDetector(
-                          onLongPress: () {
-                            _toggleMultiSelect(customer['id'] as int);
-                          },
-                          child: Stack(
-                            children: [
-                              CustomerCardWidget(
-                                customer: customer,
-                                onTap: () {
-                                  if (_isMultiSelectMode) {
-                                    _toggleMultiSelect(customer['id'] as int);
-                                  } else {
-                                    _navigateToCustomerDetail(customer);
-                                  }
-                                },
-                                onCall: () =>
-                                    _makePhoneCall(customer['phone'] as String),
-                                onEmail: () =>
-                                    _sendEmail(customer['email'] as String),
-                                onNewOrder: () {
-                                  Navigator.pushNamed(
-                                      context, '/sales-order-processing');
-                                },
-                                onPaymentReceipt: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          'Reçu de paiement pour ${customer['companyName']}'),
-                                      duration: const Duration(seconds: 2),
-                                    ),
-                                  );
-                                },
-                                onCreditLimit: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          'Ajustement limite de crédit pour ${customer['companyName']}'),
-                                      duration: const Duration(seconds: 2),
-                                    ),
-                                  );
-                                },
-                                onNotes: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          'Notes pour ${customer['companyName']}'),
-                                      duration: const Duration(seconds: 2),
-                                    ),
-                                  );
-                                },
-                              ),
-                              if (_isMultiSelectMode)
-                                Positioned(
-                                  top: 16,
-                                  right: 24,
-                                  child: Container(
-                                    width: 24,
-                                    height: 24,
-                                    decoration: BoxDecoration(
-                                      color: isSelected
-                                          ? theme.colorScheme.primary
-                                          : theme.colorScheme.surface,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: isSelected
-                                            ? theme.colorScheme.primary
-                                            : theme.colorScheme.outline,
-                                        width: 2,
-                                      ),
-                                    ),
-                                    child: isSelected
-                                        ? Center(
-                                            child: CustomIconWidget(
-                                              iconName: 'check',
-                                              size: 16,
-                                              color:
-                                                  theme.colorScheme.onPrimary,
-                                            ),
-                                          )
-                                        : null,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+            child: _buildBody(theme),
           ),
         ],
       ),
       floatingActionButton: !_isMultiSelectMode
           ? FloatingActionButton(
               onPressed: _showNewCustomerForm,
-              tooltip: 'Nouveau client',
+              tooltip: 'Ajouter un client',
               child: CustomIconWidget(
                 iconName: 'add',
                 size: 24,
@@ -557,6 +577,161 @@ class _CustomerManagementState extends State<CustomerManagement> {
           if (index != 3) {
             Navigator.pushReplacementNamed(context, routes[index]);
           }
+        },
+      ),
+    );
+  }
+
+  Widget _buildBody(ThemeData theme) {
+    if (_isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (_errorMessage != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CustomIconWidget(
+                iconName: 'error_outline',
+                size: 64,
+                color: theme.colorScheme.error,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Erreur de chargement',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _errorMessage!,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: _loadCustomers,
+                icon: CustomIconWidget(
+                  iconName: 'refresh',
+                  size: 20,
+                  color: theme.colorScheme.onPrimary,
+                ),
+                label: const Text('Réessayer'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_filteredCustomers.isEmpty) {
+      return EmptyStateWidget(
+        onAddCustomer: _showNewCustomerForm,
+        onImportContacts: _importContacts,
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: ListView.builder(
+        itemCount: _filteredCustomers.length,
+        itemBuilder: (context, index) {
+          final customer = _filteredCustomers[index];
+          final isSelected =
+              _selectedCustomers.contains(customer['id'].hashCode);
+
+          return GestureDetector(
+            onLongPress: () {
+              _toggleMultiSelect(customer['id']);
+            },
+            child: Stack(
+              children: [
+                CustomerCardWidget(
+                  customer: customer,
+                  onTap: () {
+                    if (_isMultiSelectMode) {
+                      _toggleMultiSelect(customer['id']);
+                    } else {
+                      _navigateToCustomerDetail(customer);
+                    }
+                  },
+                  onCall: () =>
+                      _makePhoneCall(customer['phone'] as String),
+                  onEmail: () =>
+                      _sendEmail(customer['email'] as String),
+                  onNewOrder: () {
+                    Navigator.pushNamed(
+                        context, '/sales-order-processing');
+                  },
+                  onPaymentReceipt: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            'Reçu de paiement pour ${customer['companyName']}'),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                  onCreditLimit: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            'Ajustement limite de crédit pour ${customer['companyName']}'),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                  onNotes: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            'Notes pour ${customer['companyName']}'),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                ),
+                if (_isMultiSelectMode)
+                  Positioned(
+                    top: 16,
+                    right: 24,
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.surface,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isSelected
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.outline,
+                          width: 2,
+                        ),
+                      ),
+                      child: isSelected
+                          ? Center(
+                              child: CustomIconWidget(
+                                iconName: 'check',
+                                size: 16,
+                                color: theme.colorScheme.onPrimary,
+                              ),
+                            )
+                          : null,
+                    ),
+                  ),
+              ],
+            ),
+          );
         },
       ),
     );

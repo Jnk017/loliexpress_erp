@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../services/role_service.dart';
+
 /// Navigation item configuration for bottom bar
 class CustomBottomBarItem {
   final IconData icon;
@@ -29,44 +31,25 @@ class CustomBottomBar extends StatelessWidget {
     this.customItems,
   });
 
-  /// Default navigation items based on Mobile Navigation Hierarchy
-  static final List<CustomBottomBarItem> _defaultItems = [
-    const CustomBottomBarItem(
-      icon: Icons.dashboard_outlined,
-      activeIcon: Icons.dashboard,
-      label: 'Dashboard',
-      route: '/main-dashboard',
-    ),
-    const CustomBottomBarItem(
-      icon: Icons.inventory_2_outlined,
-      activeIcon: Icons.inventory_2,
-      label: 'Inventory',
-      route: '/inventory-management',
-    ),
-    const CustomBottomBarItem(
-      icon: Icons.shopping_cart_outlined,
-      activeIcon: Icons.shopping_cart,
-      label: 'Orders',
-      route: '/sales-order-processing',
-    ),
-    const CustomBottomBarItem(
-      icon: Icons.people_outline,
-      activeIcon: Icons.people,
-      label: 'Customers',
-      route: '/customer-management',
-    ),
-    const CustomBottomBarItem(
-      icon: Icons.analytics_outlined,
-      activeIcon: Icons.analytics,
-      label: 'Reports',
-      route: '/financial-dashboard',
-    ),
-  ];
+  static List<CustomBottomBarItem> _itemsFromRole() {
+    final roleItems = RoleService.instance.getBottomNavItems();
+    return roleItems
+        .map((item) => CustomBottomBarItem(
+              icon: item.icon,
+              label: item.label,
+              route: item.route,
+            ))
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final items = customItems ?? _defaultItems;
+    final items = customItems ?? _itemsFromRole();
+
+    if (items.length <= 1) {
+      return const SizedBox.shrink();
+    }
 
     return Container(
       decoration: BoxDecoration(
@@ -124,8 +107,7 @@ class CustomBottomBar extends StatelessWidget {
             if (onTap != null) {
               onTap!(index);
             } else {
-              // Default navigation behavior
-              Navigator.pushNamed(context, item.route);
+              Navigator.pushReplacementNamed(context, item.route);
             }
           },
           borderRadius: BorderRadius.circular(12),
@@ -199,11 +181,15 @@ class CustomBottomBarWithFAB extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final items = customItems ?? CustomBottomBar._defaultItems;
+    final items = customItems ?? CustomBottomBar._itemsFromRole();
+
+    if (items.length <= 1) {
+      return const SizedBox.shrink();
+    }
 
     // Split items for FAB placement (2 items on each side)
     final leftItems = items.take(2).toList();
-    final rightItems = items.skip(2).take(3).toList();
+    final rightItems = items.skip(2).toList();
 
     return Container(
       decoration: BoxDecoration(
@@ -278,7 +264,7 @@ class CustomBottomBarWithFAB extends StatelessWidget {
           if (onTap != null) {
             onTap!(index);
           } else {
-            Navigator.pushNamed(context, item.route);
+            Navigator.pushReplacementNamed(context, item.route);
           }
         },
         borderRadius: BorderRadius.circular(12),

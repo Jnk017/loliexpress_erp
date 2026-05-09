@@ -107,7 +107,7 @@ class AnomalyCardWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             DropdownButtonFormField<String>(
-              initialValue: selectedStatus,
+              value: selectedStatus,
               decoration: const InputDecoration(labelText: 'Status'),
               items: const [
                 DropdownMenuItem(value: 'resolved', child: Text('Resolved')),

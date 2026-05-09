@@ -228,7 +228,7 @@ class _ForensicExportDialogWidgetState
                         _isLoadingTemplates
                             ? const Center(child: CircularProgressIndicator())
                             : DropdownButtonFormField<String>(
-                                initialValue: _selectedTemplateId,
+                                value: _selectedTemplateId,
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   contentPadding: EdgeInsets.symmetric(

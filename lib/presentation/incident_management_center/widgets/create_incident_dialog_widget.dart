@@ -197,7 +197,7 @@ class _CreateIncidentDialogWidgetState
                       ),
                       SizedBox(height: 1.h),
                       DropdownButtonFormField<String>(
-                        initialValue: _selectedSeverity,
+                        value: _selectedSeverity,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
@@ -227,7 +227,7 @@ class _CreateIncidentDialogWidgetState
                       ),
                       SizedBox(height: 1.h),
                       DropdownButtonFormField<String>(
-                        initialValue: _selectedCategory,
+                        value: _selectedCategory,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
