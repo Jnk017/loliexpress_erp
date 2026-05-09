@@ -24,6 +24,7 @@ import '../presentation/security_dashboard/security_dashboard.dart';
 import '../presentation/settings_configuration/settings_configuration.dart';
 import '../presentation/splash_screen/splash_screen.dart';
 import '../presentation/purchases/purchases_screen.dart';
+import '../presentation/expenses/expenses_screen.dart';
 import '../presentation/user_role_management/user_role_management.dart';
 
 class AppRoutes {
@@ -54,6 +55,7 @@ class AppRoutes {
   static const String incidentManagementCenter = '/incident-management-center';
   static const String incidentInvestigationWorkspace = '/incident-investigation-workspace';
   static const String purchases = '/purchases';
+  static const String expenses = '/expenses';
   static const String productDetail = '/product-detail';
 
   static Map<String, WidgetBuilder> get routes => {
@@ -99,6 +101,7 @@ class AppRoutes {
     );
   },
   purchases: (context) => const PurchasesScreen(),
+  expenses: (context) => const ExpensesScreen(),
   productDetail: (context) => const ProductCatalog(),
 };
 }

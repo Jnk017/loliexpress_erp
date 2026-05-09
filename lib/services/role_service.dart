@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'auth_service.dart';
 
-enum UserRole { admin, salesRep, warehouseStaff, customer, unknown }
+enum UserRole { admin, salesRep, warehouseStaff, customer, comptable, acheteur, unknown }
 
 class RoleService {
   static RoleService? _instance;
@@ -22,6 +22,8 @@ class RoleService {
       case 'sales_rep': return UserRole.salesRep;
       case 'warehouse_staff': return UserRole.warehouseStaff;
       case 'b2b_customer': return UserRole.customer;
+      case 'comptable': return UserRole.comptable;
+      case 'acheteur': return UserRole.acheteur;
       default: return UserRole.unknown;
     }
   }
@@ -40,18 +42,26 @@ class RoleService {
         return _warehouseRoutes.contains(route);
       case UserRole.customer:
         return _customerRoutes.contains(route);
+      case UserRole.comptable:
+        return _comptableRoutes.contains(route);
+      case UserRole.acheteur:
+        return _acheteurRoutes.contains(route);
       case UserRole.unknown:
         return false;
     }
   }
 
   bool get canEditPrices => _currentRole == UserRole.admin;
-  bool get canViewFinancials => _currentRole == UserRole.admin;
-  bool get canViewProfitReports => _currentRole == UserRole.admin;
+  bool get canViewFinancials => _currentRole == UserRole.admin || _currentRole == UserRole.comptable;
+  bool get canViewProfitReports => _currentRole == UserRole.admin || _currentRole == UserRole.comptable;
   bool get canViewStockReports => _currentRole == UserRole.admin || _currentRole == UserRole.warehouseStaff;
   bool get canManageUsers => _currentRole == UserRole.admin;
   bool get canViewAllOrders => _currentRole == UserRole.admin || _currentRole == UserRole.salesRep;
   bool get canCreateOrders => _currentRole == UserRole.admin || _currentRole == UserRole.salesRep || _currentRole == UserRole.customer;
+  bool get canApprovePurchases => _currentRole == UserRole.admin;
+  bool get canApproveExpenses => _currentRole == UserRole.admin;
+  bool get canPayExpenses => _currentRole == UserRole.comptable;
+  bool get canCreatePurchases => _currentRole == UserRole.acheteur;
 
   String getHomeRoute() {
     switch (_currentRole) {
@@ -59,6 +69,8 @@ class RoleService {
       case UserRole.salesRep: return '/main-dashboard';
       case UserRole.warehouseStaff: return '/inventory-management';
       case UserRole.customer: return '/customer-portal';
+      case UserRole.comptable: return '/main-dashboard';
+      case UserRole.acheteur: return '/purchases';
       case UserRole.unknown: return '/login-screen';
     }
   }
@@ -75,6 +87,7 @@ class RoleService {
     '/notifications-screen',
     '/notifications-center',
     '/settings-configuration',
+    '/expenses',
   };
 
   static const _warehouseRoutes = {
@@ -83,6 +96,7 @@ class RoleService {
     '/notifications-screen',
     '/notifications-center',
     '/settings-configuration',
+    '/expenses',
   };
 
   static const _customerRoutes = {
@@ -95,6 +109,37 @@ class RoleService {
     '/documents-screen',
   };
 
+  static const _comptableRoutes = {
+    '/main-dashboard',
+    '/product-catalog',
+    '/product-detail',
+    '/customer-management',
+    '/sales-order-processing',
+    '/invoice-generation',
+    '/delivery-tracking',
+    '/inventory-management',
+    '/barcode-scanner',
+    '/financial-dashboard',
+    '/reports-analytics',
+    '/purchases',
+    '/notifications-screen',
+    '/notifications-center',
+    '/settings-configuration',
+    '/expenses',
+  };
+
+  static const _acheteurRoutes = {
+    '/purchases',
+    '/product-catalog',
+    '/product-detail',
+    '/inventory-management',
+    '/barcode-scanner',
+    '/notifications-screen',
+    '/notifications-center',
+    '/settings-configuration',
+    '/expenses',
+  };
+
   List<BottomNavItem> getBottomNavItems() {
     switch (_currentRole) {
       case UserRole.admin:
@@ -103,6 +148,7 @@ class RoleService {
           BottomNavItem(icon: Icons.inventory_2, label: 'Stock', route: '/inventory-management'),
           BottomNavItem(icon: Icons.shopping_cart, label: 'Ventes', route: '/sales-order-processing'),
           BottomNavItem(icon: Icons.shopping_bag, label: 'Achats', route: '/purchases'),
+          BottomNavItem(icon: Icons.receipt_long, label: 'Dépenses', route: '/expenses'),
           BottomNavItem(icon: Icons.analytics, label: 'Rapports', route: '/reports-analytics'),
         ];
       case UserRole.salesRep:
@@ -121,6 +167,20 @@ class RoleService {
         return [
           BottomNavItem(icon: Icons.storefront, label: 'Catalogue', route: '/product-catalog'),
           BottomNavItem(icon: Icons.shopping_bag, label: 'Commandes', route: '/customer-portal'),
+        ];
+      case UserRole.comptable:
+        return [
+          BottomNavItem(icon: Icons.dashboard, label: 'Dashboard', route: '/main-dashboard'),
+          BottomNavItem(icon: Icons.inventory_2, label: 'Stock', route: '/inventory-management'),
+          BottomNavItem(icon: Icons.receipt_long, label: 'Dépenses', route: '/expenses'),
+          BottomNavItem(icon: Icons.shopping_bag, label: 'Achats', route: '/purchases'),
+          BottomNavItem(icon: Icons.analytics, label: 'Rapports', route: '/reports-analytics'),
+        ];
+      case UserRole.acheteur:
+        return [
+          BottomNavItem(icon: Icons.shopping_bag, label: 'Achats', route: '/purchases'),
+          BottomNavItem(icon: Icons.storefront, label: 'Catalogue', route: '/product-catalog'),
+          BottomNavItem(icon: Icons.inventory_2, label: 'Stock', route: '/inventory-management'),
         ];
       case UserRole.unknown:
         return [];
