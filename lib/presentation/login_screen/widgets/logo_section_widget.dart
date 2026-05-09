@@ -16,7 +16,7 @@ class LogoSectionWidget extends StatelessWidget {
       children: [
         // Official Loliexpress Logo
         Image.asset(
-          'assets/images/1-1764550821958.png',
+          'assets/images/logo_loliexpress.png',
           width: 35.w,
           height: 35.w,
           fit: BoxFit.contain,

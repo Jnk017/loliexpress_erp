@@ -209,7 +209,7 @@ class _SplashScreenState extends State<SplashScreen>
               FadeTransition(
                 opacity: _fadeAnimation,
                 child: Text(
-                  'Gestion de Distribution',
+                  'Grandir Ensemble',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: theme.colorScheme.onPrimary.withValues(alpha: 0.9),
                     fontWeight: FontWeight.w400,
@@ -269,7 +269,7 @@ class _SplashScreenState extends State<SplashScreen>
         ],
       ),
       child: Image.asset(
-        'assets/images/1-1764550821958.png',
+        'assets/images/logo_loliexpress.png',
         width: 120,
         height: 120,
         fit: BoxFit.contain,
