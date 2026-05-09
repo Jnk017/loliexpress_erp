@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../services/auth_service.dart';
+import '../../services/role_service.dart';
 
 /// Splash Screen for Loliexpress ERP
 /// Provides branded app launch experience while initializing core ERP services
@@ -77,14 +78,10 @@ class _SplashScreenState extends State<SplashScreen>
         if (!mounted) return;
 
         if (AuthService.instance.isAuthenticated) {
-          final role = await AuthService.instance.getUserRole();
+          await RoleService.instance.refreshRole();
           if (!mounted) return;
 
-          String route = '/main-dashboard';
-          if (role == 'customer') {
-            route = '/customer-portal';
-          }
-          Navigator.pushReplacementNamed(context, route);
+          Navigator.pushReplacementNamed(context, RoleService.instance.getHomeRoute());
         } else {
           Navigator.pushReplacementNamed(context, '/login-screen');
         }

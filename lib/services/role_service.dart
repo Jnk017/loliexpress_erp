@@ -1,0 +1,136 @@
+import 'package:flutter/material.dart';
+import 'auth_service.dart';
+
+enum UserRole { admin, salesRep, warehouseStaff, customer, unknown }
+
+class RoleService {
+  static RoleService? _instance;
+  static RoleService get instance => _instance ??= RoleService._();
+  RoleService._();
+
+  UserRole _currentRole = UserRole.unknown;
+  UserRole get currentRole => _currentRole;
+
+  Future<void> refreshRole() async {
+    final roleStr = await AuthService.instance.getUserRole();
+    _currentRole = _parseRole(roleStr);
+  }
+
+  UserRole _parseRole(String? role) {
+    switch (role) {
+      case 'admin': return UserRole.admin;
+      case 'sales_rep': return UserRole.salesRep;
+      case 'warehouse_staff': return UserRole.warehouseStaff;
+      case 'b2b_customer': return UserRole.customer;
+      default: return UserRole.unknown;
+    }
+  }
+
+  void setRole(String? roleStr) {
+    _currentRole = _parseRole(roleStr);
+  }
+
+  bool canAccess(String route) {
+    switch (_currentRole) {
+      case UserRole.admin:
+        return true;
+      case UserRole.salesRep:
+        return _salesRepRoutes.contains(route);
+      case UserRole.warehouseStaff:
+        return _warehouseRoutes.contains(route);
+      case UserRole.customer:
+        return _customerRoutes.contains(route);
+      case UserRole.unknown:
+        return false;
+    }
+  }
+
+  bool get canEditPrices => _currentRole == UserRole.admin;
+  bool get canViewFinancials => _currentRole == UserRole.admin;
+  bool get canViewProfitReports => _currentRole == UserRole.admin;
+  bool get canViewStockReports => _currentRole == UserRole.admin || _currentRole == UserRole.warehouseStaff;
+  bool get canManageUsers => _currentRole == UserRole.admin;
+  bool get canViewAllOrders => _currentRole == UserRole.admin || _currentRole == UserRole.salesRep;
+  bool get canCreateOrders => _currentRole == UserRole.admin || _currentRole == UserRole.salesRep || _currentRole == UserRole.customer;
+
+  String getHomeRoute() {
+    switch (_currentRole) {
+      case UserRole.admin: return '/main-dashboard';
+      case UserRole.salesRep: return '/main-dashboard';
+      case UserRole.warehouseStaff: return '/inventory-management';
+      case UserRole.customer: return '/customer-portal';
+      case UserRole.unknown: return '/login-screen';
+    }
+  }
+
+  static const _salesRepRoutes = {
+    '/main-dashboard',
+    '/product-catalog',
+    '/product-detail',
+    '/customer-management',
+    '/sales-order-processing',
+    '/invoice-generation',
+    '/delivery-tracking',
+    '/barcode-scanner',
+    '/notifications-screen',
+    '/notifications-center',
+    '/settings-configuration',
+  };
+
+  static const _warehouseRoutes = {
+    '/inventory-management',
+    '/barcode-scanner',
+    '/notifications-screen',
+    '/notifications-center',
+    '/settings-configuration',
+  };
+
+  static const _customerRoutes = {
+    '/customer-portal',
+    '/product-catalog',
+    '/product-detail',
+    '/sales-order-processing',
+    '/invoice-generation',
+    '/notifications-screen',
+    '/documents-screen',
+  };
+
+  List<BottomNavItem> getBottomNavItems() {
+    switch (_currentRole) {
+      case UserRole.admin:
+        return [
+          BottomNavItem(icon: Icons.dashboard, label: 'Dashboard', route: '/main-dashboard'),
+          BottomNavItem(icon: Icons.inventory_2, label: 'Stock', route: '/inventory-management'),
+          BottomNavItem(icon: Icons.shopping_cart, label: 'Ventes', route: '/sales-order-processing'),
+          BottomNavItem(icon: Icons.people, label: 'Clients', route: '/customer-management'),
+          BottomNavItem(icon: Icons.analytics, label: 'Rapports', route: '/reports-analytics'),
+        ];
+      case UserRole.salesRep:
+        return [
+          BottomNavItem(icon: Icons.dashboard, label: 'Dashboard', route: '/main-dashboard'),
+          BottomNavItem(icon: Icons.shopping_cart, label: 'Ventes', route: '/sales-order-processing'),
+          BottomNavItem(icon: Icons.people, label: 'Clients', route: '/customer-management'),
+          BottomNavItem(icon: Icons.local_shipping, label: 'Livraisons', route: '/delivery-tracking'),
+        ];
+      case UserRole.warehouseStaff:
+        return [
+          BottomNavItem(icon: Icons.inventory_2, label: 'Stock', route: '/inventory-management'),
+          BottomNavItem(icon: Icons.qr_code_scanner, label: 'Scanner', route: '/barcode-scanner'),
+        ];
+      case UserRole.customer:
+        return [
+          BottomNavItem(icon: Icons.storefront, label: 'Catalogue', route: '/product-catalog'),
+          BottomNavItem(icon: Icons.shopping_bag, label: 'Commandes', route: '/customer-portal'),
+        ];
+      case UserRole.unknown:
+        return [];
+    }
+  }
+}
+
+class BottomNavItem {
+  final IconData icon;
+  final String label;
+  final String route;
+  const BottomNavItem({required this.icon, required this.label, required this.route});
+}

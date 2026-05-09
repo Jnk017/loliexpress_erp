@@ -4,6 +4,7 @@ import 'package:sizer/sizer.dart';
 
 import '../core/app_export.dart';
 import '../widgets/custom_error_widget.dart';
+import './services/role_service.dart';
 import './services/supabase_service.dart';
 import './services/theme_service.dart';
 
@@ -69,8 +70,50 @@ class MyApp extends StatelessWidget {
               },
               // 🚨 END CRITICAL SECTION
               debugShowCheckedModeBanner: false,
-              routes: AppRoutes.routes,
               initialRoute: AppRoutes.initial,
+              onGenerateRoute: (settings) {
+                final routeName = settings.name ?? '/';
+
+                // Always allow these routes
+                if (routeName == '/' || routeName == '/splash-screen' || routeName == '/login-screen') {
+                  final routes = AppRoutes.routes;
+                  final builder = routes[routeName];
+                  if (builder != null) {
+                    return MaterialPageRoute(builder: builder, settings: settings);
+                  }
+                }
+
+                // Check role access
+                if (!RoleService.instance.canAccess(routeName)) {
+                  return MaterialPageRoute(
+                    builder: (context) => Scaffold(
+                      appBar: AppBar(title: const Text('Accès refusé')),
+                      body: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.lock, size: 64, color: Colors.grey),
+                            const SizedBox(height: 16),
+                            const Text('Vous n\'avez pas accès à cette page.', style: TextStyle(fontSize: 16)),
+                            const SizedBox(height: 24),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pushReplacementNamed(context, RoleService.instance.getHomeRoute()),
+                              child: const Text('Retour'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                final routes = AppRoutes.routes;
+                final builder = routes[routeName];
+                if (builder != null) {
+                  return MaterialPageRoute(builder: builder, settings: settings);
+                }
+                return null;
+              },
             );
           },
         );

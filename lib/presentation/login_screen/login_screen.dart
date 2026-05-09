@@ -4,12 +4,12 @@ import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
 import '../../services/auth_service.dart';
+import '../../services/role_service.dart';
 import '../../widgets/custom_icon_widget.dart';
 import './widgets/email_input_widget.dart';
 import './widgets/login_button_widget.dart';
 import './widgets/logo_section_widget.dart';
 import './widgets/password_input_widget.dart';
-import './widgets/role_selector_widget.dart';
 
 /// Login Screen for Loliexpress ERP
 /// Provides secure multi-role authentication for business owners, staff, and B2B customers
@@ -25,11 +25,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  String? _selectedRole;
   bool _isLoading = false;
   String? _emailError;
   String? _passwordError;
-  String? _roleError;
   String? _generalError;
 
   @override
@@ -44,7 +42,6 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _emailError = null;
       _passwordError = null;
-      _roleError = null;
       _generalError = null;
     });
 
@@ -96,15 +93,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
       HapticFeedback.mediumImpact();
 
-      final role = await AuthService.instance.getUserRole();
+      await RoleService.instance.refreshRole();
       if (!mounted) return;
 
-      String route = '/main-dashboard';
-      if (role == 'customer') {
-        route = '/customer-portal';
-      }
-
-      Navigator.pushReplacementNamed(context, route);
+      Navigator.pushReplacementNamed(context, RoleService.instance.getHomeRoute());
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -257,20 +249,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               }
                             },
                             onSubmitted: _handleLogin,
-                          ),
-
-                          SizedBox(height: 3.h),
-
-                          // Role Selector
-                          RoleSelectorWidget(
-                            selectedRole: _selectedRole,
-                            errorText: _roleError,
-                            onRoleChanged: (value) {
-                              setState(() {
-                                _selectedRole = value;
-                                _roleError = null;
-                              });
-                            },
                           ),
 
                           SizedBox(height: 2.h),
