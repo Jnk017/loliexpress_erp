@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../services/audit_log_service.dart';
-import '../../services/forensic_analysis_service.dart';
 import '../../services/security_monitoring_service.dart';
 import '../../widgets/custom_app_bar.dart';
 import './widgets/assign_investigator_dialog_widget.dart';
@@ -24,8 +22,6 @@ class IncidentManagementCenter extends StatefulWidget {
 class _IncidentManagementCenterState extends State<IncidentManagementCenter> {
   final SecurityMonitoringService _securityService =
       SecurityMonitoringService();
-  final ForensicAnalysisService _forensicService = ForensicAnalysisService();
-  final AuditLogService _auditService = AuditLogService();
 
   List<Map<String, dynamic>> _incidents = [];
   bool _isLoading = true;

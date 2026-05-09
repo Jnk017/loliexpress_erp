@@ -29,15 +29,11 @@ class _SecurityDashboardState extends State<SecurityDashboard>
   String? _errorMessage;
 
   late TabController _tabController;
-  int _selectedTabIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
-    _tabController.addListener(() {
-      setState(() => _selectedTabIndex = _tabController.index);
-    });
     _loadSecurityData();
     _setupRealtimeSubscription();
   }
@@ -169,7 +165,7 @@ class _SecurityDashboardState extends State<SecurityDashboard>
                       SizedBox(height: 2.h),
                       ElevatedButton(
                         onPressed: _loadSecurityData,
-                        child: const Text('Retry'),
+                        child: const Text('Réessayer'),
                       ),
                     ],
                   ),

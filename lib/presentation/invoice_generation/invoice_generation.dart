@@ -576,7 +576,6 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
     return showDialog<int>(
       context: context,
       builder: (context) {
-        final theme = Theme.of(context);
         return AlertDialog(
           title: const Text('Quantité'),
           content: TextField(
@@ -607,7 +606,6 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
   }
 
   void _editLineItem(int index) async {
-    final item = _lineItems[index];
     final quantity = await _showQuantityDialog();
     if (quantity != null && quantity > 0) {
       setState(() {
@@ -945,8 +943,6 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Nouvelle facture',

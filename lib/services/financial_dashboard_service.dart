@@ -304,8 +304,6 @@ class FinancialDashboardService {
           'daysOverdue': daysOverdue > 0 ? daysOverdue : 0,
         };
       }).toList();
-    
-      return [];
     } catch (e) {
       print('Error fetching accounts receivable: $e');
       return [];

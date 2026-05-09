@@ -35,6 +35,38 @@ This is a Flutter mobile ERP application (LoliExpress ERP) with a Supabase backe
 - Widget tests use `GoogleFonts.config.allowRuntimeFetching = false` to avoid network calls.
 - Full integration testing requires valid Supabase credentials in `env.json`.
 
+### Deployment & Configuration
+
+#### Disable Email Confirmation (Development)
+In the Supabase Dashboard: **Auth → Providers → Email → Disable "Confirm email"**. This allows users to sign up without verifying their email address (useful for local dev/testing).
+
+#### Configure SMTP for Production Emails
+In the Supabase Dashboard: **Auth → SMTP Settings**. Configure your SMTP provider (e.g. Resend, Mailgun, SendGrid) for password reset and confirmation emails in production.
+
+#### Build APK (Android Release)
+```bash
+flutter build apk --release --dart-define-from-file=env.json
+```
+
+#### Deploy Web
+```bash
+flutter build web --dart-define-from-file=env.json
+```
+Then host the `build/web/` directory on any static hosting (Vercel, Netlify, Firebase Hosting, etc.).
+
+#### User Roles
+The app supports 6 roles (defined in `lib/services/role_service.dart`):
+| Role | Description |
+|------|-------------|
+| `admin` | Full access to all features, user management, and configuration |
+| `salesRep` | Sales-focused: orders, customers, limited inventory view |
+| `warehouseStaff` | Inventory management, stock receiving, warehouse operations |
+| `comptable` | Finance-focused: expenses, purchases, receivables, financial reports |
+| `acheteur` | Purchasing: supplier management, purchase orders |
+| `customer` | External customer portal (limited self-service) |
+
+To create users: register via the app login screen (or Supabase Dashboard → Auth → Users), then set the role in the `user_profiles` table (`role` column).
+
 ### Remaining Warnings
 - ~15 warnings remain (unused fields/variables in pre-existing security/audit/invoice code). These are non-blocking.
 - No CI/CD pipeline configured yet.

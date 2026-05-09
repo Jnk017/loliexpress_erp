@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../services/user_management_service.dart';
-import './create_user_dialog.dart';
 import './edit_user_dialog.dart';
 import './user_card_widget.dart';
 
@@ -75,17 +74,6 @@ class _UserListWidgetState extends State<UserListWidget> {
       _selectedRole = role;
       _filterUsers(_searchController.text);
     });
-  }
-
-  Future<void> _createUser() async {
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) => const CreateUserDialog(),
-    );
-    if (result == true) {
-      await _loadUsers();
-      widget.onRefresh();
-    }
   }
 
   Future<void> _editUser(Map<String, dynamic> user) async {
@@ -182,7 +170,7 @@ class _UserListWidgetState extends State<UserListWidget> {
                 controller: _searchController,
                 onChanged: _filterUsers,
                 decoration: InputDecoration(
-                  hintText: 'Search by name or email...',
+                  hintText: 'Rechercher par nom ou email...',
                   prefixIcon:
                       const Icon(Icons.search, color: Color(0xFF1976D2)),
                   border: OutlineInputBorder(
