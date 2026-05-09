@@ -11,7 +11,7 @@ class CustomerService {
     try {
       var query = _client.from('customers').select();
       if (search != null && search.isNotEmpty) {
-        query = query.or('company_name.ilike.%$search%,contact_name.ilike.%$search%,email.ilike.%$search%');
+        query = query.or('company_name.ilike.%$search%,contact_person.ilike.%$search%,email.ilike.%$search%');
       }
       final response = await query.order('company_name').range(offset, offset + limit - 1);
       return List<Map<String, dynamic>>.from(response);

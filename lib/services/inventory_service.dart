@@ -9,7 +9,7 @@ class InventoryService {
 
   Future<List<Map<String, dynamic>>> getStock({String? warehouseId, String? productId, bool lowStockOnly = false}) async {
     try {
-      var query = _client.from('inventory_stock').select('*, products(name, sku, barcode), warehouse_locations(name, code)');
+      var query = _client.from('inventory_stock').select('*, products(name, sku, barcode), warehouse_locations(name)');
       if (warehouseId != null) query = query.eq('warehouse_id', warehouseId);
       if (productId != null) query = query.eq('product_id', productId);
       if (lowStockOnly) query = query.lte('quantity', 10);
