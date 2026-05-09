@@ -4,9 +4,11 @@ import 'package:sizer/sizer.dart';
 import '../../core/app_export.dart';
 import '../../services/auth_service.dart';
 import '../../services/customer_service.dart';
+import '../../services/expense_service.dart';
 import '../../services/inventory_service.dart';
 import '../../services/order_service.dart';
 import '../../services/product_service.dart';
+import '../../services/purchase_service.dart';
 import '../../services/role_service.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_bottom_bar.dart';
@@ -86,17 +88,34 @@ class _MainDashboardState extends State<MainDashboard>
     });
 
     try {
-      final results = await Future.wait([
+      final role = RoleService.instance.currentRole;
+      final futures = <Future>[
         OrderService.instance.getOrderStats(),
         ProductService.instance.getProducts(limit: 1000),
         CustomerService.instance.getCustomerStats(),
         InventoryService.instance.getStockSummary(),
-      ]);
+      ];
+
+      final bool isFinanceRole =
+          role == UserRole.comptable || role == UserRole.admin;
+      if (isFinanceRole) {
+        futures.add(ExpenseService.instance.getExpenseStats());
+        futures.add(PurchaseService.instance.getPurchaseStats());
+      }
+
+      final results = await Future.wait(futures);
 
       final orderStats = results[0] as Map<String, dynamic>;
       final products = results[1] as List<Map<String, dynamic>>;
       final customerStats = results[2] as Map<String, dynamic>;
       final stockSummary = results[3] as Map<String, dynamic>;
+
+      Map<String, dynamic>? expenseStats;
+      Map<String, dynamic>? purchaseStats;
+      if (isFinanceRole) {
+        expenseStats = results[4] as Map<String, dynamic>;
+        purchaseStats = results[5] as Map<String, dynamic>;
+      }
 
       final totalRevenue = orderStats['total_revenue'] as double? ?? 0;
       final pendingOrders = orderStats['pending'] as int? ?? 0;
@@ -105,7 +124,6 @@ class _MainDashboardState extends State<MainDashboard>
       final totalProducts = products.length;
       final inventoryValue = stockSummary['total_value'] as double? ?? 0;
 
-      final role = RoleService.instance.currentRole;
       final kpis = <Map<String, dynamic>>[
         {
           "title": "Chiffre d'Affaires",
@@ -155,6 +173,29 @@ class _MainDashboardState extends State<MainDashboard>
           "isPositive": true,
           "icon": "people",
           "route": "/customer-management",
+        });
+      }
+
+      if (isFinanceRole && expenseStats != null && purchaseStats != null) {
+        final pendingPayments = expenseStats['approved'] as int? ?? 0;
+        final unpaidPurchases = purchaseStats['unpaid'] as int? ?? 0;
+        kpis.add({
+          "title": "Dépenses à payer",
+          "value": "$pendingPayments",
+          "subtitle": "en attente",
+          "change": "${expenseStats['pending'] ?? 0} à approuver",
+          "isPositive": pendingPayments == 0,
+          "icon": "receipt_long",
+          "route": "/expense-management",
+        });
+        kpis.add({
+          "title": "Achats impayés",
+          "value": "$unpaidPurchases",
+          "subtitle": "achats",
+          "change": "${purchaseStats['total_purchases'] ?? 0} total",
+          "isPositive": unpaidPurchases == 0,
+          "icon": "shopping_cart_checkout",
+          "route": "/purchase-management",
         });
       }
 
