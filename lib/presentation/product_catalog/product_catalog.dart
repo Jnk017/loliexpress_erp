@@ -4,6 +4,7 @@ import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
 import '../../services/product_service.dart';
+import '../../services/role_service.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_bottom_bar.dart';
 import '../../widgets/custom_icon_widget.dart';
@@ -339,7 +340,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
           ),
         ],
       ),
-      floatingActionButton: _isMultiSelectMode
+      floatingActionButton: _isMultiSelectMode || RoleService.instance.currentRole == UserRole.customer
           ? null
           : Column(
               mainAxisSize: MainAxisSize.min,
@@ -509,11 +510,13 @@ class _ProductCatalogState extends State<ProductCatalog> {
             onTap: () {
               if (_isMultiSelectMode) {
                 _toggleProductSelection(productId);
-              } else {
+              } else if (RoleService.instance.canEditPrices) {
                 _openAddProductDialog(product: product);
               }
             },
-            onEdit: () => _openAddProductDialog(product: product),
+            onEdit: RoleService.instance.canEditPrices
+                ? () => _openAddProductDialog(product: product)
+                : () {},
             onDuplicate: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
