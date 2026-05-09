@@ -59,7 +59,7 @@ class CustomBottomBar extends StatelessWidget {
       icon: Icons.analytics_outlined,
       activeIcon: Icons.analytics,
       label: 'Reports',
-      route: '/financial-dashboard',
+      route: '/reports-analytics',
     ),
   ];
 

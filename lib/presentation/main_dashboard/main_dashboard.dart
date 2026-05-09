@@ -59,7 +59,7 @@ class _MainDashboardState extends State<MainDashboard>
       '/inventory-management',
       '/sales-order-processing',
       '/customer-management',
-      '/financial-dashboard',
+      '/reports-analytics',
     ];
     if (index != 0) {
       Navigator.pushReplacementNamed(context, routes[index]);
