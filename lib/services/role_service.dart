@@ -102,7 +102,7 @@ class RoleService {
           BottomNavItem(icon: Icons.dashboard, label: 'Dashboard', route: '/main-dashboard'),
           BottomNavItem(icon: Icons.inventory_2, label: 'Stock', route: '/inventory-management'),
           BottomNavItem(icon: Icons.shopping_cart, label: 'Ventes', route: '/sales-order-processing'),
-          BottomNavItem(icon: Icons.people, label: 'Clients', route: '/customer-management'),
+          BottomNavItem(icon: Icons.shopping_bag, label: 'Achats', route: '/purchases'),
           BottomNavItem(icon: Icons.analytics, label: 'Rapports', route: '/reports-analytics'),
         ];
       case UserRole.salesRep:
