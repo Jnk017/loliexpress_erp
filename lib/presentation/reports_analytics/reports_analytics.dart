@@ -25,7 +25,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   bool _isLoading = false;
-  String _selectedDateRange = 'This Month';
+  String _selectedDateRange = 'Ce mois';
   bool _isLiveUpdatesEnabled = true;
 
   // Service instance
@@ -130,7 +130,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
           children: [
             ListTile(
               leading: Icon(Icons.picture_as_pdf, color: Colors.red),
-              title: Text('Export as PDF'),
+              title: Text('Exporter en PDF'),
               onTap: () {
                 Navigator.pop(context);
                 _exportToPDF();
@@ -138,7 +138,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             ),
             ListTile(
               leading: Icon(Icons.table_chart, color: Colors.green),
-              title: Text('Export as CSV'),
+              title: Text('Exporter en CSV'),
               onTap: () {
                 Navigator.pop(context);
                 _exportToCSV();
@@ -146,7 +146,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             ),
             ListTile(
               leading: Icon(Icons.email, color: Colors.blue),
-              title: Text('Email Report'),
+              title: Text('Envoyer par Email'),
               onTap: () {
                 Navigator.pop(context);
                 _exportToCSV();
@@ -162,27 +162,27 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Generate Custom Report'),
+        title: Text('Générer un Rapport Personnalisé'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             DropdownButtonFormField<String>(
-              decoration: InputDecoration(labelText: 'Report Type'),
+              decoration: InputDecoration(labelText: 'Type de Rapport'),
               items: [
-                'Sales',
-                'Inventory',
-                'Financial',
-                'Customer',
+                'Ventes',
+                'Inventaire',
+                'Financier',
+                'Client',
               ].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
               onChanged: (value) {},
             ),
             SizedBox(height: 2.h),
             DropdownButtonFormField<String>(
-              decoration: InputDecoration(labelText: 'Chart Type'),
+              decoration: InputDecoration(labelText: 'Type de Graphique'),
               items: [
-                'Bar Chart',
-                'Line Chart',
-                'Pie Chart',
+                'Graphique à Barres',
+                'Graphique en Lignes',
+                'Graphique Circulaire',
               ].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
               onChanged: (value) {},
             ),
@@ -191,16 +191,16 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
+            child: Text('Annuler'),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Generating custom report...')),
+                SnackBar(content: Text('Génération du rapport personnalisé...')),
               );
             },
-            child: Text('Generate'),
+            child: Text('Générer'),
           ),
         ],
       ),
@@ -211,7 +211,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Reports & Analytics',
+        title: 'Rapports & Analyses',
         actions: [
           // Live updates indicator
           Container(
@@ -241,7 +241,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
           IconButton(
             icon: Icon(Icons.file_download),
             onPressed: _showExportOptions,
-            tooltip: 'Export',
+            tooltip: 'Exporter',
           ),
           IconButton(icon: Icon(Icons.more_vert), onPressed: () {}),
         ],
@@ -269,11 +269,11 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
                     unselectedLabelColor: Colors.grey,
                     indicatorColor: Theme.of(context).primaryColor,
                     tabs: [
-                      Tab(text: 'Reports'),
-                      Tab(text: 'Sales'),
-                      Tab(text: 'Inventory'),
-                      Tab(text: 'Financial'),
-                      Tab(text: 'Customer'),
+                      Tab(text: 'Rapports'),
+                      Tab(text: 'Ventes'),
+                      Tab(text: 'Inventaire'),
+                      Tab(text: 'Financier'),
+                      Tab(text: 'Client'),
                       Tab(text: 'Créances'),
                       Tab(text: 'Achats'),
                     ],
@@ -303,7 +303,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showCustomReportBuilder,
         icon: Icon(Icons.add_chart),
-        label: Text('Custom Report'),
+        label: Text('Rapport Personnalisé'),
       ),
       bottomNavigationBar: CustomBottomBar(currentIndex: 0),
     );
@@ -319,7 +319,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Key Performance Indicators',
+                'Indicateurs Clés de Performance',
                 style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
               ),
               if (_financialMetrics != null)
@@ -334,7 +334,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             children: [
               Expanded(
                 child: KPIWidget(
-                  title: 'Total Revenue',
+                  title: 'Revenu Total',
                   value:
                       '\$${_financialMetrics?['totalRevenue']?.toStringAsFixed(0) ?? '0'}',
                   change: '+12.5%',
@@ -345,7 +345,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
               SizedBox(width: 3.w),
               Expanded(
                 child: KPIWidget(
-                  title: 'Gross Margin',
+                  title: 'Marge Brute',
                   value:
                       '${_financialMetrics?['profitMargin']?.toStringAsFixed(1) ?? '0'}%',
                   change: '+2.1%',
@@ -360,7 +360,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             children: [
               Expanded(
                 child: KPIWidget(
-                  title: 'Net Profit',
+                  title: 'Profit Net',
                   value:
                       '\$${_financialMetrics?['netProfit']?.toStringAsFixed(0) ?? '0'}',
                   change: '+8.3%',
@@ -371,7 +371,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
               SizedBox(width: 3.w),
               Expanded(
                 child: KPIWidget(
-                  title: 'Total Expenses',
+                  title: 'Dépenses Totales',
                   value:
                       '\$${_financialMetrics?['totalExpenses']?.toStringAsFixed(0) ?? '0'}',
                   change: '-3.2%',
@@ -383,18 +383,18 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
           ),
           SizedBox(height: 3.h),
           Text(
-            'Performance Charts',
+            'Graphiques de Performance',
             style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 2.h),
           ChartWidget(
-            title: 'Sales Performance',
+            title: 'Performance des Ventes',
             chartType: 'line',
             data: _salesMetrics?['chartData'] ?? [],
           ),
           SizedBox(height: 2.h),
           ChartWidget(
-            title: 'Inventory Turnover',
+            title: 'Rotation des Stocks',
             chartType: 'bar',
             data: _inventoryMetrics?['stockLevels'] ?? [],
           ),
@@ -415,17 +415,17 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             ),
           SizedBox(height: 1.h),
           ChartWidget(
-            title: 'Sales Trend',
+            title: 'Tendance des Ventes',
             chartType: 'line',
             data: _salesMetrics?['chartData'] ?? [],
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
-            title: 'Sales by Product Category',
-            subtitle: 'Top performing categories',
+            title: 'Ventes par Catégorie de Produit',
+            subtitle: 'Catégories les plus performantes',
             icon: Icons.category,
             onTap: () => _showReportDetail(
-              'Sales by Product Category',
+              'Ventes par Catégorie de Produit',
               'Répartition des ventes par catégorie de produits.\n\n'
               'Total ventes: ${_salesMetrics?['totalSales'] ?? 0} FC\n'
               'Catégories actives: ${_salesMetrics?['activeCategories'] ?? 'N/A'}',
@@ -433,11 +433,11 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
-            title: 'Sales by Representative',
-            subtitle: 'Performance by sales team',
+            title: 'Ventes par Représentant',
+            subtitle: 'Performance de l\'équipe commerciale',
             icon: Icons.people,
             onTap: () => _showReportDetail(
-              'Sales by Representative',
+              'Ventes par Représentant',
               'Performance de l\'équipe de vente.\n\n'
               'Nombre de transactions: ${_salesMetrics?['transactionCount'] ?? 0}\n'
               'Vente moyenne: ${_salesMetrics?['averageSale'] ?? 0} FC',
@@ -445,11 +445,11 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
-            title: 'Sales Forecast',
-            subtitle: 'Predicted sales for next period',
+            title: 'Prévisions de Ventes',
+            subtitle: 'Ventes prévues pour la prochaine période',
             icon: Icons.insights,
             onTap: () => _showReportDetail(
-              'Sales Forecast',
+              'Prévisions de Ventes',
               'Prévisions de vente pour la prochaine période.\n\n'
               'Tendance actuelle: ${_salesMetrics?['trend'] ?? 'Stable'}\n'
               'Estimation: ${(_salesMetrics?['totalSales'] ?? 0) * 1.1} FC',
@@ -472,17 +472,17 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             ),
           SizedBox(height: 1.h),
           ChartWidget(
-            title: 'Stock Levels',
+            title: 'Niveaux de Stock',
             chartType: 'bar',
             data: _inventoryMetrics?['stockLevels'] ?? [],
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
-            title: 'Inventory Turnover Analysis',
-            subtitle: 'Fast vs slow moving items',
+            title: 'Analyse de Rotation des Stocks',
+            subtitle: 'Articles à rotation rapide vs lente',
             icon: Icons.inventory,
             onTap: () => _showReportDetail(
-              'Inventory Turnover Analysis',
+              'Analyse de Rotation des Stocks',
               'Analyse de rotation des stocks.\n\n'
               'Produits total: ${_inventoryMetrics?['totalProducts'] ?? 0}\n'
               'Ruptures de stock: ${_inventoryMetrics?['outOfStock'] ?? 0}\n'
@@ -491,11 +491,11 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
-            title: 'Stock Valuation Report',
-            subtitle: 'Current inventory value',
+            title: 'Rapport d\'Évaluation du Stock',
+            subtitle: 'Valeur actuelle du stock',
             icon: Icons.monetization_on,
             onTap: () => _showReportDetail(
-              'Stock Valuation Report',
+              'Rapport d\'Évaluation du Stock',
               'Évaluation de la valeur du stock.\n\n'
               'Valeur totale: ${_inventoryMetrics?['totalValue'] ?? 0} FC\n'
               'Produits en stock: ${_inventoryMetrics?['totalProducts'] ?? 0}',
@@ -503,11 +503,11 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
-            title: 'Warehouse Performance',
-            subtitle: 'Multi-location analysis',
+            title: 'Performance Entrepôt',
+            subtitle: 'Analyse multi-sites',
             icon: Icons.warehouse,
             onTap: () => _showReportDetail(
-              'Warehouse Performance',
+              'Performance Entrepôt',
               'Analyse multi-entrepôt.\n\n'
               'Taux de rotation: ${_inventoryMetrics?['turnoverRate'] ?? 'N/A'}\n'
               'Efficacité: ${_inventoryMetrics?['efficiency'] ?? 'N/A'}%',
@@ -530,7 +530,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             ),
           SizedBox(height: 1.h),
           ChartWidget(
-            title: 'Cash Flow',
+            title: 'Flux de Trésorerie',
             chartType: 'line',
             data: [],
           ),
@@ -544,23 +544,23 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Accounts Receivable Aging',
+                      'Vieillissement des Comptes Clients',
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(height: 2.h),
-                    _buildAgingBucket('Current',
+                    _buildAgingBucket('Courant',
                         _agingReport!['agingTotals']['current'] ?? 0),
-                    _buildAgingBucket('30-Day Overdue',
+                    _buildAgingBucket('Retard 30 jours',
                         _agingReport!['agingTotals']['30-day'] ?? 0),
-                    _buildAgingBucket('60-Day Overdue',
+                    _buildAgingBucket('Retard 60 jours',
                         _agingReport!['agingTotals']['60-day'] ?? 0),
-                    _buildAgingBucket('90+ Day Overdue',
+                    _buildAgingBucket('Retard 90+ jours',
                         _agingReport!['agingTotals']['90-day'] ?? 0),
                     Divider(),
-                    _buildAgingBucket('Total Outstanding',
+                    _buildAgingBucket('Total Impayé',
                         _agingReport!['totalOutstanding'] ?? 0,
                         isBold: true),
                   ],
@@ -570,11 +570,11 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             SizedBox(height: 2.h),
           ],
           ReportCardWidget(
-            title: 'Profit & Loss Statement',
-            subtitle: 'Income and expenses breakdown',
+            title: 'Compte de Résultat',
+            subtitle: 'Détail des revenus et dépenses',
             icon: Icons.account_balance,
             onTap: () => _showReportDetail(
-              'Profit & Loss Statement',
+              'Compte de Résultat',
               'Compte de résultat.\n\n'
               'Revenu Total: ${_financialMetrics?['totalRevenue'] ?? 0} FC\n'
               'Dépenses Totales: ${_financialMetrics?['totalExpenses'] ?? 0} FC\n'
@@ -584,11 +584,11 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
-            title: 'Expense Analysis',
-            subtitle: 'Category-wise expenses',
+            title: 'Analyse des Dépenses',
+            subtitle: 'Dépenses par catégorie',
             icon: Icons.pie_chart,
             onTap: () => _showReportDetail(
-              'Expense Analysis',
+              'Analyse des Dépenses',
               'Analyse des dépenses par catégorie.\n\n'
               'Dépenses Totales: ${_financialMetrics?['totalExpenses'] ?? 0} FC\n'
               'Ratio dépenses/revenu: ${_financialMetrics?['totalRevenue'] != null && _financialMetrics!['totalRevenue'] != 0 ? ((_financialMetrics!['totalExpenses'] ?? 0) / _financialMetrics!['totalRevenue'] * 100).toStringAsFixed(1) : 'N/A'}%',
@@ -631,17 +631,17 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             ),
           SizedBox(height: 1.h),
           ChartWidget(
-            title: 'Customer Acquisition',
+            title: 'Acquisition Clients',
             chartType: 'bar',
             data: [],
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
-            title: 'Customer Segmentation',
-            subtitle: 'High, medium, low value customers',
+            title: 'Segmentation des Clients',
+            subtitle: 'Clients haute, moyenne, faible valeur',
             icon: Icons.pie_chart_outline,
             onTap: () => _showReportDetail(
-              'Customer Segmentation',
+              'Segmentation des Clients',
               'Segmentation des clients.\n\n'
               'Total clients: ${_customerMetrics?['totalCustomers'] ?? 0}\n'
               'Clients actifs: ${_customerMetrics?['activeCustomers'] ?? 0}\n'
@@ -650,11 +650,11 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
-            title: 'Customer Lifetime Value',
-            subtitle: 'Total revenue per customer',
+            title: 'Valeur Vie Client',
+            subtitle: 'Revenu total par client',
             icon: Icons.person_outline,
             onTap: () => _showReportDetail(
-              'Customer Lifetime Value',
+              'Valeur Vie Client',
               'Valeur vie client (CLV).\n\n'
               'CLV moyen: ${_customerMetrics?['averageCLV'] ?? 'N/A'} FC\n'
               'Panier moyen: ${_customerMetrics?['averageOrderValue'] ?? 'N/A'} FC',
@@ -662,11 +662,11 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
           ),
           SizedBox(height: 2.h),
           ReportCardWidget(
-            title: 'Customer Retention Rate',
-            subtitle: 'Repeat purchase analysis',
+            title: 'Taux de Rétention Client',
+            subtitle: 'Analyse des achats récurrents',
             icon: Icons.repeat,
             onTap: () => _showReportDetail(
-              'Customer Retention Rate',
+              'Taux de Rétention Client',
               'Taux de rétention des clients.\n\n'
               'Taux de rétention: ${_customerMetrics?['retentionRate'] ?? 'N/A'}%\n'
               'Clients récurrents: ${_customerMetrics?['returningCustomers'] ?? 0}',

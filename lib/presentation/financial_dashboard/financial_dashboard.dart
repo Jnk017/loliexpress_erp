@@ -26,7 +26,6 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
       DateTime.now().subtract(const Duration(days: 30));
   DateTime _selectedEndDate = DateTime.now();
   bool _isRefreshing = false;
-  DateTime _lastSyncTime = DateTime.now();
 
   // Financial service for real-time data
   final FinancialDashboardService _financialService =
@@ -81,7 +80,6 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
           _financialData['outstandingReceivables'] =
               metrics['outstandingReceivables'];
           _financialData['monthlyExpenses'] = metrics['monthlyExpenses'];
-          _lastSyncTime = DateTime.now();
         });
       }
     });
@@ -114,7 +112,6 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
     if (mounted) {
       setState(() {
         _isRefreshing = false;
-        _lastSyncTime = DateTime.now();
       });
     }
   }

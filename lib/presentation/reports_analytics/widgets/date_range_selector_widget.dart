@@ -14,12 +14,12 @@ class DateRangeSelectorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ranges = [
-      'Today',
-      'This Week',
-      'This Month',
-      'This Quarter',
-      'This Year',
-      'Custom',
+      'Aujourd\'hui',
+      'Cette semaine',
+      'Ce mois',
+      'Ce trimestre',
+      'Cette année',
+      'Personnalisé',
     ];
 
     return Container(
@@ -38,7 +38,7 @@ class DateRangeSelectorWidget extends StatelessWidget {
               selected: isSelected,
               onSelected: (selected) {
                 if (selected) {
-                  if (range == 'Custom') {
+                  if (range == 'Personnalisé') {
                     _showCustomDatePicker(context);
                   } else {
                     onRangeChanged(range);

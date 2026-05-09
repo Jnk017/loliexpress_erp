@@ -26,7 +26,7 @@ class _SettingsConfigurationScreenState
   String _selectedLanguage = 'French';
   String _selectedCurrency = 'EUR (€)';
 
-  String _userName = 'Loading...';
+  String _userName = 'Chargement...';
   String _userEmail = '';
   String _userRole = '';
 

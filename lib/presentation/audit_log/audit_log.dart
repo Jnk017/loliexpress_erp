@@ -10,7 +10,6 @@ import './widgets/audit_log_card_widget.dart';
 import './widgets/date_range_selector_widget.dart';
 import './widgets/device_fingerprinting_widget.dart';
 import './widgets/filter_panel_widget.dart';
-import './widgets/forensic_export_dialog_widget.dart';
 import './widgets/forensic_timeline_widget.dart';
 import './widgets/ip_geolocation_map_widget.dart';
 
@@ -59,18 +58,6 @@ class _AuditLogScreenState extends State<AuditLogScreen>
     'EXPORT',
     'IMPORT'
   ];
-
-  // Add export dialog method
-  void _showExportDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => ForensicExportDialogWidget(
-        initialStartDate: _selectedDateRange?.start ?? DateTime.now().subtract(const Duration(days: 7)),
-        initialEndDate: _selectedDateRange?.end ?? DateTime.now(),
-        preSelectedUserIds: _selectedUser != null ? [_selectedUser!] : null,
-      ),
-    );
-  }
 
   @override
   void initState() {
@@ -660,7 +647,7 @@ class _AuditLogScreenState extends State<AuditLogScreen>
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      hintText: 'Search by user, module, or changes...',
+                      hintText: 'Rechercher par utilisateur, module ou modifications...',
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
