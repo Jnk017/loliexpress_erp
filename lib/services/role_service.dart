@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'auth_service.dart';
 
-enum UserRole { admin, salesRep, warehouseStaff, customer, comptable, acheteur, unknown }
+enum UserRole { admin, sales, warehouse, unknown }
 
 class RoleService {
   static RoleService? _instance;
@@ -18,13 +18,19 @@ class RoleService {
 
   UserRole _parseRole(String? role) {
     switch (role) {
-      case 'admin': return UserRole.admin;
-      case 'sales_rep': return UserRole.salesRep;
-      case 'warehouse_staff': return UserRole.warehouseStaff;
-      case 'b2b_customer': return UserRole.customer;
-      case 'comptable': return UserRole.comptable;
-      case 'acheteur': return UserRole.acheteur;
-      default: return UserRole.unknown;
+      case 'admin':
+      case 'comptable':
+      case 'acheteur':
+        return UserRole.admin;
+      case 'sales':
+      case 'sales_rep':
+      case 'b2b_customer':
+        return UserRole.sales;
+      case 'warehouse':
+      case 'warehouse_staff':
+        return UserRole.warehouse;
+      default:
+        return UserRole.unknown;
     }
   }
 
@@ -36,46 +42,37 @@ class RoleService {
     switch (_currentRole) {
       case UserRole.admin:
         return true;
-      case UserRole.salesRep:
-        return _salesRepRoutes.contains(route);
-      case UserRole.warehouseStaff:
+      case UserRole.sales:
+        return _salesRoutes.contains(route);
+      case UserRole.warehouse:
         return _warehouseRoutes.contains(route);
-      case UserRole.customer:
-        return _customerRoutes.contains(route);
-      case UserRole.comptable:
-        return _comptableRoutes.contains(route);
-      case UserRole.acheteur:
-        return _acheteurRoutes.contains(route);
       case UserRole.unknown:
         return false;
     }
   }
 
   bool get canEditPrices => _currentRole == UserRole.admin;
-  bool get canViewFinancials => _currentRole == UserRole.admin || _currentRole == UserRole.comptable;
-  bool get canViewProfitReports => _currentRole == UserRole.admin || _currentRole == UserRole.comptable;
-  bool get canViewStockReports => _currentRole == UserRole.admin || _currentRole == UserRole.warehouseStaff;
+  bool get canViewFinancials => _currentRole == UserRole.admin;
+  bool get canViewProfitReports => _currentRole == UserRole.admin;
+  bool get canViewStockReports => _currentRole == UserRole.admin || _currentRole == UserRole.warehouse;
   bool get canManageUsers => _currentRole == UserRole.admin;
-  bool get canViewAllOrders => _currentRole == UserRole.admin || _currentRole == UserRole.salesRep;
-  bool get canCreateOrders => _currentRole == UserRole.admin || _currentRole == UserRole.salesRep || _currentRole == UserRole.customer;
+  bool get canViewAllOrders => _currentRole == UserRole.admin || _currentRole == UserRole.sales;
+  bool get canCreateOrders => _currentRole == UserRole.admin || _currentRole == UserRole.sales;
   bool get canApprovePurchases => _currentRole == UserRole.admin;
   bool get canApproveExpenses => _currentRole == UserRole.admin;
-  bool get canPayExpenses => _currentRole == UserRole.comptable;
-  bool get canCreatePurchases => _currentRole == UserRole.acheteur;
+  bool get canPayExpenses => _currentRole == UserRole.admin;
+  bool get canCreatePurchases => _currentRole == UserRole.admin;
 
   String getHomeRoute() {
     switch (_currentRole) {
       case UserRole.admin: return '/main-dashboard';
-      case UserRole.salesRep: return '/main-dashboard';
-      case UserRole.warehouseStaff: return '/inventory-management';
-      case UserRole.customer: return '/customer-portal';
-      case UserRole.comptable: return '/main-dashboard';
-      case UserRole.acheteur: return '/purchases';
+      case UserRole.sales: return '/main-dashboard';
+      case UserRole.warehouse: return '/inventory-management';
       case UserRole.unknown: return '/login-screen';
     }
   }
 
-  static const _salesRepRoutes = {
+  static const _salesRoutes = {
     '/main-dashboard',
     '/product-catalog',
     '/product-detail',
@@ -87,7 +84,6 @@ class RoleService {
     '/notifications-screen',
     '/notifications-center',
     '/settings-configuration',
-    '/expenses',
   };
 
   static const _warehouseRoutes = {
@@ -96,48 +92,6 @@ class RoleService {
     '/notifications-screen',
     '/notifications-center',
     '/settings-configuration',
-    '/expenses',
-  };
-
-  static const _customerRoutes = {
-    '/customer-portal',
-    '/product-catalog',
-    '/product-detail',
-    '/sales-order-processing',
-    '/invoice-generation',
-    '/notifications-screen',
-    '/documents-screen',
-  };
-
-  static const _comptableRoutes = {
-    '/main-dashboard',
-    '/product-catalog',
-    '/product-detail',
-    '/customer-management',
-    '/sales-order-processing',
-    '/invoice-generation',
-    '/delivery-tracking',
-    '/inventory-management',
-    '/barcode-scanner',
-    '/financial-dashboard',
-    '/reports-analytics',
-    '/purchases',
-    '/notifications-screen',
-    '/notifications-center',
-    '/settings-configuration',
-    '/expenses',
-  };
-
-  static const _acheteurRoutes = {
-    '/purchases',
-    '/product-catalog',
-    '/product-detail',
-    '/inventory-management',
-    '/barcode-scanner',
-    '/notifications-screen',
-    '/notifications-center',
-    '/settings-configuration',
-    '/expenses',
   };
 
   List<BottomNavItem> getBottomNavItems() {
@@ -151,36 +105,17 @@ class RoleService {
           BottomNavItem(icon: Icons.receipt_long, label: 'Dépenses', route: '/expenses'),
           BottomNavItem(icon: Icons.analytics, label: 'Rapports', route: '/reports-analytics'),
         ];
-      case UserRole.salesRep:
+      case UserRole.sales:
         return [
           BottomNavItem(icon: Icons.dashboard, label: 'Dashboard', route: '/main-dashboard'),
           BottomNavItem(icon: Icons.shopping_cart, label: 'Ventes', route: '/sales-order-processing'),
           BottomNavItem(icon: Icons.people, label: 'Clients', route: '/customer-management'),
           BottomNavItem(icon: Icons.local_shipping, label: 'Livraisons', route: '/delivery-tracking'),
         ];
-      case UserRole.warehouseStaff:
+      case UserRole.warehouse:
         return [
           BottomNavItem(icon: Icons.inventory_2, label: 'Stock', route: '/inventory-management'),
           BottomNavItem(icon: Icons.qr_code_scanner, label: 'Scanner', route: '/barcode-scanner'),
-        ];
-      case UserRole.customer:
-        return [
-          BottomNavItem(icon: Icons.storefront, label: 'Catalogue', route: '/product-catalog'),
-          BottomNavItem(icon: Icons.shopping_bag, label: 'Commandes', route: '/customer-portal'),
-        ];
-      case UserRole.comptable:
-        return [
-          BottomNavItem(icon: Icons.dashboard, label: 'Dashboard', route: '/main-dashboard'),
-          BottomNavItem(icon: Icons.inventory_2, label: 'Stock', route: '/inventory-management'),
-          BottomNavItem(icon: Icons.receipt_long, label: 'Dépenses', route: '/expenses'),
-          BottomNavItem(icon: Icons.shopping_bag, label: 'Achats', route: '/purchases'),
-          BottomNavItem(icon: Icons.analytics, label: 'Rapports', route: '/reports-analytics'),
-        ];
-      case UserRole.acheteur:
-        return [
-          BottomNavItem(icon: Icons.shopping_bag, label: 'Achats', route: '/purchases'),
-          BottomNavItem(icon: Icons.storefront, label: 'Catalogue', route: '/product-catalog'),
-          BottomNavItem(icon: Icons.inventory_2, label: 'Stock', route: '/inventory-management'),
         ];
       case UserRole.unknown:
         return [];

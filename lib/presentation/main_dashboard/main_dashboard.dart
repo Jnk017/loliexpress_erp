@@ -38,7 +38,7 @@ class _MainDashboardState extends State<MainDashboard>
 
   List<_TabInfo> get _visibleTabs {
     final role = RoleService.instance.currentRole;
-    if (role == UserRole.salesRep) {
+    if (role == UserRole.sales) {
       return const [
         _TabInfo(label: 'Tableau de Bord', route: '/main-dashboard'),
         _TabInfo(label: 'Ventes', route: '/sales-order-processing'),
@@ -96,8 +96,7 @@ class _MainDashboardState extends State<MainDashboard>
         InventoryService.instance.getStockSummary(),
       ];
 
-      final bool isFinanceRole =
-          role == UserRole.comptable || role == UserRole.admin;
+      final bool isFinanceRole = role == UserRole.admin;
       if (isFinanceRole) {
         futures.add(ExpenseService.instance.getExpenseStats());
         futures.add(PurchaseService.instance.getPurchaseStats());
@@ -128,7 +127,7 @@ class _MainDashboardState extends State<MainDashboard>
         {
           "title": "Chiffre d'Affaires",
           "value": _formatNumber(totalRevenue),
-          "currency": "FCFA",
+          "currency": "CDF",
           "change": "${orderStats['delivered'] ?? 0} livrées",
           "isPositive": true,
           "icon": "trending_up",
@@ -145,7 +144,7 @@ class _MainDashboardState extends State<MainDashboard>
         },
       ];
 
-      if (role != UserRole.salesRep) {
+      if (role != UserRole.sales) {
         kpis.add({
           "title": "Stock Faible",
           "value": "$lowStockCount",
@@ -158,7 +157,7 @@ class _MainDashboardState extends State<MainDashboard>
         kpis.add({
           "title": "Valeur Inventaire",
           "value": _formatNumber(inventoryValue),
-          "currency": "FCFA",
+          "currency": "CDF",
           "change": "$totalCustomers clients",
           "isPositive": true,
           "icon": "payment",

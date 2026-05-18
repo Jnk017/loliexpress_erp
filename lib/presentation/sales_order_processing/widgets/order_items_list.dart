@@ -162,14 +162,14 @@ class OrderItemsList extends StatelessWidget {
                   ),
                   SizedBox(height: 0.5.h),
                   Text(
-                    '${unitPrice.toStringAsFixed(0)} FCFA × $quantity',
+                    '${unitPrice.toStringAsFixed(0)} CDF × $quantity',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                   SizedBox(height: 0.5.h),
                   Text(
-                    '${total.toStringAsFixed(0)} FCFA',
+                    '${total.toStringAsFixed(0)} CDF',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.w600,

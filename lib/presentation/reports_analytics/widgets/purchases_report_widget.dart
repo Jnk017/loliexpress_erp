@@ -72,7 +72,9 @@ class _PurchasesReportWidgetState extends State<PurchasesReportWidget> {
           final key = '${months[date.month - 1]} ${date.year}';
           final amount = (purchase['total_amount'] as num?)?.toDouble() ?? 0;
           monthly[key] = (monthly[key] ?? 0) + amount;
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('Failed to aggregate purchase date: $e');
+        }
       }
     }
 

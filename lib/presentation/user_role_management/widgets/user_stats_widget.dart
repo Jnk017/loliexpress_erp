@@ -15,9 +15,8 @@ class UserStatsWidget extends StatelessWidget {
     final totalUsers = statistics['total_users'] ?? 0;
     final activeUsers = statistics['active_users'] ?? 0;
     final adminCount = statistics['admin_count'] ?? 0;
-    final salesRepCount = statistics['sales_rep_count'] ?? 0;
-    final warehouseCount = statistics['warehouse_staff_count'] ?? 0;
-    final customerCount = statistics['b2b_customer_count'] ?? 0;
+    final salesCount = statistics['sales_count'] ?? 0;
+    final warehouseCount = statistics['warehouse_count'] ?? 0;
 
     return SingleChildScrollView(
       padding: EdgeInsets.all(3.w),
@@ -73,8 +72,8 @@ class UserStatsWidget extends StatelessWidget {
           ),
           SizedBox(height: 2.h),
           _buildRoleStatCard(
-            'Sales Representatives',
-            salesRepCount,
+            'Sales',
+            salesCount,
             totalUsers,
             Icons.business_center,
             Colors.blue,
@@ -86,14 +85,6 @@ class UserStatsWidget extends StatelessWidget {
             totalUsers,
             Icons.warehouse,
             Colors.orange,
-          ),
-          SizedBox(height: 2.h),
-          _buildRoleStatCard(
-            'B2B Customers',
-            customerCount,
-            totalUsers,
-            Icons.shopping_bag,
-            Colors.green,
           ),
           SizedBox(height: 3.h),
           Card(
@@ -131,9 +122,8 @@ class UserStatsWidget extends StatelessWidget {
                     'Most Common Role',
                     _getMostCommonRole(
                       adminCount,
-                      salesRepCount,
+                      salesCount,
                       warehouseCount,
-                      customerCount,
                     ),
                   ),
                 ],
@@ -290,15 +280,13 @@ class UserStatsWidget extends StatelessWidget {
 
   String _getMostCommonRole(
     int admin,
-    int salesRep,
+    int sales,
     int warehouse,
-    int customer,
   ) {
     final roles = {
       'Admin': admin,
-      'Sales Rep': salesRep,
+      'Sales': sales,
       'Warehouse': warehouse,
-      'Customer': customer,
     };
 
     var maxCount = 0;

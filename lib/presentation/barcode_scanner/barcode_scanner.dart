@@ -52,7 +52,7 @@ class _BarcodeScannerState extends State<BarcodeScanner>
       "name": "Coca-Cola Original 330ml",
       "sku": "COC-330-001",
       "stock": 245,
-      "price": "450 FCFA",
+      "price": "450 CDF",
       "image":
           "https://images.unsplash.com/photo-1675599591199-7bced32f7f97",
       "semanticLabel":
@@ -64,7 +64,7 @@ class _BarcodeScannerState extends State<BarcodeScanner>
       "name": "Sprite Citron 500ml",
       "sku": "SPR-500-002",
       "stock": 189,
-      "price": "550 FCFA",
+      "price": "550 CDF",
       "image":
           "https://images.unsplash.com/photo-1592860893757-84536a1c9b82",
       "semanticLabel":
@@ -76,7 +76,7 @@ class _BarcodeScannerState extends State<BarcodeScanner>
       "name": "Commande #2024-001",
       "sku": "ORD-2024-001",
       "stock": 0,
-      "price": "125 000 FCFA",
+      "price": "125 000 CDF",
       "image":
           "https://images.unsplash.com/photo-1644507881446-41ed9ee2c928",
       "semanticLabel":

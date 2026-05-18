@@ -7,6 +7,7 @@ import '../../../widgets/custom_icon_widget.dart';
 /// Line items section with product list and add product button
 class LineItemsWidget extends StatelessWidget {
   final List<Map<String, dynamic>> lineItems;
+  final String currency;
   final VoidCallback onAddProduct;
   final Function(int) onEditItem;
   final Function(int) onRemoveItem;
@@ -14,6 +15,7 @@ class LineItemsWidget extends StatelessWidget {
   const LineItemsWidget({
     super.key,
     required this.lineItems,
+    required this.currency,
     required this.onAddProduct,
     required this.onEditItem,
     required this.onRemoveItem,
@@ -184,7 +186,7 @@ class LineItemsWidget extends StatelessWidget {
                         ),
                         SizedBox(height: 0.5.h),
                         Text(
-                          'Qté: $quantity × ${_formatCurrency(unitPrice)} FCFA',
+                          'Qté: $quantity × ${_formatCurrency(unitPrice)} $currency',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
@@ -197,7 +199,7 @@ class LineItemsWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        '${_formatCurrency(total)} FCFA',
+                        '${_formatCurrency(total)} $currency',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: theme.colorScheme.primary,

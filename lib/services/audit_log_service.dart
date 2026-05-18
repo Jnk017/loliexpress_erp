@@ -304,7 +304,7 @@ class AuditLogService {
       // In a real app, use file_saver package to download
       // For now, just print success
       // ignore: avoid_print
-      print('CSV Export Ready: ${buffer.toString().length} bytes');
+      debugPrint('CSV Export Ready: ${buffer.toString().length} bytes');
     } catch (e) {
       throw Exception('Failed to export audit logs: $e');
     }

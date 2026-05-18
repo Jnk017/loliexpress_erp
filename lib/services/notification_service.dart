@@ -1,11 +1,10 @@
+import 'package:flutter/foundation.dart';
+
 import './supabase_service.dart';
 
 /// Service for managing notifications and workflow automation
 class NotificationService {
   final _client = SupabaseService.instance.client;
-
-  // Resend API key from environment
-  static const String _resendApiKey = String.fromEnvironment('RESEND_API_KEY');
 
   /// Get notifications for current user
   Future<List<Map<String, dynamic>>> getUserNotifications({
@@ -52,6 +51,7 @@ class NotificationService {
 
       return response.count;
     } catch (e) {
+      debugPrint('Failed to fetch unread notification count: $e');
       return 0;
     }
   }
@@ -88,13 +88,8 @@ class NotificationService {
     required String subject,
     required String htmlContent,
   }) async {
-    if (_resendApiKey.isEmpty) {
-      throw Exception(
-          'RESEND_API_KEY is not configured in environment variables');
-    }
-
     // Note: Actual email sending would be implemented in a backend/edge function
-    // This is a placeholder for the client-side service structure
+    // so private provider API keys are never embedded in the Flutter app.
     throw UnimplementedError(
         'Email sending should be implemented in a Supabase Edge Function or backend service');
   }
@@ -158,6 +153,7 @@ class NotificationService {
 
       return response;
     } catch (e) {
+      debugPrint('Failed to fetch notification template: $e');
       return null;
     }
   }
