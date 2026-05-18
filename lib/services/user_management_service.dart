@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserManagementService {
   final SupabaseClient _supabase = Supabase.instance.client;
+  static const Set<String> allowedRoles = {'admin', 'sales', 'warehouse'};
 
   // Get all users from user_profiles
   Future<List<Map<String, dynamic>>> getAllUsers() async {
@@ -24,19 +25,15 @@ class UserManagementService {
 
       final activeUsers = users.where((u) => u['is_active'] == true).length;
       final adminCount = users.where((u) => u['role'] == 'admin').length;
-      final salesRepCount = users.where((u) => u['role'] == 'sales_rep').length;
-      final warehouseCount =
-          users.where((u) => u['role'] == 'warehouse_staff').length;
-      final customerCount =
-          users.where((u) => u['role'] == 'b2b_customer').length;
+      final salesCount = users.where((u) => u['role'] == 'sales').length;
+      final warehouseCount = users.where((u) => u['role'] == 'warehouse').length;
 
       return {
         'total_users': users.length,
         'active_users': activeUsers,
         'admin_count': adminCount,
-        'sales_rep_count': salesRepCount,
-        'warehouse_staff_count': warehouseCount,
-        'b2b_customer_count': customerCount,
+        'sales_count': salesCount,
+        'warehouse_count': warehouseCount,
       };
     } catch (e) {
       throw Exception('Failed to fetch statistics: $e');
@@ -52,11 +49,13 @@ class UserManagementService {
     String? phone,
     String? companyName,
   }) async {
+    _validateRole(role);
     try {
       // Create auth user
       final authResponse = await _supabase.auth.signUp(
         email: email,
         password: password,
+        data: {'full_name': fullName, 'role': role},
       );
 
       if (authResponse.user == null) {
@@ -84,6 +83,7 @@ class UserManagementService {
     String? phone,
     String? companyName,
   }) async {
+    _validateRole(role);
     try {
       await _supabase.from('user_profiles').update({
         'full_name': fullName,
@@ -120,6 +120,7 @@ class UserManagementService {
 
   // Get users by role
   Future<List<Map<String, dynamic>>> getUsersByRole(String role) async {
+    _validateRole(role);
     try {
       final response = await _supabase
           .from('user_profiles')
@@ -162,6 +163,12 @@ class UserManagementService {
       }).eq('id', customerId);
     } catch (e) {
       throw Exception('Failed to assign customer: $e');
+    }
+  }
+
+  void _validateRole(String role) {
+    if (!allowedRoles.contains(role)) {
+      throw ArgumentError('Invalid user role: $role');
     }
   }
 }

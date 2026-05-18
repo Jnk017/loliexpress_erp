@@ -33,7 +33,7 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
   Map<String, dynamic>? _selectedCustomerData;
   DateTime _issueDate = DateTime.now();
   DateTime _dueDate = DateTime.now().add(const Duration(days: 30));
-  String _currency = 'FCFA';
+  String _currency = 'CDF';
   String _paymentMethod = 'Virement bancaire';
   int _paymentDays = 30;
   List<Map<String, dynamic>> _lineItems = [];
@@ -305,7 +305,7 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
   }
 
   Future<void> _selectCurrency() async {
-    final currencies = ['FCFA', 'EUR'];
+    final currencies = ['CDF', 'USD'];
     final selected = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.transparent,
@@ -553,7 +553,7 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
                           ),
                         ),
                         Text(
-                          '${(product['unitPrice'] as double).toStringAsFixed(0)} FCFA',
+                          '${(product['unitPrice'] as double).toStringAsFixed(0)} $_currency',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                             color: theme.colorScheme.primary,
@@ -975,6 +975,7 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
                   SizedBox(height: 2.h),
                   LineItemsWidget(
                     lineItems: _lineItems,
+                    currency: _currency,
                     onAddProduct: _addProduct,
                     onEditItem: _editLineItem,
                     onRemoveItem: _removeLineItem,

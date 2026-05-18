@@ -192,7 +192,7 @@ class _CashFlowChartWidgetState extends State<CashFlowChartWidget> {
                         return touchedBarSpots.map((barSpot) {
                           final amount = barSpot.y;
                           return LineTooltipItem(
-                            '${(amount / 1000000).toStringAsFixed(2)}M XOF',
+                            '${(amount / 1000000).toStringAsFixed(2)}M CDF',
                             theme.textTheme.labelMedium!.copyWith(
                               color: theme.colorScheme.onPrimary,
                               fontWeight: FontWeight.w600,

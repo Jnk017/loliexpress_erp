@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ReportsAnalyticsService {
@@ -82,7 +83,7 @@ class ReportsAnalyticsService {
 
   /// Handle sales order changes - refresh sales charts
   void _handleSalesOrderChange(PostgresChangePayload payload) async {
-    print('Sales order change detected: ${payload.eventType}');
+    debugPrint('Sales order change detected: ${payload.eventType}');
     await refreshSalesMetrics();
     await refreshFinancialMetrics();
     await refreshCustomerMetrics();
@@ -90,21 +91,21 @@ class ReportsAnalyticsService {
 
   /// Handle invoice changes - refresh financial charts and aging report
   void _handleInvoiceChange(PostgresChangePayload payload) async {
-    print('Invoice change detected: ${payload.eventType}');
+    debugPrint('Invoice change detected: ${payload.eventType}');
     await refreshFinancialMetrics();
     await refreshAgingReport();
   }
 
   /// Handle payment changes - refresh aging report instantly
   void _handlePaymentChange(PostgresChangePayload payload) async {
-    print('Payment change detected: ${payload.eventType}');
+    debugPrint('Payment change detected: ${payload.eventType}');
     await refreshAgingReport();
     await refreshFinancialMetrics();
   }
 
   /// Handle inventory changes - refresh inventory charts
   void _handleInventoryChange(PostgresChangePayload payload) async {
-    print('Inventory change detected: ${payload.eventType}');
+    debugPrint('Inventory change detected: ${payload.eventType}');
     await refreshInventoryMetrics();
   }
 
@@ -137,7 +138,7 @@ class ReportsAnalyticsService {
           await _supabase.rpc('get_sales_by_category', params: {
         'start_date': startDate,
       }).catchError((e) async {
-        print('RPC call failed, using fallback query: $e');
+        debugPrint('RPC call failed, using fallback query: $e');
         return await _supabase.from('order_items').select('''
               quantity,
               line_total,
@@ -158,7 +159,7 @@ class ReportsAnalyticsService {
         'timestamp': DateTime.now().toIso8601String(),
       };
     } catch (e) {
-      print('Error fetching sales metrics: $e');
+      debugPrint('Error fetching sales metrics: $e');
       return {
         'totalRevenue': 0,
         'chartData': [],
@@ -212,7 +213,7 @@ class ReportsAnalyticsService {
         'timestamp': DateTime.now().toIso8601String(),
       };
     } catch (e) {
-      print('Error fetching inventory metrics: $e');
+      debugPrint('Error fetching inventory metrics: $e');
       return {
         'stockLevels': [],
         'lowStockItems': [],
@@ -267,7 +268,7 @@ class ReportsAnalyticsService {
         'timestamp': DateTime.now().toIso8601String(),
       };
     } catch (e) {
-      print('Error fetching financial metrics: $e');
+      debugPrint('Error fetching financial metrics: $e');
       return {
         'totalRevenue': 0,
         'totalExpenses': 0,
@@ -287,7 +288,7 @@ class ReportsAnalyticsService {
         'get_top_customers',
         params: {'limit_count': 10},
       ).catchError((e) async {
-        print('RPC call failed, using fallback query: $e');
+        debugPrint('RPC call failed, using fallback query: $e');
         return await _supabase.from('sales_orders').select('''
               customer_id,
               total_amount,
@@ -321,7 +322,7 @@ class ReportsAnalyticsService {
         'timestamp': DateTime.now().toIso8601String(),
       };
     } catch (e) {
-      print('Error fetching customer metrics: $e');
+      debugPrint('Error fetching customer metrics: $e');
       return {
         'topCustomers': [],
         'activeCustomersCount': 0,
@@ -403,7 +404,7 @@ class ReportsAnalyticsService {
         'timestamp': DateTime.now().toIso8601String(),
       };
     } catch (e) {
-      print('Error fetching aging report: $e');
+      debugPrint('Error fetching aging report: $e');
       return {
         'agingBuckets': {
           'current': [],
@@ -424,7 +425,7 @@ class ReportsAnalyticsService {
       final metrics = await getSalesMetrics();
       _salesMetricsController.add(metrics);
     } catch (e) {
-      print('Error refreshing sales metrics: $e');
+      debugPrint('Error refreshing sales metrics: $e');
     }
   }
 
@@ -434,7 +435,7 @@ class ReportsAnalyticsService {
       final metrics = await getInventoryMetrics();
       _inventoryMetricsController.add(metrics);
     } catch (e) {
-      print('Error refreshing inventory metrics: $e');
+      debugPrint('Error refreshing inventory metrics: $e');
     }
   }
 
@@ -444,7 +445,7 @@ class ReportsAnalyticsService {
       final metrics = await getFinancialMetrics();
       _financialMetricsController.add(metrics);
     } catch (e) {
-      print('Error refreshing financial metrics: $e');
+      debugPrint('Error refreshing financial metrics: $e');
     }
   }
 
@@ -454,7 +455,7 @@ class ReportsAnalyticsService {
       final metrics = await getCustomerMetrics();
       _customerMetricsController.add(metrics);
     } catch (e) {
-      print('Error refreshing customer metrics: $e');
+      debugPrint('Error refreshing customer metrics: $e');
     }
   }
 
@@ -464,7 +465,7 @@ class ReportsAnalyticsService {
       final report = await getAgingReport();
       _agingReportController.add(report);
     } catch (e) {
-      print('Error refreshing aging report: $e');
+      debugPrint('Error refreshing aging report: $e');
     }
   }
 

@@ -3,6 +3,7 @@ import 'package:sizer/sizer.dart';
 
 import '../../routes/app_routes.dart';
 import '../../services/auth_service.dart';
+import '../../services/currency_service.dart';
 import '../../services/theme_service.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_bottom_bar.dart';
@@ -24,7 +25,7 @@ class _SettingsConfigurationScreenState
   bool _biometricEnabled = false;
   bool _autoBackupEnabled = true;
   String _selectedLanguage = 'French';
-  String _selectedCurrency = 'EUR (€)';
+  String _selectedCurrency = CurrencyService.defaultCurrency;
 
   String _userName = 'Chargement...';
   String _userEmail = '';
@@ -425,7 +426,7 @@ class _SettingsConfigurationScreenState
       builder: (context) => AlertDialog(
         title: Text('Role & Permissions'),
         content: Text(
-          'Current Role: Administrator\n\nPermissions:\n• Full system access\n• User management\n• Configuration control',
+          'Current Role: $_userRole\n\nSupported roles:\n• admin: full access\n• sales: sales and customer workflows\n• warehouse: inventory and warehouse workflows',
         ),
         actions: [
           TextButton(
@@ -494,7 +495,7 @@ class _SettingsConfigurationScreenState
   }
 
   void _showCurrencyDialog() {
-    final currencies = ['EUR (€)', 'USD (\$)', 'GBP (£)', 'XOF (CFA)'];
+    final currencies = CurrencyService.supportedCurrencies;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -785,7 +786,9 @@ class _SettingsConfigurationScreenState
               Navigator.pop(context);
               try {
                 await AuthService.instance.signOut();
-              } catch (_) {}
+              } catch (e) {
+                debugPrint('Failed to sign out from settings: $e');
+              }
               if (mounted) {
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   AppRoutes.login,

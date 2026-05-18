@@ -9,7 +9,7 @@ This is a Flutter mobile ERP application (LoliExpress ERP) with a Supabase backe
 - **Flutter SDK**: Installed at `/opt/flutter` (v3.29.3, Dart 3.7.2). Path is set in `~/.bashrc`.
 - **Web platform**: Enabled via `flutter config --enable-web`. The `web/` directory exists for browser testing.
 - **Dependencies**: Managed via `pubspec.yaml`. Run `flutter pub get` to install.
-- **Environment config**: `env.json` at project root contains Supabase credentials and API keys. Passed to app via `--dart-define-from-file=env.json`.
+- **Environment config**: create a local `env.json` from `env.example.json` for Supabase credentials. `env.json` is ignored and passed to app via `--dart-define-from-file=env.json`.
 
 ### Key Commands
 - **Install deps**: `flutter pub get`
@@ -55,15 +55,12 @@ flutter build web --dart-define-from-file=env.json
 Then host the `build/web/` directory on any static hosting (Vercel, Netlify, Firebase Hosting, etc.).
 
 #### User Roles
-The app supports 6 roles (defined in `lib/services/role_service.dart`):
+The app supports 3 roles (defined in `lib/services/role_service.dart`):
 | Role | Description |
 |------|-------------|
 | `admin` | Full access to all features, user management, and configuration |
-| `salesRep` | Sales-focused: orders, customers, limited inventory view |
-| `warehouseStaff` | Inventory management, stock receiving, warehouse operations |
-| `comptable` | Finance-focused: expenses, purchases, receivables, financial reports |
-| `acheteur` | Purchasing: supplier management, purchase orders |
-| `customer` | External customer portal (limited self-service) |
+| `sales` | Sales-focused: orders, customers, and limited inventory view |
+| `warehouse` | Inventory management, stock receiving, and warehouse operations |
 
 To create users: register via the app login screen (or Supabase Dashboard → Auth → Users), then set the role in the `user_profiles` table (`role` column).
 

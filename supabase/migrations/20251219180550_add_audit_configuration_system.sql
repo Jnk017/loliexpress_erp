@@ -381,7 +381,7 @@ BEGIN
         VALUES
             ('company_name', 'LoliExpress ERP', 'string'::public.config_value_type, 'Company display name', 'general', true),
             ('tax_rate', '20', 'number'::public.config_value_type, 'Default VAT rate percentage', 'finance', true),
-            ('currency', 'EUR', 'string'::public.config_value_type, 'Default currency code', 'finance', true),
+            ('currency', 'CDF', 'string'::public.config_value_type, 'Default currency code', 'finance', true),
             ('low_stock_threshold', '10', 'number'::public.config_value_type, 'Alert threshold for low stock', 'inventory', true),
             ('invoice_prefix', 'INV', 'string'::public.config_value_type, 'Invoice number prefix', 'finance', true),
             ('order_prefix', 'ORD', 'string'::public.config_value_type, 'Order number prefix', 'sales', true),

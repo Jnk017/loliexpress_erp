@@ -12,7 +12,7 @@ import './widgets/logo_section_widget.dart';
 import './widgets/password_input_widget.dart';
 
 /// Login Screen for Loliexpress ERP
-/// Provides secure multi-role authentication for business owners, staff, and B2B customers
+/// Provides secure multi-role authentication for admin, sales, and warehouse users.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -39,19 +39,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _validateInputs() {
     bool isValid = true;
+    final email = _emailController.text.trim();
     setState(() {
       _emailError = null;
       _passwordError = null;
       _generalError = null;
     });
 
-    if (_emailController.text.trim().isEmpty) {
+    if (email.isEmpty) {
       setState(() {
         _emailError = 'L\'email ou nom d\'utilisateur est requis';
       });
       isValid = false;
-    } else if (!_emailController.text.contains('@') &&
-        !_emailController.text.contains('.')) {
+    } else if (!RegExp(r'^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$').hasMatch(email)) {
       setState(() {
         _emailError = 'Format d\'email invalide';
       });
@@ -149,7 +149,10 @@ class _LoginScreenState extends State<LoginScreen> {
             TextButton(
               onPressed: () async {
                 final email = resetEmailController.text.trim();
-                if (email.isEmpty) return;
+                if (!RegExp(r'^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$')
+                    .hasMatch(email)) {
+                  return;
+                }
                 try {
                   await AuthService.instance.resetPassword(email);
                   if (dialogContext.mounted) {

@@ -644,8 +644,6 @@ class CustomIconWidget extends StatelessWidget {
       'error_outline': Icons.error_outline,
       'escalator': Icons.escalator,
       'escalator_warning': Icons.escalator_warning,
-      'euro': Icons.euro,
-      'euro_symbol': Icons.euro_symbol,
       'ev_station': Icons.ev_station,
       'event': Icons.event,
       'event_available': Icons.event_available,

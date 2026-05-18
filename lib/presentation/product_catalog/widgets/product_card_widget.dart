@@ -203,7 +203,7 @@ class ProductCardWidget extends StatelessWidget {
                           ),
                           // Price
                           Text(
-                            '${product['price']} FCFA',
+                            '${product['price']} CDF',
                             style: theme.textTheme.titleMedium?.copyWith(
                               color: colorScheme.primary,
                               fontWeight: FontWeight.w700,

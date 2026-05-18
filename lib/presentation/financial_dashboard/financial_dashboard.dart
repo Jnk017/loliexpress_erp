@@ -35,25 +35,25 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
   Map<String, dynamic> _financialData = {
     "cashPosition": {
       "amount": 0,
-      "currency": "XOF",
+      "currency": "CDF",
       "change": 0.0,
       "trend": "neutral"
     },
     "dailyRevenue": {
       "amount": 0,
-      "currency": "XOF",
+      "currency": "CDF",
       "change": 0.0,
       "trend": "neutral"
     },
     "outstandingReceivables": {
       "amount": 0,
-      "currency": "XOF",
+      "currency": "CDF",
       "change": 0.0,
       "trend": "neutral"
     },
     "monthlyExpenses": {
       "amount": 0,
-      "currency": "XOF",
+      "currency": "CDF",
       "change": 0.0,
       "trend": "neutral"
     },

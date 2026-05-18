@@ -1,9 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
   static AuthService? _instance;
   static AuthService get instance => _instance ??= AuthService._();
   AuthService._();
+
+  static const allowedRoles = {'admin', 'sales', 'warehouse'};
 
   SupabaseClient get _client => Supabase.instance.client;
 
@@ -22,10 +25,11 @@ class AuthService {
 
   Future<AuthResponse> signUp({required String email, required String password, String? fullName, String? role}) async {
     try {
+      final normalizedRole = allowedRoles.contains(role) ? role! : 'sales';
       final response = await _client.auth.signUp(
         email: email,
         password: password,
-        data: {'full_name': fullName ?? '', 'role': role ?? 'sales_rep'},
+        data: {'full_name': fullName ?? '', 'role': normalizedRole},
       );
       return response;
     } catch (e) {
@@ -56,6 +60,7 @@ class AuthService {
       final response = await _client.from('user_profiles').select('role').eq('id', user.id).maybeSingle();
       return response?['role'] as String?;
     } catch (e) {
+      debugPrint('Failed to fetch user role from profile: $e');
       return user.userMetadata?['role'] as String?;
     }
   }
@@ -66,6 +71,7 @@ class AuthService {
     try {
       return await _client.from('user_profiles').select().eq('id', user.id).maybeSingle();
     } catch (e) {
+      debugPrint('Failed to fetch user profile: $e');
       return null;
     }
   }

@@ -33,7 +33,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
     _phoneController = TextEditingController(text: widget.user['phone'] ?? '');
     _companyNameController =
         TextEditingController(text: widget.user['company_name'] ?? '');
-    _selectedRole = widget.user['role'];
+    _selectedRole = _normalizeRole(widget.user['role'] as String?);
   }
 
   Future<void> _updateUser() async {
@@ -156,13 +156,11 @@ class _EditUserDialogState extends State<EditUserDialog> {
                   items: const [
                     DropdownMenuItem(value: 'admin', child: Text('Admin')),
                     DropdownMenuItem(
-                        value: 'sales_rep',
-                        child: Text('Sales Representative')),
+                        value: 'sales',
+                        child: Text('Sales')),
                     DropdownMenuItem(
-                        value: 'warehouse_staff',
-                        child: Text('Warehouse Staff')),
-                    DropdownMenuItem(
-                        value: 'b2b_customer', child: Text('B2B Customer')),
+                        value: 'warehouse',
+                        child: Text('Warehouse')),
                   ],
                   onChanged: (value) {
                     setState(() => _selectedRole = value!);
@@ -249,5 +247,22 @@ class _EditUserDialogState extends State<EditUserDialog> {
     _phoneController.dispose();
     _companyNameController.dispose();
     super.dispose();
+  }
+
+  String _normalizeRole(String? role) {
+    switch (role) {
+      case 'admin':
+      case 'comptable':
+      case 'acheteur':
+        return 'admin';
+      case 'warehouse':
+      case 'warehouse_staff':
+        return 'warehouse';
+      case 'sales':
+      case 'sales_rep':
+      case 'b2b_customer':
+      default:
+        return 'sales';
+    }
   }
 }

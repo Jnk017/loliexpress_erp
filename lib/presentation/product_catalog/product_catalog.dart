@@ -340,7 +340,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
           ),
         ],
       ),
-      floatingActionButton: _isMultiSelectMode || RoleService.instance.currentRole == UserRole.customer
+      floatingActionButton: _isMultiSelectMode
           ? null
           : Column(
               mainAxisSize: MainAxisSize.min,

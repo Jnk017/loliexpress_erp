@@ -20,7 +20,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
   final _phoneController = TextEditingController();
   final _companyNameController = TextEditingController();
 
-  String _selectedRole = 'b2b_customer';
+  String _selectedRole = 'sales';
   bool _isLoading = false;
   bool _obscurePassword = true;
 
@@ -158,8 +158,8 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
                     if (value == null || value.isEmpty) {
                       return 'Password is required';
                     }
-                    if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
+                    if (value.length < 10) {
+                      return 'Password must be at least 10 characters';
                     }
                     return null;
                   },
@@ -177,13 +177,11 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
                   items: const [
                     DropdownMenuItem(value: 'admin', child: Text('Admin')),
                     DropdownMenuItem(
-                        value: 'sales_rep',
-                        child: Text('Sales Representative')),
+                        value: 'sales',
+                        child: Text('Sales')),
                     DropdownMenuItem(
-                        value: 'warehouse_staff',
-                        child: Text('Warehouse Staff')),
-                    DropdownMenuItem(
-                        value: 'b2b_customer', child: Text('B2B Customer')),
+                        value: 'warehouse',
+                        child: Text('Warehouse')),
                   ],
                   onChanged: (value) {
                     setState(() => _selectedRole = value!);

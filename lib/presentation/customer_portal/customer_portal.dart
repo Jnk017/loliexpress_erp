@@ -188,7 +188,7 @@ class _CustomerPortalState extends State<CustomerPortal>
               _buildNotificationItem(
                 context,
                 'Rappel de paiement',
-                'Paiement de 125 000 XOF dû le 30/11/2025',
+                'Paiement de 125 000 CDF dû le 30/11/2025',
                 'Hier',
                 Icons.payment,
                 AppTheme.errorLight,

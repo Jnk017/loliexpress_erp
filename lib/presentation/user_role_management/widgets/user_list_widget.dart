@@ -62,8 +62,7 @@ class _UserListWidgetState extends State<UserListWidget> {
                 .toLowerCase()
                 .contains(query.toLowerCase());
         final matchesRole = _selectedRole == 'All' ||
-            user['role'].toString().toUpperCase() ==
-                _selectedRole.toUpperCase();
+            _normalizeRole(user['role'].toString()) == _selectedRole;
         return matchesSearch && matchesRole;
       }).toList();
     });
@@ -194,13 +193,11 @@ class _UserListWidgetState extends State<UserListWidget> {
                   children: [
                     _buildRoleChip('All'),
                     SizedBox(width: 2.w),
-                    _buildRoleChip('ADMIN'),
+                    _buildRoleChip('admin'),
                     SizedBox(width: 2.w),
-                    _buildRoleChip('SALES_REP'),
+                    _buildRoleChip('sales'),
                     SizedBox(width: 2.w),
-                    _buildRoleChip('WAREHOUSE_STAFF'),
-                    SizedBox(width: 2.w),
-                    _buildRoleChip('B2B_CUSTOMER'),
+                    _buildRoleChip('warehouse'),
                   ],
                 ),
               ),
@@ -253,7 +250,7 @@ class _UserListWidgetState extends State<UserListWidget> {
     final isSelected = _selectedRole == role;
     return FilterChip(
       label: Text(
-        role.replaceAll('_', ' '),
+        role == 'All' ? role : role.toUpperCase(),
         style: TextStyle(
           color: isSelected ? Colors.white : const Color(0xFF1976D2),
           fontSize: 12.sp,
@@ -271,5 +268,22 @@ class _UserListWidgetState extends State<UserListWidget> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  String _normalizeRole(String role) {
+    switch (role) {
+      case 'admin':
+      case 'comptable':
+      case 'acheteur':
+        return 'admin';
+      case 'warehouse':
+      case 'warehouse_staff':
+        return 'warehouse';
+      case 'sales':
+      case 'sales_rep':
+      case 'b2b_customer':
+      default:
+        return 'sales';
+    }
   }
 }

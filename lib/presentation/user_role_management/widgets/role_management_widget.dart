@@ -32,13 +32,12 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
       final users = await _userService.getAllUsers();
       final roleMap = <String, List<Map<String, dynamic>>>{
         'admin': [],
-        'sales_rep': [],
-        'warehouse_staff': [],
-        'b2b_customer': [],
+        'sales': [],
+        'warehouse': [],
       };
 
       for (var user in users) {
-        final role = user['role'].toString().toLowerCase();
+        final role = _normalizeRole(user['role'].toString());
         if (roleMap.containsKey(role)) {
           roleMap[role]!.add(user);
         }
@@ -62,12 +61,10 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
     switch (role.toLowerCase()) {
       case 'admin':
         return Colors.red;
-      case 'sales_rep':
+      case 'sales':
         return Colors.blue;
-      case 'warehouse_staff':
+      case 'warehouse':
         return Colors.orange;
-      case 'b2b_customer':
-        return Colors.green;
       default:
         return Colors.grey;
     }
@@ -77,12 +74,10 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
     switch (role.toLowerCase()) {
       case 'admin':
         return 'Administrators';
-      case 'sales_rep':
-        return 'Sales Representatives';
-      case 'warehouse_staff':
+      case 'sales':
+        return 'Sales';
+      case 'warehouse':
         return 'Warehouse Staff';
-      case 'b2b_customer':
-        return 'B2B Customers';
       default:
         return role.toUpperCase();
     }
@@ -92,12 +87,10 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
     switch (role.toLowerCase()) {
       case 'admin':
         return 'Full system access with user and configuration management';
-      case 'sales_rep':
+      case 'sales':
         return 'Manage sales orders, customers, and assigned client accounts';
-      case 'warehouse_staff':
+      case 'warehouse':
         return 'Handle inventory, stock movements, and deliveries';
-      case 'b2b_customer':
-        return 'View orders, track deliveries, and access portal features';
       default:
         return '';
     }
@@ -113,7 +106,7 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
           'All Module Access',
           'Data Export',
         ];
-      case 'sales_rep':
+      case 'sales':
         return [
           'Create Sales Orders',
           'Manage Customers',
@@ -121,21 +114,13 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
           'Generate Invoices',
           'Sales Reports',
         ];
-      case 'warehouse_staff':
+      case 'warehouse':
         return [
           'Inventory Management',
           'Stock Movements',
           'Delivery Tracking',
           'Barcode Scanning',
           'Stock Reports',
-        ];
-      case 'b2b_customer':
-        return [
-          'View Own Orders',
-          'Track Deliveries',
-          'Access Documents',
-          'Submit Support Tickets',
-          'View Account Info',
         ];
       default:
         return [];
@@ -153,11 +138,9 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
               children: [
                 _buildRoleCard('admin'),
                 SizedBox(height: 2.h),
-                _buildRoleCard('sales_rep'),
+                _buildRoleCard('sales'),
                 SizedBox(height: 2.h),
-                _buildRoleCard('warehouse_staff'),
-                SizedBox(height: 2.h),
-                _buildRoleCard('b2b_customer'),
+                _buildRoleCard('warehouse'),
               ],
             ),
           );
@@ -300,14 +283,29 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
     switch (role.toLowerCase()) {
       case 'admin':
         return Icons.admin_panel_settings;
-      case 'sales_rep':
+      case 'sales':
         return Icons.business_center;
-      case 'warehouse_staff':
+      case 'warehouse':
         return Icons.warehouse;
-      case 'b2b_customer':
-        return Icons.shopping_bag;
       default:
         return Icons.person;
+    }
+  }
+
+  String _normalizeRole(String role) {
+    switch (role.toLowerCase()) {
+      case 'admin':
+      case 'comptable':
+      case 'acheteur':
+        return 'admin';
+      case 'warehouse':
+      case 'warehouse_staff':
+        return 'warehouse';
+      case 'sales':
+      case 'sales_rep':
+      case 'b2b_customer':
+      default:
+        return 'sales';
     }
   }
 }

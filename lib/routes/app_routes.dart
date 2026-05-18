@@ -26,6 +26,7 @@ import '../presentation/splash_screen/splash_screen.dart';
 import '../presentation/purchases/purchases_screen.dart';
 import '../presentation/expenses/expenses_screen.dart';
 import '../presentation/user_role_management/user_role_management.dart';
+import '../presentation/unauthorized/unauthorized_screen.dart';
 
 class AppRoutes {
   // TODO: Add your routes here
@@ -57,6 +58,7 @@ class AppRoutes {
   static const String purchases = '/purchases';
   static const String expenses = '/expenses';
   static const String productDetail = '/product-detail';
+  static const String unauthorized = '/unauthorized';
 
   static Map<String, WidgetBuilder> get routes => {
   initial: (context) => const SplashScreen(),
@@ -103,5 +105,6 @@ class AppRoutes {
   purchases: (context) => const PurchasesScreen(),
   expenses: (context) => const ExpensesScreen(),
   productDetail: (context) => const ProductCatalog(),
+  unauthorized: (context) => const UnauthorizedScreen(),
 };
 }

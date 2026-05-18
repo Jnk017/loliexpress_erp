@@ -104,7 +104,7 @@ class _RevenueChartWidgetState extends State<RevenueChartWidget> {
                           ),
                           children: [
                             TextSpan(
-                              text: '${_formatAmount(rod.toY.toInt())} FCFA',
+                              text: '${_formatAmount(rod.toY.toInt())} CDF',
                               style: theme.textTheme.labelMedium!.copyWith(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w700,

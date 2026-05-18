@@ -34,11 +34,6 @@ class RoleSelectorWidget extends StatelessWidget {
       'label': 'Personnel Entrepôt',
       'icon': 'warehouse',
     },
-    {
-      'value': 'customer',
-      'label': 'Client B2B',
-      'icon': 'business',
-    },
   ];
 
   @override
