@@ -50,7 +50,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.searchController,
     this.onSearchChanged,
     this.onSearchSubmitted,
-    this.searchHint = 'Search...',
+    this.searchHint = 'Rechercher...',
     this.showSyncStatus = false,
     this.isSyncing = false,
     this.lastSyncTime,
@@ -65,7 +65,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     return AppBar(
       systemOverlayStyle: SystemUiOverlayStyle(
@@ -124,7 +123,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       case CustomAppBarVariant.standard:
       case CustomAppBarVariant.detail:
       case CustomAppBarVariant.transparent:
-      default:
         return title != null
             ? Text(
                 title!,

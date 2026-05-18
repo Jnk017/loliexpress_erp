@@ -105,7 +105,7 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
     super.initState();
     _generateInvoiceNumber();
     _termsController.text =
-        'Paiement à effectuer dans les \${_paymentDays} jours suivant la date de facturation. Pénalités de retard applicables selon les conditions générales de vente.';
+        'Paiement à effectuer dans les ${_paymentDays} jours suivant la date de facturation. Pénalités de retard applicables selon les conditions générales de vente.';
   }
 
   @override
@@ -163,7 +163,7 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
         _paymentDays = selected['paymentTerms'] as int;
         _dueDate = _issueDate.add(Duration(days: _paymentDays));
         _termsController.text =
-            'Paiement à effectuer dans les \${_paymentDays} jours suivant la date de facturation. Pénalités de retard applicables selon les conditions générales de vente.';
+            'Paiement à effectuer dans les ${_paymentDays} jours suivant la date de facturation. Pénalités de retard applicables selon les conditions générales de vente.';
       });
     }
   }
@@ -359,7 +359,7 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
         _paymentDays = selected;
         _dueDate = _issueDate.add(Duration(days: _paymentDays));
         _termsController.text =
-            'Paiement à effectuer dans les \${_paymentDays} jours suivant la date de facturation. Pénalités de retard applicables selon les conditions générales de vente.';
+            'Paiement à effectuer dans les ${_paymentDays} jours suivant la date de facturation. Pénalités de retard applicables selon les conditions générales de vente.';
       });
     }
   }
@@ -576,7 +576,6 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
     return showDialog<int>(
       context: context,
       builder: (context) {
-        final theme = Theme.of(context);
         return AlertDialog(
           title: const Text('Quantité'),
           content: TextField(
@@ -607,7 +606,6 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
   }
 
   void _editLineItem(int index) async {
-    final item = _lineItems[index];
     final quantity = await _showQuantityDialog();
     if (quantity != null && quantity > 0) {
       setState(() {
@@ -945,8 +943,6 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Nouvelle facture',

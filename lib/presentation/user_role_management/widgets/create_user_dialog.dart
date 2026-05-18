@@ -166,7 +166,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
                 ),
                 SizedBox(height: 2.h),
                 DropdownButtonFormField<String>(
-                  initialValue: _selectedRole,
+                  value: _selectedRole,
                   decoration: InputDecoration(
                     labelText: 'Role *',
                     prefixIcon: const Icon(Icons.badge_outlined),

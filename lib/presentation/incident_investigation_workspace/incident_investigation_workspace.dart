@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../core/app_export.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/investigation_workspace_service.dart';
-import './widgets/evidence_repository_widget.dart';
-import './widgets/quick_actions_fab_widget.dart';
-import './widgets/tasks_kanban_widget.dart';
-import './widgets/team_communications_widget.dart';
-import './widgets/timeline_correlations_widget.dart';
-import './widgets/workspace_header_widget.dart';
 import 'widgets/evidence_repository_widget.dart';
 import 'widgets/quick_actions_fab_widget.dart';
 import 'widgets/tasks_kanban_widget.dart';

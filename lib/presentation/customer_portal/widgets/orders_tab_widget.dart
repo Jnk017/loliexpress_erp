@@ -3,6 +3,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../core/app_export.dart';
+import '../../../services/order_service.dart';
 
 /// Orders Tab Widget
 /// Displays customer's order history with status tracking and quick actions
@@ -14,69 +15,118 @@ class OrdersTabWidget extends StatefulWidget {
 }
 
 class _OrdersTabWidgetState extends State<OrdersTabWidget> {
-  bool _isRefreshing = false;
+  bool _isLoading = true;
+  bool _hasError = false;
+  String _errorMessage = '';
+  List<Map<String, dynamic>> _orders = [];
 
-  // Mock orders data
-  final List<Map<String, dynamic>> _orders = [
-    {
-      "id": "CMD-2024-1156",
-      "date": DateTime(2025, 11, 25),
-      "status": "shipped",
-      "statusLabel": "Expédiée",
-      "items": 12,
-      "total": "245 000 XOF",
-      "deliveryDate": DateTime(2025, 11, 28),
-      "products": [
-        {"name": "Coca-Cola 1.5L", "quantity": 24},
-        {"name": "Sprite 1L", "quantity": 12},
-      ],
-    },
-    {
-      "id": "CMD-2024-1142",
-      "date": DateTime(2025, 11, 20),
-      "status": "delivered",
-      "statusLabel": "Livrée",
-      "items": 8,
-      "total": "180 000 XOF",
-      "deliveryDate": DateTime(2025, 11, 22),
-      "products": [
-        {"name": "Fanta Orange 1L", "quantity": 18},
-        {"name": "Eau Minérale 1.5L", "quantity": 30},
-      ],
-    },
-    {
-      "id": "CMD-2024-1128",
-      "date": DateTime(2025, 11, 18),
-      "status": "confirmed",
-      "statusLabel": "Confirmée",
-      "items": 15,
-      "total": "320 000 XOF",
-      "deliveryDate": DateTime(2025, 11, 29),
-      "products": [
-        {"name": "Jus Tropical 1L", "quantity": 24},
-        {"name": "Coca-Cola 2L", "quantity": 12},
-      ],
-    },
-    {
-      "id": "CMD-2024-1115",
-      "date": DateTime(2025, 11, 15),
-      "status": "pending",
-      "statusLabel": "En attente",
-      "items": 6,
-      "total": "95 000 XOF",
-      "deliveryDate": DateTime(2025, 11, 30),
-      "products": [
-        {"name": "Sprite 2L", "quantity": 12},
-      ],
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadOrders();
+  }
+
+  Future<void> _loadOrders() async {
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
+
+    try {
+      final orders = await OrderService.instance.getOrders();
+      if (!mounted) return;
+      setState(() {
+        _orders = orders;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _hasError = true;
+        _errorMessage = e.toString();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_hasError) {
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.all(8.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 60, color: theme.colorScheme.error),
+              SizedBox(height: 2.h),
+              Text(
+                'Erreur de chargement',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.error,
+                ),
+              ),
+              SizedBox(height: 1.h),
+              Text(
+                _errorMessage,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 3.h),
+              ElevatedButton.icon(
+                onPressed: _loadOrders,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Réessayer'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_orders.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.all(8.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.shopping_bag_outlined, size: 60, color: theme.colorScheme.onSurfaceVariant),
+              SizedBox(height: 2.h),
+              Text(
+                'Aucune commande',
+                style: theme.textTheme.titleMedium,
+              ),
+              SizedBox(height: 1.h),
+              Text(
+                'Vous n\'avez pas encore passé de commande.',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 3.h),
+              ElevatedButton.icon(
+                onPressed: () => Navigator.pushNamed(context, '/product-catalog'),
+                icon: const Icon(Icons.add),
+                label: const Text('Nouvelle Commande'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return RefreshIndicator(
-      onRefresh: _handleRefresh,
+      onRefresh: _loadOrders,
       color: theme.colorScheme.primary,
       child: CustomScrollView(
         slivers: [
@@ -97,14 +147,14 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
                       ),
                       ElevatedButton.icon(
                         onPressed: () {
-                          _showNewOrderDialog(context);
+                          Navigator.pushNamed(context, '/product-catalog');
                         },
                         icon: CustomIconWidget(
                           iconName: 'add',
                           color: theme.colorScheme.onPrimary,
                           size: 18,
                         ),
-                        label: Text('Nouvelle'),
+                        label: const Text('Nouvelle Commande'),
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(
                             horizontal: 4.w,
@@ -147,19 +197,19 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
       {'label': 'Toutes', 'count': _orders.length},
       {
         'label': 'En attente',
-        'count': _orders.where((o) => o['status'] == 'pending').length
+        'count': _orders.where((o) => o['order_status'] == 'pending').length
       },
       {
         'label': 'Confirmées',
-        'count': _orders.where((o) => o['status'] == 'confirmed').length
+        'count': _orders.where((o) => o['order_status'] == 'confirmed').length
       },
       {
         'label': 'Expédiées',
-        'count': _orders.where((o) => o['status'] == 'shipped').length
+        'count': _orders.where((o) => o['order_status'] == 'shipped').length
       },
       {
         'label': 'Livrées',
-        'count': _orders.where((o) => o['status'] == 'delivered').length
+        'count': _orders.where((o) => o['order_status'] == 'delivered').length
       },
     ];
 
@@ -200,9 +250,14 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
 
   Widget _buildOrderCard(BuildContext context, Map<String, dynamic> order) {
     final theme = Theme.of(context);
+    final status = order['order_status'] as String? ?? 'pending';
+    final statusLabel = _getStatusLabel(status);
+    final totalAmount = (order['total_amount'] as num?)?.toDouble() ?? 0;
+    final orderId = order['id']?.toString() ?? '';
+    final createdAt = DateTime.tryParse(order['created_at'] ?? '') ?? DateTime.now();
 
     return Slidable(
-      key: ValueKey(order['id']),
+      key: ValueKey(orderId),
       endActionPane: ActionPane(
         motion: const ScrollMotion(),
         children: [
@@ -220,13 +275,14 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
             icon: Icons.local_shipping,
             label: 'Suivre',
           ),
-          SlidableAction(
-            onPressed: (context) => _downloadInvoiceAction(order),
-            backgroundColor: AppTheme.successLight,
-            foregroundColor: Colors.white,
-            icon: Icons.download,
-            label: 'Facture',
-          ),
+          if (status == 'delivered')
+            SlidableAction(
+              onPressed: (context) => _downloadInvoiceAction(order),
+              backgroundColor: AppTheme.successLight,
+              foregroundColor: Colors.white,
+              icon: Icons.download,
+              label: 'Facture',
+            ),
         ],
       ),
       child: Card(
@@ -247,14 +303,14 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            order['id'],
+                            orderId.length > 8 ? orderId.substring(0, 8).toUpperCase() : orderId.toUpperCase(),
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                           SizedBox(height: 0.5.h),
                           Text(
-                            _formatDate(order['date']),
+                            _formatDate(createdAt),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -262,27 +318,7 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
                         ],
                       ),
                     ),
-                    _buildStatusBadge(
-                        context, order['status'], order['statusLabel']),
-                  ],
-                ),
-                SizedBox(height: 2.h),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildInfoItem(
-                        context,
-                        'shopping_cart',
-                        '${order['items']} articles',
-                      ),
-                    ),
-                    Expanded(
-                      child: _buildInfoItem(
-                        context,
-                        'local_shipping',
-                        _formatDate(order['deliveryDate']),
-                      ),
-                    ),
+                    _buildStatusBadge(context, status, statusLabel),
                   ],
                 ),
                 SizedBox(height: 1.5.h),
@@ -298,7 +334,7 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
                       ),
                     ),
                     Text(
-                      order['total'],
+                      '${_formatCurrency(totalAmount)} FCFA',
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                         color: theme.colorScheme.primary,
@@ -306,6 +342,17 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
                     ),
                   ],
                 ),
+                if (status == 'delivered') ...[
+                  SizedBox(height: 1.5.h),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () => _downloadInvoiceAction(order),
+                      icon: const Icon(Icons.picture_as_pdf, size: 18),
+                      label: const Text('Télécharger Facture'),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -358,71 +405,43 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
     );
   }
 
-  Widget _buildInfoItem(BuildContext context, String iconName, String text) {
-    final theme = Theme.of(context);
-
-    return Row(
-      children: [
-        CustomIconWidget(
-          iconName: iconName,
-          color: theme.colorScheme.onSurfaceVariant,
-          size: 16,
-        ),
-        SizedBox(width: 2.w),
-        Expanded(
-          child: Text(
-            text,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
+  String _getStatusLabel(String status) {
+    switch (status) {
+      case 'pending':
+        return 'En attente';
+      case 'confirmed':
+        return 'Confirmée';
+      case 'shipped':
+        return 'Expédiée';
+      case 'delivered':
+        return 'Livrée';
+      default:
+        return status;
+    }
   }
 
   String _formatDate(DateTime date) {
     final months = [
-      'Jan',
-      'Fév',
-      'Mar',
-      'Avr',
-      'Mai',
-      'Juin',
-      'Juil',
-      'Août',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Déc'
+      'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
+      'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
-  Future<void> _handleRefresh() async {
-    setState(() {
-      _isRefreshing = true;
-    });
-
-    await Future.delayed(const Duration(seconds: 2));
-
-    setState(() {
-      _isRefreshing = false;
-    });
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Commandes mises à jour'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
+  String _formatCurrency(double amount) {
+    return amount.toStringAsFixed(0).replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]} ',
+    );
   }
 
   void _showOrderDetails(BuildContext context, Map<String, dynamic> order) {
     final theme = Theme.of(context);
+    final status = order['order_status'] as String? ?? 'pending';
+    final totalAmount = (order['total_amount'] as num?)?.toDouble() ?? 0;
+    final orderId = order['id']?.toString() ?? '';
+    final createdAt = DateTime.tryParse(order['created_at'] ?? '') ?? DateTime.now();
+    final customerData = order['customers'] as Map<String, dynamic>?;
 
     showModalBottomSheet(
       context: context,
@@ -479,43 +498,11 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
                     child: ListView(
                       controller: scrollController,
                       children: [
-                        _buildDetailRow(context, 'Numéro', order['id']),
-                        _buildDetailRow(
-                            context, 'Date', _formatDate(order['date'])),
-                        _buildDetailRow(
-                            context, 'Statut', order['statusLabel']),
-                        _buildDetailRow(context, 'Livraison prévue',
-                            _formatDate(order['deliveryDate'])),
-                        SizedBox(height: 2.h),
-                        Text(
-                          'Produits',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(height: 1.h),
-                        ...(order['products'] as List).map((product) {
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 1.h),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    product['name'],
-                                    style: theme.textTheme.bodyMedium,
-                                  ),
-                                ),
-                                Text(
-                                  'x${product['quantity']}',
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
+                        _buildDetailRow(context, 'Numéro', orderId.length > 8 ? orderId.substring(0, 8).toUpperCase() : orderId.toUpperCase()),
+                        _buildDetailRow(context, 'Date', _formatDate(createdAt)),
+                        _buildDetailRow(context, 'Statut', _getStatusLabel(status)),
+                        if (customerData != null)
+                          _buildDetailRow(context, 'Client', customerData['company_name'] ?? ''),
                         SizedBox(height: 2.h),
                         Divider(),
                         SizedBox(height: 1.h),
@@ -529,7 +516,7 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
                               ),
                             ),
                             Text(
-                              order['total'],
+                              '${_formatCurrency(totalAmount)} FCFA',
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: theme.colorScheme.primary,
@@ -571,6 +558,20 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
                             ),
                           ],
                         ),
+                        if (status == 'delivered') ...[
+                          SizedBox(height: 2.h),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                _downloadInvoiceAction(order);
+                              },
+                              icon: const Icon(Icons.picture_as_pdf),
+                              label: const Text('Télécharger Facture'),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -608,45 +609,11 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
     );
   }
 
-  void _showNewOrderDialog(BuildContext context) {
-    final theme = Theme.of(context);
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            'Nouvelle Commande',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          content: Text(
-            'Accédez au catalogue produits pour créer une nouvelle commande avec vos prix personnalisés.',
-            style: theme.textTheme.bodyMedium,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Annuler'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/product-catalog');
-              },
-              child: const Text('Voir Catalogue'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void _reorderAction(Map<String, dynamic> order) {
+    final orderId = order['id']?.toString() ?? '';
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Recommande de ${order['id']} en cours...'),
+        content: Text('Recommande de $orderId en cours...'),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -657,11 +624,6 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
   }
 
   void _downloadInvoiceAction(Map<String, dynamic> order) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Téléchargement de la facture ${order['id']}...'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    Navigator.pushNamed(context, '/invoice-generation', arguments: order);
   }
 }

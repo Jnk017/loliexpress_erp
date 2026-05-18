@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../routes/app_routes.dart';
+import '../../services/auth_service.dart';
+import '../../services/theme_service.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_bottom_bar.dart';
 import './widgets/settings_item_widget.dart';
@@ -20,9 +23,30 @@ class _SettingsConfigurationScreenState
   bool _notificationsEnabled = true;
   bool _biometricEnabled = false;
   bool _autoBackupEnabled = true;
-  bool _darkModeEnabled = false;
   String _selectedLanguage = 'French';
   String _selectedCurrency = 'EUR (€)';
+
+  String _userName = 'Chargement...';
+  String _userEmail = '';
+  String _userRole = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    final profile = await AuthService.instance.getUserProfile();
+    final user = AuthService.instance.currentUser;
+    if (mounted) {
+      setState(() {
+        _userName = profile?['full_name'] ?? user?.userMetadata?['full_name'] ?? 'User';
+        _userEmail = user?.email ?? '';
+        _userRole = profile?['role'] ?? user?.userMetadata?['role'] ?? 'User';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +64,9 @@ class _SettingsConfigurationScreenState
         padding: EdgeInsets.all(3.w),
         children: [
           UserProfileHeaderWidget(
-            name: 'Jean Dupont',
-            email: 'jean.dupont@loliexpress.com',
-            role: 'Administrator',
+            name: _userName,
+            email: _userEmail,
+            role: _userRole,
             avatarUrl:
                 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e',
             onEditProfile: () => _showEditProfileDialog(),
@@ -118,9 +142,10 @@ class _SettingsConfigurationScreenState
                 title: 'Dark Mode',
                 subtitle: 'Toggle dark theme',
                 trailing: Switch(
-                  value: _darkModeEnabled,
+                  value: ThemeService.instance.isDarkMode,
                   onChanged: (value) {
-                    setState(() => _darkModeEnabled = value);
+                    ThemeService.instance.toggleTheme();
+                    setState(() {});
                   },
                 ),
               ),
@@ -273,6 +298,17 @@ class _SettingsConfigurationScreenState
             label: Text('Reset to Factory Defaults'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              padding: EdgeInsets.symmetric(vertical: 2.h),
+            ),
+          ),
+          SizedBox(height: 2.h),
+          ElevatedButton.icon(
+            onPressed: () => _showLogoutDialog(),
+            icon: Icon(Icons.logout),
+            label: Text('Logout'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.grey[800],
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(vertical: 2.h),
             ),
@@ -727,6 +763,38 @@ class _SettingsConfigurationScreenState
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: Text('Reset'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Logout'),
+        content: Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              try {
+                await AuthService.instance.signOut();
+              } catch (_) {}
+              if (mounted) {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  AppRoutes.login,
+                  (route) => false,
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: Text('Logout'),
           ),
         ],
       ),

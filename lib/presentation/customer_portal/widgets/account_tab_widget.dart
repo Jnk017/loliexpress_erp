@@ -60,8 +60,6 @@ class _AccountTabWidgetState extends State<AccountTabWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return ListView(
       padding: EdgeInsets.all(4.w),
       children: [

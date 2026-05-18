@@ -23,6 +23,8 @@ import '../presentation/security_alert_center/security_alert_center.dart';
 import '../presentation/security_dashboard/security_dashboard.dart';
 import '../presentation/settings_configuration/settings_configuration.dart';
 import '../presentation/splash_screen/splash_screen.dart';
+import '../presentation/purchases/purchases_screen.dart';
+import '../presentation/expenses/expenses_screen.dart';
 import '../presentation/user_role_management/user_role_management.dart';
 
 class AppRoutes {
@@ -52,6 +54,9 @@ class AppRoutes {
   static const String automationRulesManager = '/automation-rules-manager';
   static const String incidentManagementCenter = '/incident-management-center';
   static const String incidentInvestigationWorkspace = '/incident-investigation-workspace';
+  static const String purchases = '/purchases';
+  static const String expenses = '/expenses';
+  static const String productDetail = '/product-detail';
 
   static Map<String, WidgetBuilder> get routes => {
   initial: (context) => const SplashScreen(),
@@ -95,5 +100,8 @@ class AppRoutes {
       severity: args['severity'],
     );
   },
+  purchases: (context) => const PurchasesScreen(),
+  expenses: (context) => const ExpensesScreen(),
+  productDetail: (context) => const ProductCatalog(),
 };
 }

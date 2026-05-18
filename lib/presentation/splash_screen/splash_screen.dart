@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../services/auth_service.dart';
+import '../../services/role_service.dart';
 
 /// Splash Screen for Loliexpress ERP
 /// Provides branded app launch experience while initializing core ERP services
@@ -51,55 +53,46 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _initializeApp() async {
     try {
-      // Simulate checking authentication status
       await Future.delayed(const Duration(milliseconds: 800));
+      if (mounted) {
+        setState(() {
+          _initializationStatus = 'Vérification de l\'authentification...';
+        });
+      }
+
+      await Future.delayed(const Duration(milliseconds: 600));
       if (mounted) {
         setState(() {
           _initializationStatus = 'Chargement des préférences...';
         });
       }
 
-      // Simulate loading user preferences
-      await Future.delayed(const Duration(milliseconds: 600));
-      if (mounted) {
-        setState(() {
-          _initializationStatus = 'Synchronisation des données...';
-        });
-      }
-
-      // Simulate syncing offline data
       await Future.delayed(const Duration(milliseconds: 800));
-      if (mounted) {
-        setState(() {
-          _initializationStatus = 'Préparation du tableau de bord...';
-        });
-      }
-
-      // Simulate preparing cached inventory/customer information
-      await Future.delayed(const Duration(milliseconds: 600));
 
       if (mounted) {
         setState(() {
           _isInitializing = false;
         });
 
-        // Navigate based on authentication status
-        // For demo purposes, navigating to login screen
-        // In production, check actual auth status and navigate accordingly
         await Future.delayed(const Duration(milliseconds: 400));
-        if (mounted) {
+        if (!mounted) return;
+
+        if (AuthService.instance.isAuthenticated) {
+          await RoleService.instance.refreshRole();
+          if (!mounted) return;
+
+          Navigator.pushReplacementNamed(context, RoleService.instance.getHomeRoute());
+        } else {
           Navigator.pushReplacementNamed(context, '/login-screen');
         }
       }
     } catch (e) {
-      // Handle initialization errors
       if (mounted) {
         setState(() {
           _initializationStatus = 'Erreur d\'initialisation';
           _isInitializing = false;
         });
 
-        // Show retry option after 5 seconds
         await Future.delayed(const Duration(seconds: 5));
         if (mounted) {
           _showRetryDialog();
@@ -213,7 +206,7 @@ class _SplashScreenState extends State<SplashScreen>
               FadeTransition(
                 opacity: _fadeAnimation,
                 child: Text(
-                  'Gestion de Distribution',
+                  'Grandir Ensemble',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: theme.colorScheme.onPrimary.withValues(alpha: 0.9),
                     fontWeight: FontWeight.w400,
@@ -273,7 +266,7 @@ class _SplashScreenState extends State<SplashScreen>
         ],
       ),
       child: Image.asset(
-        'assets/images/1-1764550821958.png',
+        'assets/images/logo_loliexpress.png',
         width: 120,
         height: 120,
         fit: BoxFit.contain,

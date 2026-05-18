@@ -3,11 +3,11 @@
 ## Cursor Cloud specific instructions
 
 ### Project Overview
-This is a Flutter mobile ERP application (LoliExpress ERP) with a Supabase backend. The app targets Android/iOS with web support added for development convenience.
+This is a Flutter mobile ERP application (LoliExpress ERP) with a Supabase backend. The app targets Android/iOS with web support for development convenience.
 
 ### Development Environment
 - **Flutter SDK**: Installed at `/opt/flutter` (v3.29.3, Dart 3.7.2). Path is set in `~/.bashrc`.
-- **Web platform**: Enabled via `flutter config --enable-web`. The `web/` directory was created with `flutter create --platforms web .`
+- **Web platform**: Enabled via `flutter config --enable-web`. The `web/` directory exists for browser testing.
 - **Dependencies**: Managed via `pubspec.yaml`. Run `flutter pub get` to install.
 - **Environment config**: `env.json` at project root contains Supabase credentials and API keys. Passed to app via `--dart-define-from-file=env.json`.
 
@@ -18,18 +18,55 @@ This is a Flutter mobile ERP application (LoliExpress ERP) with a Supabase backe
 - **Run app (web)**: `flutter run -d chrome --web-port=8080 --dart-define-from-file=env.json`
 - **Build web**: `flutter build web --dart-define-from-file=env.json`
 
-### Known Issues (pre-existing in codebase)
-- `lib/theme/app_theme.dart` uses `AppBarThemeData` and `InputDecorationThemeData` which are not valid Flutter API names (should be `AppBarTheme` and `InputDecorationTheme`). This causes compilation failures.
-- `lib/presentation/incident_investigation_workspace/incident_investigation_workspace.dart` references `RealtimeChannel` which is not resolved (undefined class).
-- Multiple widgets use `initialValue` parameter on `DropdownButtonFormField` which doesn't exist in this Flutter version (should use `value`).
-- These errors prevent `flutter build`, `flutter run`, and `flutter test` from completing successfully. `flutter analyze` runs but reports these errors.
+### Architecture
+- **Services** (`lib/services/`): Singleton services wrapping Supabase client (auth, products, orders, customers, inventory, documents, notifications, etc.)
+- **Presentation** (`lib/presentation/`): 24 feature screens, each with a main file and `widgets/` subfolder
+- **Theme** (`lib/theme/`): Material 3 light/dark themes with `ThemeService` for runtime toggle
+- **Routes** (`lib/routes/`): Central named-route map in `app_routes.dart`
 
 ### Backend (Supabase)
-- No `supabase/config.toml` exists; only migration SQL files in `supabase/migrations/`.
 - The app requires `SUPABASE_URL` and `SUPABASE_ANON_KEY` in `env.json` to connect to a Supabase project.
-- To run a local Supabase instance, you would need to `supabase init` and `supabase start`, then apply the 10 migration files.
+- 10 migration files in `supabase/migrations/` define the full schema (RLS-protected).
+- Authentication uses Supabase Auth (email/password). User roles stored in `user_profiles` table.
+- To run locally: `supabase init && supabase start`, then apply migrations.
 
-### Notes
-- No test infrastructure exists beyond the default `test/widget_test.dart` (which references `const MyApp()` but `MyApp` is not const-constructible).
-- No CI/CD, Makefile, Docker, or devcontainer configuration exists.
-- No git hooks or pre-commit configuration.
+### Testing Notes
+- Tests in `test/services/` test singleton instantiation (don't require Supabase).
+- Widget tests use `GoogleFonts.config.allowRuntimeFetching = false` to avoid network calls.
+- Full integration testing requires valid Supabase credentials in `env.json`.
+
+### Deployment & Configuration
+
+#### Disable Email Confirmation (Development)
+In the Supabase Dashboard: **Auth → Providers → Email → Disable "Confirm email"**. This allows users to sign up without verifying their email address (useful for local dev/testing).
+
+#### Configure SMTP for Production Emails
+In the Supabase Dashboard: **Auth → SMTP Settings**. Configure your SMTP provider (e.g. Resend, Mailgun, SendGrid) for password reset and confirmation emails in production.
+
+#### Build APK (Android Release)
+```bash
+flutter build apk --release --dart-define-from-file=env.json
+```
+
+#### Deploy Web
+```bash
+flutter build web --dart-define-from-file=env.json
+```
+Then host the `build/web/` directory on any static hosting (Vercel, Netlify, Firebase Hosting, etc.).
+
+#### User Roles
+The app supports 6 roles (defined in `lib/services/role_service.dart`):
+| Role | Description |
+|------|-------------|
+| `admin` | Full access to all features, user management, and configuration |
+| `salesRep` | Sales-focused: orders, customers, limited inventory view |
+| `warehouseStaff` | Inventory management, stock receiving, warehouse operations |
+| `comptable` | Finance-focused: expenses, purchases, receivables, financial reports |
+| `acheteur` | Purchasing: supplier management, purchase orders |
+| `customer` | External customer portal (limited self-service) |
+
+To create users: register via the app login screen (or Supabase Dashboard → Auth → Users), then set the role in the `user_profiles` table (`role` column).
+
+### Remaining Warnings
+- ~15 warnings remain (unused fields/variables in pre-existing security/audit/invoice code). These are non-blocking.
+- No CI/CD pipeline configured yet.

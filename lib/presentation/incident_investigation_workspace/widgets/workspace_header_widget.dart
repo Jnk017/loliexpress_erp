@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../core/app_export.dart';
 import '../../../services/investigation_workspace_service.dart';
 
 class WorkspaceHeaderWidget extends StatefulWidget {

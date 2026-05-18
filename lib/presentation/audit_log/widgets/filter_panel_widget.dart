@@ -76,7 +76,7 @@ class FilterPanelWidget extends StatelessWidget {
             'Filter by User',
             Icons.person_outline,
             DropdownButtonFormField<String>(
-              initialValue: selectedUser,
+              value: selectedUser,
               decoration: InputDecoration(
                 hintText: 'Select user',
                 border: OutlineInputBorder(
@@ -105,7 +105,7 @@ class FilterPanelWidget extends StatelessWidget {
             'Filter by Module',
             Icons.folder_outlined,
             DropdownButtonFormField<String>(
-              initialValue: selectedModule,
+              value: selectedModule,
               decoration: InputDecoration(
                 hintText: 'Select module',
                 border: OutlineInputBorder(
@@ -134,7 +134,7 @@ class FilterPanelWidget extends StatelessWidget {
             'Filter by Action Type',
             Icons.play_circle_outline,
             DropdownButtonFormField<String>(
-              initialValue: selectedActionType,
+              value: selectedActionType,
               decoration: InputDecoration(
                 hintText: 'Select action type',
                 border: OutlineInputBorder(
