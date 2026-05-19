@@ -24,7 +24,7 @@ class _SettingsConfigurationScreenState
   bool _biometricEnabled = false;
   bool _autoBackupEnabled = true;
   String _selectedLanguage = 'French';
-  String _selectedCurrency = 'EUR (€)';
+  String _selectedCurrency = 'CDF (FC)';
 
   String _userName = 'Chargement...';
   String _userEmail = '';
@@ -494,7 +494,7 @@ class _SettingsConfigurationScreenState
   }
 
   void _showCurrencyDialog() {
-    final currencies = ['EUR (€)', 'USD (\$)', 'GBP (£)', 'XOF (CFA)'];
+    final currencies = ['CDF (FC)', 'USD (\$)'];
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

@@ -334,7 +334,7 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
                       ),
                     ),
                     Text(
-                      '${_formatCurrency(totalAmount)} FCFA',
+                      '${_formatCurrency(totalAmount)} FC',
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                         color: theme.colorScheme.primary,
@@ -516,7 +516,7 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
                               ),
                             ),
                             Text(
-                              '${_formatCurrency(totalAmount)} FCFA',
+                              '${_formatCurrency(totalAmount)} FC',
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: theme.colorScheme.primary,

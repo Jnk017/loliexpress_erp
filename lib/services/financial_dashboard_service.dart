@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FinancialDashboardService {
@@ -70,21 +71,21 @@ class FinancialDashboardService {
 
   /// Handle payment changes and refresh metrics
   void _handlePaymentChange(PostgresChangePayload payload) async {
-    print('Payment change detected: ${payload.eventType}');
+    debugPrint('Payment change detected: ${payload.eventType}');
     await refreshFinancialMetrics();
     await refreshReceivables();
   }
 
   /// Handle invoice changes and refresh metrics
   void _handleInvoiceChange(PostgresChangePayload payload) async {
-    print('Invoice change detected: ${payload.eventType}');
+    debugPrint('Invoice change detected: ${payload.eventType}');
     await refreshFinancialMetrics();
     await refreshReceivables();
   }
 
   /// Handle expense changes and refresh metrics
   void _handleExpenseChange(PostgresChangePayload payload) async {
-    print('Expense change detected: ${payload.eventType}');
+    debugPrint('Expense change detected: ${payload.eventType}');
     await refreshFinancialMetrics();
   }
 
@@ -96,7 +97,7 @@ class FinancialDashboardService {
     if (tableName != null &&
         ['payments', 'invoices', 'expenses', 'sales_orders']
             .contains(tableName)) {
-      print('Financial audit log detected for table: $tableName');
+      debugPrint('Financial audit log detected for table: $tableName');
       await refreshFinancialMetrics();
       await refreshReceivables();
     }
@@ -139,15 +140,15 @@ class FinancialDashboardService {
 
       return {
         'amount': cashPosition,
-        'currency': 'XOF',
+        'currency': 'CDF',
         'change': 0.0, // Calculate actual change from previous period
         'trend': cashPosition > 0 ? 'up' : 'down',
       };
     } catch (e) {
-      print('Error fetching cash position: $e');
+      debugPrint('Error fetching cash position: $e');
       return {
         'amount': 0,
-        'currency': 'XOF',
+        'currency': 'CDF',
         'change': 0.0,
         'trend': 'neutral'
       };
@@ -173,15 +174,15 @@ class FinancialDashboardService {
     
       return {
         'amount': totalRevenue,
-        'currency': 'XOF',
+        'currency': 'CDF',
         'change': 0.0, // Calculate actual change
         'trend': 'up',
       };
     } catch (e) {
-      print('Error fetching daily revenue: $e');
+      debugPrint('Error fetching daily revenue: $e');
       return {
         'amount': 0,
-        'currency': 'XOF',
+        'currency': 'CDF',
         'change': 0.0,
         'trend': 'neutral'
       };
@@ -205,15 +206,15 @@ class FinancialDashboardService {
     
       return {
         'amount': totalOutstanding,
-        'currency': 'XOF',
+        'currency': 'CDF',
         'change': 0.0, // Calculate actual change
         'trend': 'up',
       };
     } catch (e) {
-      print('Error fetching receivables: $e');
+      debugPrint('Error fetching receivables: $e');
       return {
         'amount': 0,
-        'currency': 'XOF',
+        'currency': 'CDF',
         'change': 0.0,
         'trend': 'neutral'
       };
@@ -238,15 +239,15 @@ class FinancialDashboardService {
     
       return {
         'amount': totalExpenses,
-        'currency': 'XOF',
+        'currency': 'CDF',
         'change': 0.0, // Calculate actual change
         'trend': 'up',
       };
     } catch (e) {
-      print('Error fetching expenses: $e');
+      debugPrint('Error fetching expenses: $e');
       return {
         'amount': 0,
-        'currency': 'XOF',
+        'currency': 'CDF',
         'change': 0.0,
         'trend': 'neutral'
       };
@@ -297,7 +298,7 @@ class FinancialDashboardService {
           'semanticLabel':
               'Avatar for ${customer?['company_name'] ?? 'Unknown'}',
           'amount': totalAmount - amountPaid,
-          'currency': 'XOF',
+          'currency': 'CDF',
           'dueDate': invoice['due_date'],
           'status': status,
           'invoiceNumber': invoice['invoice_number'],
@@ -305,7 +306,7 @@ class FinancialDashboardService {
         };
       }).toList();
     } catch (e) {
-      print('Error fetching accounts receivable: $e');
+      debugPrint('Error fetching accounts receivable: $e');
       return [];
     }
   }
@@ -322,7 +323,7 @@ class FinancialDashboardService {
 
       _financialMetricsController.add(metrics);
     } catch (e) {
-      print('Error refreshing financial metrics: $e');
+      debugPrint('Error refreshing financial metrics: $e');
     }
   }
 
@@ -332,7 +333,7 @@ class FinancialDashboardService {
       final receivables = await getAccountsReceivable();
       _receivablesController.add(receivables);
     } catch (e) {
-      print('Error refreshing receivables: $e');
+      debugPrint('Error refreshing receivables: $e');
     }
   }
 

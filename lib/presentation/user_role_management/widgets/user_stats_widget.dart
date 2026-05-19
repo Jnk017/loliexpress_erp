@@ -17,6 +17,8 @@ class UserStatsWidget extends StatelessWidget {
     final adminCount = statistics['admin_count'] ?? 0;
     final salesRepCount = statistics['sales_rep_count'] ?? 0;
     final warehouseCount = statistics['warehouse_staff_count'] ?? 0;
+    final comptableCount = statistics['comptable_count'] ?? 0;
+    final acheteurCount = statistics['acheteur_count'] ?? 0;
     final customerCount = statistics['b2b_customer_count'] ?? 0;
 
     return SingleChildScrollView(
@@ -86,6 +88,22 @@ class UserStatsWidget extends StatelessWidget {
             totalUsers,
             Icons.warehouse,
             Colors.orange,
+          ),
+          SizedBox(height: 2.h),
+          _buildRoleStatCard(
+            'Comptables',
+            comptableCount,
+            totalUsers,
+            Icons.account_balance,
+            Colors.purple,
+          ),
+          SizedBox(height: 2.h),
+          _buildRoleStatCard(
+            'Acheteurs',
+            acheteurCount,
+            totalUsers,
+            Icons.shopping_cart,
+            Colors.teal,
           ),
           SizedBox(height: 2.h),
           _buildRoleStatCard(

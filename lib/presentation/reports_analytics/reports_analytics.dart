@@ -87,7 +87,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
       // Load initial data
       await _refreshAllData();
     } catch (e) {
-      print('Error initializing realtime data: $e');
+      debugPrint('Error initializing realtime data: $e');
     } finally {
       setState(() => _isLoading = false);
     }

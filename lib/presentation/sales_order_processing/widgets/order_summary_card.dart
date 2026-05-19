@@ -49,7 +49,7 @@ class OrderSummaryCard extends StatelessWidget {
               _buildSummaryRow(
                 context,
                 'Sous-total',
-                '${subtotal.toStringAsFixed(0)} FCFA',
+                '${subtotal.toStringAsFixed(0)} FC',
                 false,
               ),
               if (discount > 0) ...[
@@ -57,7 +57,7 @@ class OrderSummaryCard extends StatelessWidget {
                 _buildSummaryRow(
                   context,
                   'Remise',
-                  '-${discount.toStringAsFixed(0)} FCFA',
+                  '-${discount.toStringAsFixed(0)} FC',
                   false,
                   color: theme.colorScheme.tertiary,
                 ),
@@ -66,7 +66,7 @@ class OrderSummaryCard extends StatelessWidget {
               _buildSummaryRow(
                 context,
                 'TVA (18%)',
-                '${tax.toStringAsFixed(0)} FCFA',
+                '${tax.toStringAsFixed(0)} FC',
                 false,
               ),
               SizedBox(height: 1.h),
@@ -77,7 +77,7 @@ class OrderSummaryCard extends StatelessWidget {
               _buildSummaryRow(
                 context,
                 'Total',
-                '${total.toStringAsFixed(0)} FCFA',
+                '${total.toStringAsFixed(0)} FC',
                 true,
               ),
               SizedBox(height: 2.h),

@@ -128,7 +128,7 @@ class _MainDashboardState extends State<MainDashboard>
         {
           "title": "Chiffre d'Affaires",
           "value": _formatNumber(totalRevenue),
-          "currency": "FCFA",
+          "currency": "CDF",
           "change": "${orderStats['delivered'] ?? 0} livrées",
           "isPositive": true,
           "icon": "trending_up",
@@ -158,7 +158,7 @@ class _MainDashboardState extends State<MainDashboard>
         kpis.add({
           "title": "Valeur Inventaire",
           "value": _formatNumber(inventoryValue),
-          "currency": "FCFA",
+          "currency": "CDF",
           "change": "$totalCustomers clients",
           "isPositive": true,
           "icon": "payment",

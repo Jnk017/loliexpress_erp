@@ -351,7 +351,7 @@ class _AddProductDialogWidgetState extends State<AddProductDialogWidget> {
     return TextFormField(
       controller: _priceController,
       decoration: const InputDecoration(
-        labelText: 'Prix unitaire (FCFA) *',
+        labelText: 'Prix unitaire (FC) *',
         hintText: 'Ex: 750',
         prefixIcon: Icon(Icons.attach_money),
       ),
