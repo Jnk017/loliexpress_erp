@@ -97,7 +97,7 @@ class _CustomerManagementState extends State<CustomerManagement> {
       }
     }
 
-    final formattedBalance = '${_formatNumber(balance.toInt())} FCFA';
+    final formattedBalance = '${_formatNumber(balance.toInt())} FC';
 
     return {
       'id': raw['id'],

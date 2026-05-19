@@ -27,6 +27,10 @@ class UserManagementService {
       final salesRepCount = users.where((u) => u['role'] == 'sales_rep').length;
       final warehouseCount =
           users.where((u) => u['role'] == 'warehouse_staff').length;
+      final comptableCount =
+          users.where((u) => u['role'] == 'comptable').length;
+      final acheteurCount =
+          users.where((u) => u['role'] == 'acheteur').length;
       final customerCount =
           users.where((u) => u['role'] == 'b2b_customer').length;
 
@@ -36,6 +40,8 @@ class UserManagementService {
         'admin_count': adminCount,
         'sales_rep_count': salesRepCount,
         'warehouse_staff_count': warehouseCount,
+        'comptable_count': comptableCount,
+        'acheteur_count': acheteurCount,
         'b2b_customer_count': customerCount,
       };
     } catch (e) {

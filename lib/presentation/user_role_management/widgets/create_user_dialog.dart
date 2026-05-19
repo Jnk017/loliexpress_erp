@@ -158,8 +158,14 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
                     if (value == null || value.isEmpty) {
                       return 'Password is required';
                     }
-                    if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
+                    if (value.length < 8) {
+                      return 'Password must be at least 8 characters';
+                    }
+                    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                      return 'Must contain at least one uppercase letter';
+                    }
+                    if (!RegExp(r'[0-9]').hasMatch(value)) {
+                      return 'Must contain at least one number';
                     }
                     return null;
                   },
@@ -182,6 +188,12 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
                     DropdownMenuItem(
                         value: 'warehouse_staff',
                         child: Text('Warehouse Staff')),
+                    DropdownMenuItem(
+                        value: 'comptable',
+                        child: Text('Comptable')),
+                    DropdownMenuItem(
+                        value: 'acheteur',
+                        child: Text('Acheteur')),
                     DropdownMenuItem(
                         value: 'b2b_customer', child: Text('B2B Customer')),
                   ],

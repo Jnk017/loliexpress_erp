@@ -34,6 +34,8 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
         'admin': [],
         'sales_rep': [],
         'warehouse_staff': [],
+        'comptable': [],
+        'acheteur': [],
         'b2b_customer': [],
       };
 
@@ -66,6 +68,10 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
         return Colors.blue;
       case 'warehouse_staff':
         return Colors.orange;
+      case 'comptable':
+        return Colors.purple;
+      case 'acheteur':
+        return Colors.teal;
       case 'b2b_customer':
         return Colors.green;
       default:
@@ -81,6 +87,10 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
         return 'Sales Representatives';
       case 'warehouse_staff':
         return 'Warehouse Staff';
+      case 'comptable':
+        return 'Comptables';
+      case 'acheteur':
+        return 'Acheteurs';
       case 'b2b_customer':
         return 'B2B Customers';
       default:
@@ -96,6 +106,10 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
         return 'Manage sales orders, customers, and assigned client accounts';
       case 'warehouse_staff':
         return 'Handle inventory, stock movements, and deliveries';
+      case 'comptable':
+        return 'Finance management: expenses, payments, and financial reports';
+      case 'acheteur':
+        return 'Purchasing: supplier management and purchase orders';
       case 'b2b_customer':
         return 'View orders, track deliveries, and access portal features';
       default:
@@ -129,6 +143,22 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
           'Barcode Scanning',
           'Stock Reports',
         ];
+      case 'comptable':
+        return [
+          'View Financial Dashboard',
+          'Approve/Reject Expenses',
+          'Process Payments',
+          'Financial Reports',
+          'View Receivables',
+        ];
+      case 'acheteur':
+        return [
+          'Manage Suppliers',
+          'Create Purchase Orders',
+          'View Inventory Levels',
+          'Purchase Reports',
+          'Supplier Invoices',
+        ];
       case 'b2b_customer':
         return [
           'View Own Orders',
@@ -156,6 +186,10 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
                 _buildRoleCard('sales_rep'),
                 SizedBox(height: 2.h),
                 _buildRoleCard('warehouse_staff'),
+                SizedBox(height: 2.h),
+                _buildRoleCard('comptable'),
+                SizedBox(height: 2.h),
+                _buildRoleCard('acheteur'),
                 SizedBox(height: 2.h),
                 _buildRoleCard('b2b_customer'),
               ],
@@ -304,6 +338,10 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
         return Icons.business_center;
       case 'warehouse_staff':
         return Icons.warehouse;
+      case 'comptable':
+        return Icons.account_balance;
+      case 'acheteur':
+        return Icons.shopping_cart;
       case 'b2b_customer':
         return Icons.shopping_bag;
       default:

@@ -184,7 +184,7 @@ class LineItemsWidget extends StatelessWidget {
                         ),
                         SizedBox(height: 0.5.h),
                         Text(
-                          'Qté: $quantity × ${_formatCurrency(unitPrice)} FCFA',
+                          'Qté: $quantity × ${_formatCurrency(unitPrice)} FC',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
@@ -197,7 +197,7 @@ class LineItemsWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        '${_formatCurrency(total)} FCFA',
+                        '${_formatCurrency(total)} FC',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: theme.colorScheme.primary,

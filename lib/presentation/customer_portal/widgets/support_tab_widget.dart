@@ -78,7 +78,7 @@ class _SupportTabWidgetState extends State<SupportTabWidget> {
     {
       "question": "Quels modes de paiement acceptez-vous ?",
       "answer":
-          "Nous acceptons les virements bancaires, Mobile Money (Orange Money, MTN Money, Moov Money), chèques et paiements en espèces à la livraison pour les commandes inférieures à 500 000 XOF.",
+          "Nous acceptons les virements bancaires, Mobile Money (Orange Money, MTN Money, Moov Money), chèques et paiements en espèces à la livraison pour les commandes inférieures à 500 000 CDF.",
       "category": "Paiement",
       "isExpanded": false,
     },

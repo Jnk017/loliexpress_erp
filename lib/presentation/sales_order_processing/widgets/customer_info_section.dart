@@ -181,7 +181,7 @@ class CustomerInfoSection extends StatelessWidget {
                   _buildInfoRow(
                     context,
                     'Crédit disponible',
-                    '${customerData["creditLimit"]} FCFA',
+                    '${customerData["creditLimit"]} FC',
                   ),
                 ],
               ),
