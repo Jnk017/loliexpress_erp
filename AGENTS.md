@@ -7,7 +7,7 @@ This is a Flutter mobile ERP application (LoliExpress ERP) with a Supabase backe
 
 ### Development Environment
 - **Flutter SDK**: Installed at `/opt/flutter` (v3.29.3, Dart 3.7.2). Path is set in `~/.bashrc`.
-- **Web platform**: Enabled via `flutter config --enable-web`. The `web/` directory exists for browser testing.
+- **Web platform**: Enabled via `flutter config --enable-web`. The `web/` directory is NOT committed; scaffold it with `flutter create --platforms web .` before building/running for web.
 - **Dependencies**: Managed via `pubspec.yaml`. Run `flutter pub get` to install.
 - **Environment config**: `env.json` at project root contains Supabase credentials and API keys. Passed to app via `--dart-define-from-file=env.json`.
 
@@ -65,8 +65,13 @@ The app supports 6 roles (defined in `lib/services/role_service.dart`):
 | `acheteur` | Purchasing: supplier management, purchase orders |
 | `customer` | External customer portal (limited self-service) |
 
-To create users: register via the app login screen (or Supabase Dashboard → Auth → Users), then set the role in the `user_profiles` table (`role` column).
+To create users: use the Supabase Dashboard (Auth → Users) or the Supabase Auth REST API. The login screen does not currently have a registration/sign-up UI. Then set the role in the `user_profiles` table (`role` column).
 
 ### Remaining Warnings
-- ~15 warnings remain (unused fields/variables in pre-existing security/audit/invoice code). These are non-blocking.
+- ~100 info-level lint issues remain (style suggestions, deprecated API usage, print statements). These are non-blocking.
 - No CI/CD pipeline configured yet.
+
+### Gotchas
+- The `web/` directory is gitignored/not committed. Run `flutter create --platforms web .` to scaffold it before `flutter build web` or `flutter run -d chrome`.
+- The hosted Supabase instance has email confirmation enabled by default. Disable it in the Dashboard for dev/test or create pre-confirmed users via the Admin API.
+- `flutter run -d chrome` requires a display/headless Chrome. For CI or headless environments, use `flutter build web` + a static server instead.
