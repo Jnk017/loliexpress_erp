@@ -1,3 +1,6 @@
+# Local Supabase overrides (keys from `supabase status`; do not commit)
+env.local.json
+
 # Miscellaneous
 *.class
 *.log
