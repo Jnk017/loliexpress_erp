@@ -28,7 +28,7 @@ This is a Flutter mobile ERP application (LoliExpress ERP) with a Supabase backe
 - The app requires `SUPABASE_URL` and `SUPABASE_ANON_KEY` in `env.json` to connect to a Supabase project.
 - 10 migration files in `supabase/migrations/` define the full schema (RLS-protected).
 - Authentication uses Supabase Auth (email/password). User roles stored in `user_profiles` table.
-- To run locally: `supabase init && supabase start`, then apply migrations.
+- To run locally: `supabase start` from repo root (applies migrations). Studio: http://127.0.0.1:54323. Create Auth users via signup API or Studio; set `role` in `user_profiles`.
 
 ### Testing Notes
 - Tests in `test/services/` test singleton instantiation (don't require Supabase).
