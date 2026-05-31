@@ -6,10 +6,11 @@
 This is a Flutter mobile ERP application (LoliExpress ERP) with a Supabase backend. The app targets Android/iOS with web support for development convenience.
 
 ### Development Environment
-- **Flutter SDK**: Installed at `/opt/flutter` (v3.29.3, Dart 3.7.2). Path is set in `~/.bashrc`.
-- **Web platform**: Enabled via `flutter config --enable-web`. The `web/` directory is NOT committed; scaffold it with `flutter create --platforms web .` before building/running for web.
+- **Flutter SDK**: Installed at `/opt/flutter` (stable channel; ensure `export PATH="/opt/flutter/bin:$PATH"`). Run `flutter config --enable-web` once per machine.
+- **Web platform**: The `web/` directory is NOT committed (gitignored). Scaffold once per clone: `flutter create --platforms web .` before `flutter build web` or `flutter run -d chrome`.
 - **Dependencies**: Managed via `pubspec.yaml`. Run `flutter pub get` to install.
-- **Environment config**: `env.json` at project root contains Supabase credentials and API keys. Passed to app via `--dart-define-from-file=env.json`.
+- **Environment config**: `env.json` holds hosted Supabase credentials (`--dart-define-from-file=env.json`). For **local Supabase**, use a gitignored `env.local.json` with URL/keys from `supabase status` and `--dart-define-from-file=env.local.json`.
+- **Supabase CLI**: Use the full release tarball (`supabase` + `supabase-go` in the same directory on `PATH`, e.g. `~/.local/share/supabase`). Docker required; on cloud VMs use `sudo service docker start` and often `sudo supabase start` / `sudo supabase status`.
 
 ### Key Commands
 - **Install deps**: `flutter pub get`
@@ -73,9 +74,5 @@ To create users: use the Supabase Dashboard (Auth → Users) or the Supabase Aut
 
 ### Gotchas
 - The `web/` directory is gitignored/not committed. Run `flutter create --platforms web .` to scaffold it before `flutter build web` or `flutter run -d chrome`.
-- The hosted Supabase URL in `env.json` may be unreachable from some cloud networks (DNS failure). Use local `supabase start` + `env.local.json` for E2E login tests.
-- After changing `--dart-define-from-file`, rebuild web before serving `build/web/`; hard-refresh the browser to avoid stale `main.dart.js` with an old Supabase URL.
-- `flutter analyze` exits with code 1 when info-level lints exist (~99); this is expected and non-blocking.
-- The hosted Supabase instance has email confirmation enabled by default. Disable it in the Dashboard for dev/test or use local Supabase (email auto-confirmed).
-- `flutter run -d chrome` requires a display. In headless cloud VMs, use `flutter build web --dart-define-from-file=env.local.json` then `cd build/web && python3 -m http.server 8080`.
-- **Local E2E test user (example)**: after `supabase start`, sign up `admin@test.local` / `TestAdmin123!` via Auth API, then set `role='admin'` in `user_profiles` via `supabase db query`.
+- The hosted Supabase instance has email confirmation enabled by default. Disable it in the Dashboard for dev/test or create pre-confirmed users via the Admin API.
+- `flutter run -d chrome` requires a display/headless Chrome. For CI or headless environments, use `flutter build web` + a static server instead.
