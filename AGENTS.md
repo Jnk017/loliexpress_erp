@@ -28,7 +28,7 @@ This is a Flutter mobile ERP application (LoliExpress ERP) with a Supabase backe
 - The app requires `SUPABASE_URL` and `SUPABASE_ANON_KEY` in `env.json` to connect to a Supabase project.
 - 10 migration files in `supabase/migrations/` define the full schema (RLS-protected).
 - Authentication uses Supabase Auth (email/password). User roles stored in `user_profiles` table.
-- To run locally: `supabase start` from repo root (applies migrations). Studio: http://127.0.0.1:54323. Create Auth users via signup API or Studio; set `role` in `user_profiles`.
+- To run locally: `supabase init && supabase start`, then apply migrations.
 
 ### Testing Notes
 - Tests in `test/services/` test singleton instantiation (don't require Supabase).
@@ -73,5 +73,9 @@ To create users: use the Supabase Dashboard (Auth → Users) or the Supabase Aut
 
 ### Gotchas
 - The `web/` directory is gitignored/not committed. Run `flutter create --platforms web .` to scaffold it before `flutter build web` or `flutter run -d chrome`.
-- The hosted Supabase instance has email confirmation enabled by default. Disable it in the Dashboard for dev/test or create pre-confirmed users via the Admin API.
-- `flutter run -d chrome` requires a display/headless Chrome. For CI or headless environments, use `flutter build web` + a static server instead.
+- The hosted Supabase URL in `env.json` may be unreachable from some cloud networks (DNS failure). Use local `supabase start` + `env.local.json` for E2E login tests.
+- After changing `--dart-define-from-file`, rebuild web before serving `build/web/`; hard-refresh the browser to avoid stale `main.dart.js` with an old Supabase URL.
+- `flutter analyze` exits with code 1 when info-level lints exist (~99); this is expected and non-blocking.
+- The hosted Supabase instance has email confirmation enabled by default. Disable it in the Dashboard for dev/test or use local Supabase (email auto-confirmed).
+- `flutter run -d chrome` requires a display. In headless cloud VMs, use `flutter build web --dart-define-from-file=env.local.json` then `cd build/web && python3 -m http.server 8080`.
+- **Local E2E test user (example)**: after `supabase start`, sign up `admin@test.local` / `TestAdmin123!` via Auth API, then set `role='admin'` in `user_profiles` via `supabase db query`.
