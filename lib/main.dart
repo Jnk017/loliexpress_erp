@@ -21,16 +21,16 @@ void main() async {
   // Initialize ThemeService
   await ThemeService.instance.initialize();
 
-  bool _hasShownError = false;
+  bool hasShownError = false;
 
   // 🚨 CRITICAL: Custom error handling - DO NOT REMOVE
   ErrorWidget.builder = (FlutterErrorDetails details) {
-    if (!_hasShownError) {
-      _hasShownError = true;
+    if (!hasShownError) {
+      hasShownError = true;
 
       // Reset flag after 3 seconds to allow error widget on new screens
       Future.delayed(Duration(seconds: 5), () {
-        _hasShownError = false;
+        hasShownError = false;
       });
 
       return CustomErrorWidget(errorDetails: details);
@@ -47,6 +47,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -75,11 +77,14 @@ class MyApp extends StatelessWidget {
                 final routeName = settings.name ?? '/';
 
                 // Always allow these routes
-                if (routeName == '/' || routeName == '/splash-screen' || routeName == '/login-screen') {
+                if (routeName == '/' ||
+                    routeName == '/splash-screen' ||
+                    routeName == '/login-screen') {
                   final routes = AppRoutes.routes;
                   final builder = routes[routeName];
                   if (builder != null) {
-                    return MaterialPageRoute(builder: builder, settings: settings);
+                    return MaterialPageRoute(
+                        builder: builder, settings: settings);
                   }
                 }
 
@@ -92,12 +97,15 @@ class MyApp extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.lock, size: 64, color: Colors.grey),
+                            const Icon(Icons.lock,
+                                size: 64, color: Colors.grey),
                             const SizedBox(height: 16),
-                            const Text('Vous n\'avez pas accès à cette page.', style: TextStyle(fontSize: 16)),
+                            const Text('Vous n\'avez pas accès à cette page.',
+                                style: TextStyle(fontSize: 16)),
                             const SizedBox(height: 24),
                             ElevatedButton(
-                              onPressed: () => Navigator.pushReplacementNamed(context, RoleService.instance.getHomeRoute()),
+                              onPressed: () => Navigator.pushReplacementNamed(
+                                  context, RoleService.instance.getHomeRoute()),
                               child: const Text('Retour'),
                             ),
                           ],
@@ -110,7 +118,8 @@ class MyApp extends StatelessWidget {
                 final routes = AppRoutes.routes;
                 final builder = routes[routeName];
                 if (builder != null) {
-                  return MaterialPageRoute(builder: builder, settings: settings);
+                  return MaterialPageRoute(
+                      builder: builder, settings: settings);
                 }
                 return null;
               },

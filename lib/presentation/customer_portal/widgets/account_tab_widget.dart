@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../core/app_export.dart';
+import '../../../services/auth_service.dart';
 
 /// Account Tab Widget
 /// Shows customer profile, payment terms, credit limit, and outstanding balance
@@ -15,48 +16,49 @@ class AccountTabWidget extends StatefulWidget {
 class _AccountTabWidgetState extends State<AccountTabWidget> {
   bool _isBiometricEnabled = true;
 
-  // Mock account data
-  final Map<String, dynamic> _accountData = {
-    "companyName": "Supermarché Moderne SARL",
-    "contactName": "Amadou Diallo",
-    "email": "contact@supermarche-moderne.com",
-    "phone": "+225 07 12 34 56 78",
-    "address": "Zone 4C, Marcory, Abidjan",
-    "customerCode": "CLI-2024-0156",
-    "creditLimit": "2 000 000 CDF",
-    "availableCredit": "1 245 000 CDF",
-    "outstandingBalance": "755 000 CDF",
+  Map<String, dynamic> _accountData = {
+    "companyName": "",
+    "contactName": "",
+    "email": "",
+    "phone": "",
+    "address": "",
+    "customerCode": "",
+    "creditLimit": "0 CDF",
+    "availableCredit": "0 CDF",
+    "outstandingBalance": "0 CDF",
     "paymentTerms": "Net 30 jours",
     "accountStatus": "active",
-    "memberSince": DateTime(2023, 3, 15),
+    "memberSince": DateTime.now(),
   };
+  final List<Map<String, dynamic>> _paymentHistory = [];
 
-  final List<Map<String, dynamic>> _paymentHistory = [
-    {
-      "id": "PAY-2024-0234",
-      "date": DateTime(2025, 11, 20),
-      "amount": "245 000 CDF",
-      "method": "Virement bancaire",
-      "status": "completed",
-      "statusLabel": "Complété",
-    },
-    {
-      "id": "PAY-2024-0221",
-      "date": DateTime(2025, 11, 15),
-      "amount": "180 000 CDF",
-      "method": "Mobile Money",
-      "status": "completed",
-      "statusLabel": "Complété",
-    },
-    {
-      "id": "PAY-2024-0208",
-      "date": DateTime(2025, 11, 10),
-      "amount": "320 000 CDF",
-      "method": "Chèque",
-      "status": "pending",
-      "statusLabel": "En attente",
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadAccount();
+  }
+
+  Future<void> _loadAccount() async {
+    final profile = await AuthService.instance.getUserProfile();
+    if (!mounted || profile == null) return;
+    setState(() {
+      _accountData = {
+        "companyName": profile['company_name'] ?? '',
+        "contactName": profile['full_name'] ?? '',
+        "email": profile['email'] ?? '',
+        "phone": profile['phone'] ?? '',
+        "address": '',
+        "customerCode": profile['id'] ?? '',
+        "creditLimit": "0 CDF",
+        "availableCredit": "0 CDF",
+        "outstandingBalance": "0 CDF",
+        "paymentTerms": "Net 30 jours",
+        "accountStatus": profile['is_active'] == true ? "active" : "inactive",
+        "memberSince":
+            DateTime.tryParse(profile['created_at'] ?? '') ?? DateTime.now(),
+      };
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

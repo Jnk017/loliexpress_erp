@@ -62,7 +62,20 @@ class _PurchasesReportWidgetState extends State<PurchasesReportWidget> {
 
   Map<String, double> _getMonthlyTrend() {
     final Map<String, double> monthly = {};
-    final months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+    final months = [
+      'Jan',
+      'Fév',
+      'Mar',
+      'Avr',
+      'Mai',
+      'Jun',
+      'Jul',
+      'Aoû',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Déc'
+    ];
 
     for (final purchase in _purchases) {
       final createdAt = purchase['created_at'] as String?;
@@ -94,7 +107,8 @@ class _PurchasesReportWidgetState extends State<PurchasesReportWidget> {
             SizedBox(height: 1.h),
             Text('Erreur: $_errorMessage', textAlign: TextAlign.center),
             SizedBox(height: 1.h),
-            ElevatedButton(onPressed: _loadData, child: const Text('Réessayer')),
+            ElevatedButton(
+                onPressed: _loadData, child: const Text('Réessayer')),
           ],
         ),
       );
@@ -209,7 +223,8 @@ class _PurchasesReportWidgetState extends State<PurchasesReportWidget> {
       return const SizedBox.shrink();
     }
 
-    final maxValue = topSuppliers.values.isEmpty ? 1.0 : topSuppliers.values.first;
+    final maxValue =
+        topSuppliers.values.isEmpty ? 1.0 : topSuppliers.values.first;
 
     return Card(
       elevation: 1,
@@ -256,7 +271,8 @@ class _PurchasesReportWidgetState extends State<PurchasesReportWidget> {
                       child: LinearProgressIndicator(
                         value: fraction,
                         backgroundColor: Colors.grey.shade200,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.indigo.shade300),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.indigo.shade300),
                         minHeight: 6,
                       ),
                     ),
@@ -312,7 +328,8 @@ class _PurchasesReportWidgetState extends State<PurchasesReportWidget> {
                         child: LinearProgressIndicator(
                           value: fraction,
                           backgroundColor: Colors.grey.shade200,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.teal.shade300),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.teal.shade300),
                           minHeight: 8,
                         ),
                       ),
@@ -320,7 +337,8 @@ class _PurchasesReportWidgetState extends State<PurchasesReportWidget> {
                     SizedBox(width: 2.w),
                     Text(
                       'FC ${entry.value.toStringAsFixed(0)}',
-                      style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                          fontSize: 9.sp, fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
@@ -403,7 +421,7 @@ class _StatusChip extends StatelessWidget {
         Container(
           padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 0.8.h),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(

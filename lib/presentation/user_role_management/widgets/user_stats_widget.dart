@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-
 class UserStatsWidget extends StatelessWidget {
   final Map<String, dynamic> statistics;
 
   const UserStatsWidget({
-    Key? key,
+    super.key,
     required this.statistics,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

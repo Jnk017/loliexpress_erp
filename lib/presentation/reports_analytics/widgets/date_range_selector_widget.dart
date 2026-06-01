@@ -6,10 +6,10 @@ class DateRangeSelectorWidget extends StatelessWidget {
   final Function(String) onRangeChanged;
 
   const DateRangeSelectorWidget({
-    Key? key,
+    super.key,
     required this.selectedRange,
     required this.onRangeChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class DateRangeSelectorWidget extends StatelessWidget {
       'Personnalisé',
     ];
 
-    return Container(
+    return SizedBox(
       height: 5.h,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,

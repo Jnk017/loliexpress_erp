@@ -9,11 +9,11 @@ class DocumentCardWidget extends StatelessWidget {
   final VoidCallback onPreview;
 
   const DocumentCardWidget({
-    Key? key,
+    super.key,
     required this.document,
     required this.onDelete,
     required this.onPreview,
-  }) : super(key: key);
+  });
 
   IconData _getFileIcon(String mimeType) {
     if (mimeType.startsWith('image/')) return Icons.image;

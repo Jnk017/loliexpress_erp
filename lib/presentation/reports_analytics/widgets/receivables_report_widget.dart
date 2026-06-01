@@ -7,7 +7,8 @@ class ReceivablesReportWidget extends StatefulWidget {
   const ReceivablesReportWidget({super.key});
 
   @override
-  State<ReceivablesReportWidget> createState() => _ReceivablesReportWidgetState();
+  State<ReceivablesReportWidget> createState() =>
+      _ReceivablesReportWidgetState();
 }
 
 class _ReceivablesReportWidgetState extends State<ReceivablesReportWidget> {
@@ -88,7 +89,8 @@ class _ReceivablesReportWidgetState extends State<ReceivablesReportWidget> {
             SizedBox(height: 1.h),
             Text('Erreur: $_errorMessage', textAlign: TextAlign.center),
             SizedBox(height: 1.h),
-            ElevatedButton(onPressed: _loadData, child: const Text('Réessayer')),
+            ElevatedButton(
+                onPressed: _loadData, child: const Text('Réessayer')),
           ],
         ),
       );
@@ -285,7 +287,7 @@ class _ReceivablesReportWidgetState extends State<ReceivablesReportWidget> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: color.withOpacity(0.1),
+          backgroundColor: color.withValues(alpha: 0.1),
           child: Icon(Icons.person, color: color, size: 20),
         ),
         title: Text(
@@ -396,7 +398,7 @@ class _AgingRow extends StatelessWidget {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.3.h),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(

@@ -7,9 +7,9 @@ class EditUserDialog extends StatefulWidget {
   final Map<String, dynamic> user;
 
   const EditUserDialog({
-    Key? key,
+    super.key,
     required this.user,
-  }) : super(key: key);
+  });
 
   @override
   State<EditUserDialog> createState() => _EditUserDialogState();
@@ -145,7 +145,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
                 ),
                 SizedBox(height: 2.h),
                 DropdownButtonFormField<String>(
-                  value: _selectedRole,
+                  initialValue: _selectedRole,
                   decoration: InputDecoration(
                     labelText: 'Role *',
                     prefixIcon: const Icon(Icons.badge_outlined),
@@ -162,11 +162,9 @@ class _EditUserDialogState extends State<EditUserDialog> {
                         value: 'warehouse_staff',
                         child: Text('Warehouse Staff')),
                     DropdownMenuItem(
-                        value: 'comptable',
-                        child: Text('Comptable')),
+                        value: 'comptable', child: Text('Comptable')),
                     DropdownMenuItem(
-                        value: 'acheteur',
-                        child: Text('Acheteur')),
+                        value: 'acheteur', child: Text('Acheteur')),
                     DropdownMenuItem(
                         value: 'b2b_customer', child: Text('B2B Customer')),
                   ],

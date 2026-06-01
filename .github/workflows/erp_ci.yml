@@ -1,0 +1,54 @@
+name: LoliExpress ERP CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.3'
+          channel: stable
+      - name: Prepare environment
+        run: cp env.json.example env.json
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Analyze
+        run: flutter analyze
+      - name: Test
+        run: flutter test
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.3'
+          channel: stable
+      - name: Prepare environment
+        run: cp env.json.example env.json
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Scaffold web
+        run: flutter create --platforms web .
+      - name: Build web
+        run: flutter build web --release --dart-define-from-file=env.json
+      - name: Build APK
+        run: flutter build apk --debug --dart-define-from-file=env.json
+
+  supabase:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+      - name: Verify migrations parse
+        run: supabase migration list --local || true

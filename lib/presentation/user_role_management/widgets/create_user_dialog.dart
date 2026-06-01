@@ -4,7 +4,7 @@ import 'package:sizer/sizer.dart';
 import '../../../services/user_management_service.dart';
 
 class CreateUserDialog extends StatefulWidget {
-  const CreateUserDialog({Key? key}) : super(key: key);
+  const CreateUserDialog({super.key});
 
   @override
   State<CreateUserDialog> createState() => _CreateUserDialogState();
@@ -172,7 +172,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
                 ),
                 SizedBox(height: 2.h),
                 DropdownButtonFormField<String>(
-                  value: _selectedRole,
+                  initialValue: _selectedRole,
                   decoration: InputDecoration(
                     labelText: 'Role *',
                     prefixIcon: const Icon(Icons.badge_outlined),
@@ -189,11 +189,9 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
                         value: 'warehouse_staff',
                         child: Text('Warehouse Staff')),
                     DropdownMenuItem(
-                        value: 'comptable',
-                        child: Text('Comptable')),
+                        value: 'comptable', child: Text('Comptable')),
                     DropdownMenuItem(
-                        value: 'acheteur',
-                        child: Text('Acheteur')),
+                        value: 'acheteur', child: Text('Acheteur')),
                     DropdownMenuItem(
                         value: 'b2b_customer', child: Text('B2B Customer')),
                   ],

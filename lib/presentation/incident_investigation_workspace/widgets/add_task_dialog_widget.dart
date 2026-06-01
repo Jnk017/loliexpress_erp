@@ -155,7 +155,7 @@ class _AddTaskDialogWidgetState extends State<AddTaskDialogWidget> {
               SizedBox(height: 2.h),
               if (!_isLoadingMembers)
                 DropdownButtonFormField<String>(
-                  value: _selectedAssignee,
+                  initialValue: _selectedAssignee,
                   decoration: const InputDecoration(
                     labelText: 'Assign To',
                     border: OutlineInputBorder(),
@@ -196,7 +196,7 @@ class _AddTaskDialogWidgetState extends State<AddTaskDialogWidget> {
                         ),
                         SizedBox(height: 1.h),
                         DropdownButtonFormField<int>(
-                          value: _priority,
+                          initialValue: _priority,
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                           ),

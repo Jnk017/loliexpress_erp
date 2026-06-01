@@ -9,7 +9,7 @@ import './widgets/notification_settings_widget.dart';
 
 /// Comprehensive Notifications Center with priority-based organization and actionable responses
 class NotificationsCenter extends StatefulWidget {
-  const NotificationsCenter({Key? key}) : super(key: key);
+  const NotificationsCenter({super.key});
 
   @override
   State<NotificationsCenter> createState() => _NotificationsCenterState();

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-
 /// Logo section widget for login screen
 /// Displays official Loliexpress logo with brand colors
 class LogoSectionWidget extends StatelessWidget {

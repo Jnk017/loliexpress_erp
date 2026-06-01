@@ -10,13 +10,13 @@ class UserProfileHeaderWidget extends StatelessWidget {
   final VoidCallback onEditProfile;
 
   const UserProfileHeaderWidget({
-    Key? key,
+    super.key,
     required this.name,
     required this.email,
     required this.role,
     required this.avatarUrl,
     required this.onEditProfile,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

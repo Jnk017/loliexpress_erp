@@ -388,6 +388,7 @@ class _AuditLogScreenState extends State<AuditLogScreen>
     if (currentUser == null) return;
 
     final userProfile = await _auditService.getUserProfile(currentUser);
+    if (!mounted) return;
 
     showModalBottomSheet(
       context: context,
@@ -647,7 +648,8 @@ class _AuditLogScreenState extends State<AuditLogScreen>
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      hintText: 'Rechercher par utilisateur, module ou modifications...',
+                      hintText:
+                          'Rechercher par utilisateur, module ou modifications...',
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),

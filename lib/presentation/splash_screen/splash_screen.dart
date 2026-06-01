@@ -81,7 +81,8 @@ class _SplashScreenState extends State<SplashScreen>
           await RoleService.instance.refreshRole();
           if (!mounted) return;
 
-          Navigator.pushReplacementNamed(context, RoleService.instance.getHomeRoute());
+          Navigator.pushReplacementNamed(
+              context, RoleService.instance.getHomeRoute());
         } else {
           Navigator.pushReplacementNamed(context, '/login-screen');
         }

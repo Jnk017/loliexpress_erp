@@ -132,7 +132,7 @@ class ReportsAnalyticsService {
           'amount': order['total_amount'],
         });
       }
-    
+
       // Sales by category
       final categoryResponse =
           await _supabase.rpc('get_sales_by_category', params: {
@@ -205,7 +205,7 @@ class ReportsAnalyticsService {
           });
         }
       }
-    
+
       return {
         'stockLevels': stockLevels,
         'lowStockItems': lowStockItems,
@@ -241,7 +241,7 @@ class ReportsAnalyticsService {
       for (var order in ordersResponse) {
         totalRevenue += (order['total_amount'] as num?)?.toDouble() ?? 0;
       }
-    
+
       // Expenses
       final expensesResponse = await _supabase
           .from('expenses')
@@ -252,7 +252,7 @@ class ReportsAnalyticsService {
       for (var expense in expensesResponse) {
         totalExpenses += (expense['amount'] as num?)?.toDouble() ?? 0;
       }
-    
+
       // Calculate profitability
       final grossProfit = totalRevenue - totalCost;
       final netProfit = grossProfit - totalExpenses;
@@ -313,8 +313,7 @@ class ReportsAnalyticsService {
       final activeCustomersResponse =
           await _supabase.from('customers').select('id').eq('is_active', true);
 
-      final activeCustomersCount =
-          activeCustomersResponse.length;
+      final activeCustomersCount = activeCustomersResponse.length;
 
       return {
         'topCustomers': topCustomers,
@@ -366,8 +365,7 @@ class ReportsAnalyticsService {
 
       for (var invoice in response) {
         final customer = invoice['customers'] as Map<String, dynamic>?;
-        final totalAmount =
-            (invoice['total_amount'] as num?)?.toDouble() ?? 0;
+        final totalAmount = (invoice['total_amount'] as num?)?.toDouble() ?? 0;
         final amountPaid = (invoice['amount_paid'] as num?)?.toDouble() ?? 0;
         final outstanding = totalAmount - amountPaid;
         final dueDate = DateTime.parse(invoice['due_date'] as String);
@@ -394,7 +392,7 @@ class ReportsAnalyticsService {
         agingBuckets[bucket]?.add(invoiceData);
         agingTotals[bucket] = (agingTotals[bucket] ?? 0) + outstanding;
       }
-    
+
       final totalOutstanding = agingTotals.values.fold(0.0, (a, b) => a + b);
 
       return {

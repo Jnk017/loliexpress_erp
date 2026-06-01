@@ -90,7 +90,9 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
       'name': raw['company_name'] ?? '',
       'phone': raw['phone'] ?? '',
       'email': raw['email'] ?? '',
-      'address': '${raw['address'] ?? ''}, ${raw['city'] ?? ''}'.trim().replaceAll(RegExp(r'^,\s*|,\s*$'), ''),
+      'address': '${raw['address'] ?? ''}, ${raw['city'] ?? ''}'
+          .trim()
+          .replaceAll(RegExp(r'^,\s*|,\s*$'), ''),
       'tier': tier,
       'paymentTerms': 'Net 30 jours',
       'creditLimit': _formatNumber(creditLimit.toInt()),
@@ -105,7 +107,8 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
       'name': raw['name'] ?? '',
       'price': unitPrice,
       'stock': 999,
-      'image': raw['image_url'] ?? 'https://images.unsplash.com/photo-1633288485223-84bafb2a1e2d',
+      'image': raw['image_url'] ??
+          'https://images.unsplash.com/photo-1633288485223-84bafb2a1e2d',
       'semanticLabel': raw['name'] ?? 'Product image',
       'tierDiscounts': <String, double>{
         'Premium': 0.15,
@@ -338,8 +341,8 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
                           _selectedCustomer?['id'] == customer['id'];
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: theme.colorScheme.primary
-                              .withValues(alpha: 0.1),
+                          backgroundColor:
+                              theme.colorScheme.primary.withValues(alpha: 0.1),
                           child: Text(
                             (customer['name'] as String)
                                 .substring(0, 1)
@@ -401,11 +404,13 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
     });
 
     try {
-      final items = _orderItems.map((item) => {
-        'product_id': item['productId'] as String,
-        'quantity': item['quantity'] as int,
-        'unit_price': item['unitPrice'] as double,
-      }).toList();
+      final items = _orderItems
+          .map((item) => {
+                'product_id': item['productId'] as String,
+                'quantity': item['quantity'] as int,
+                'unit_price': item['unitPrice'] as double,
+              })
+          .toList();
 
       final discount = _calculateDiscount();
       final order = await OrderService.instance.createOrder(
@@ -565,16 +570,17 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
     final tax = _calculateTax();
     final total = _calculateTotal();
 
-    final customerData = _selectedCustomer ?? {
-      'id': '',
-      'name': 'Aucun client',
-      'phone': '',
-      'email': '',
-      'address': '',
-      'tier': 'Standard',
-      'paymentTerms': '-',
-      'creditLimit': '0',
-    };
+    final customerData = _selectedCustomer ??
+        {
+          'id': '',
+          'name': 'Aucun client',
+          'phone': '',
+          'email': '',
+          'address': '',
+          'tier': 'Standard',
+          'paymentTerms': '-',
+          'creditLimit': '0',
+        };
 
     return Scaffold(
       appBar: CustomAppBar(

@@ -15,7 +15,6 @@ import '../presentation/invoice_generation/invoice_generation.dart';
 import '../presentation/login_screen/login_screen.dart';
 import '../presentation/main_dashboard/main_dashboard.dart';
 import '../presentation/notifications_center/notifications_center.dart';
-import '../presentation/notifications_screen/notifications_screen.dart';
 import '../presentation/product_catalog/product_catalog.dart';
 import '../presentation/reports_analytics/reports_analytics.dart';
 import '../presentation/sales_order_processing/sales_order_processing.dart';
@@ -53,55 +52,56 @@ class AppRoutes {
   static const String securityAlertCenter = '/security-alert-center';
   static const String automationRulesManager = '/automation-rules-manager';
   static const String incidentManagementCenter = '/incident-management-center';
-  static const String incidentInvestigationWorkspace = '/incident-investigation-workspace';
+  static const String incidentInvestigationWorkspace =
+      '/incident-investigation-workspace';
   static const String purchases = '/purchases';
   static const String expenses = '/expenses';
   static const String productDetail = '/product-detail';
 
   static Map<String, WidgetBuilder> get routes => {
-  initial: (context) => const SplashScreen(),
-  mainDashboard: (context) => const MainDashboard(),
-  financialDashboard: (context) => const FinancialDashboard(),
-  splash: (context) => const SplashScreen(),
-  invoiceGeneration: (context) => const InvoiceGeneration(),
-  deliveryTracking: (context) => const DeliveryTracking(),
-  customerManagement: (context) => const CustomerManagement(),
-  barcodeScanner: (context) => const BarcodeScanner(),
-  login: (context) => const LoginScreen(),
-  salesOrderProcessing: (context) => const SalesOrderProcessing(),
-  inventoryManagement: (context) => const InventoryManagement(),
-  productCatalog: (context) => const ProductCatalog(),
-  customerPortal: (context) => const CustomerPortal(),
-  documentsScreen: (context) {
-  final args = ModalRoute.of(context)!.settings.arguments
-  as Map<String, dynamic>;
-  return DocumentsScreen(
-  entityType: args['entityType'],
-  entityId: args['entityId'],
-  entityName: args['entityName'],
-  );
-  },
-  notificationsScreen: (context) => const NotificationsScreen(),
-  notificationsCenter: (context) => const NotificationsCenter(),
-  reportsAnalytics: (context) => const ReportsAnalyticsScreen(),
-  settingsConfiguration: (context) => const SettingsConfigurationScreen(),
-  userRoleManagement: (context) => const UserRoleManagementScreen(),
-  auditLog: (context) => const AuditLogScreen(),
-  securityDashboard: (context) => const SecurityDashboard(),
-  securityAlertCenter: (context) => const SecurityAlertCenter(),
-  automationRulesManager: (context) => const AutomationRulesManager(),
-  incidentManagementCenter: (context) => const IncidentManagementCenter(),
-  incidentInvestigationWorkspace: (context) {
-    final args = ModalRoute.of(context)!.settings.arguments
-        as Map<String, dynamic>;
-    return IncidentInvestigationWorkspaceScreen(
-      incidentId: args['incidentId'],
-      incidentTitle: args['incidentTitle'],
-      severity: args['severity'],
-    );
-  },
-  purchases: (context) => const PurchasesScreen(),
-  expenses: (context) => const ExpensesScreen(),
-  productDetail: (context) => const ProductCatalog(),
-};
+        initial: (context) => const SplashScreen(),
+        mainDashboard: (context) => const MainDashboard(),
+        financialDashboard: (context) => const FinancialDashboard(),
+        splash: (context) => const SplashScreen(),
+        invoiceGeneration: (context) => const InvoiceGeneration(),
+        deliveryTracking: (context) => const DeliveryTracking(),
+        customerManagement: (context) => const CustomerManagement(),
+        barcodeScanner: (context) => const BarcodeScanner(),
+        login: (context) => const LoginScreen(),
+        salesOrderProcessing: (context) => const SalesOrderProcessing(),
+        inventoryManagement: (context) => const InventoryManagement(),
+        productCatalog: (context) => const ProductCatalog(),
+        customerPortal: (context) => const CustomerPortal(),
+        documentsScreen: (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>;
+          return DocumentsScreen(
+            entityType: args['entityType'],
+            entityId: args['entityId'],
+            entityName: args['entityName'],
+          );
+        },
+        notificationsScreen: (context) => const NotificationsCenter(),
+        notificationsCenter: (context) => const NotificationsCenter(),
+        reportsAnalytics: (context) => const ReportsAnalyticsScreen(),
+        settingsConfiguration: (context) => const SettingsConfigurationScreen(),
+        userRoleManagement: (context) => const UserRoleManagementScreen(),
+        auditLog: (context) => const AuditLogScreen(),
+        securityDashboard: (context) => const SecurityDashboard(),
+        securityAlertCenter: (context) => const SecurityAlertCenter(),
+        automationRulesManager: (context) => const AutomationRulesManager(),
+        incidentManagementCenter: (context) => const IncidentManagementCenter(),
+        incidentInvestigationWorkspace: (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>;
+          return IncidentInvestigationWorkspaceScreen(
+            incidentId: args['incidentId'],
+            incidentTitle: args['incidentTitle'],
+            severity: args['severity'],
+          );
+        },
+        purchases: (context) => const PurchasesScreen(),
+        expenses: (context) => const ExpensesScreen(),
+        productDetail: (context) => const ProductCatalog(),
+      };
 }

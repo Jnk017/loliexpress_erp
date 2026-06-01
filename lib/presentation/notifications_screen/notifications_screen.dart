@@ -6,7 +6,7 @@ import './widgets/notification_card_widget.dart';
 
 /// Screen for displaying user notifications
 class NotificationsScreen extends StatefulWidget {
-  const NotificationsScreen({Key? key}) : super(key: key);
+  const NotificationsScreen({super.key});
 
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
@@ -65,11 +65,14 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   }
 
   Future<void> _handleMarkAsRead(String notificationId) async {
+    final messenger = ScaffoldMessenger.of(context);
     try {
       await _notificationService.markAsRead(notificationId);
+      if (!mounted) return;
       _loadNotifications();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (!mounted) return;
+      messenger.showSnackBar(
         SnackBar(
           content: Text('Erreur: ${e.toString()}'),
           backgroundColor: Colors.red,

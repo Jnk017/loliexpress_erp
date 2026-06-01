@@ -27,8 +27,8 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
   late TextEditingController _priorityController;
 
   String _selectedTriggerType = 'anomaly_detected';
-  List<Map<String, dynamic>> _conditions = [];
-  List<Map<String, dynamic>> _actions = [];
+  final List<Map<String, dynamic>> _conditions = [];
+  final List<Map<String, dynamic>> _actions = [];
   bool _isSaving = false;
 
   @override
@@ -212,7 +212,7 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
           children: [
             Expanded(
               child: DropdownButtonFormField<String>(
-                value: _selectedTriggerType,
+                initialValue: _selectedTriggerType,
                 decoration: const InputDecoration(
                   labelText: 'Trigger Type',
                   border: OutlineInputBorder(),
@@ -234,8 +234,9 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
                       value: 'time_based', child: Text('Time-Based')),
                 ],
                 onChanged: (value) {
-                  if (value != null)
+                  if (value != null) {
                     setState(() => _selectedTriggerType = value);
+                  }
                 },
               ),
             ),
@@ -297,7 +298,7 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            value: condition['condition_field'],
+                            initialValue: condition['condition_field'],
                             decoration: const InputDecoration(
                                 labelText: 'Field', isDense: true),
                             items: const [
@@ -323,7 +324,7 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
                         SizedBox(width: 2.w),
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            value: condition['condition_operator'],
+                            initialValue: condition['condition_operator'],
                             decoration: const InputDecoration(
                                 labelText: 'Operator', isDense: true),
                             items: const [
@@ -362,7 +363,7 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
                     ),
                     if (index < _conditions.length - 1)
                       DropdownButtonFormField<String>(
-                        value: condition['logical_operator'],
+                        initialValue: condition['logical_operator'],
                         decoration: const InputDecoration(
                             labelText: 'Logic', isDense: true),
                         items: const [
@@ -380,7 +381,7 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
                 ),
               ),
             );
-          }).toList(),
+          }),
       ],
     );
   }
@@ -427,7 +428,7 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
                     SizedBox(width: 2.w),
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        value: action['action_type'],
+                        initialValue: action['action_type'],
                         decoration: const InputDecoration(
                             labelText: 'Action Type', isDense: true),
                         items: const [
@@ -468,7 +469,7 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
                 ),
               ),
             );
-          }).toList(),
+          }),
       ],
     );
   }

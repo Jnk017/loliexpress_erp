@@ -8,11 +8,11 @@ class ChartWidget extends StatelessWidget {
   final List<dynamic> data;
 
   const ChartWidget({
-    Key? key,
+    super.key,
     required this.title,
     required this.chartType,
     this.data = const [],
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

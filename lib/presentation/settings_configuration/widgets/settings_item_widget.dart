@@ -9,13 +9,13 @@ class SettingsItemWidget extends StatelessWidget {
   final Widget? trailing;
 
   const SettingsItemWidget({
-    Key? key,
+    super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
     this.onTap,
     this.trailing,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

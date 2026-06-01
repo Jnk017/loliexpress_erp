@@ -64,7 +64,8 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.error_outline, size: 60, color: theme.colorScheme.error),
+              Icon(Icons.error_outline,
+                  size: 60, color: theme.colorScheme.error),
               SizedBox(height: 2.h),
               Text(
                 'Erreur de chargement',
@@ -99,7 +100,8 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.shopping_bag_outlined, size: 60, color: theme.colorScheme.onSurfaceVariant),
+              Icon(Icons.shopping_bag_outlined,
+                  size: 60, color: theme.colorScheme.onSurfaceVariant),
               SizedBox(height: 2.h),
               Text(
                 'Aucune commande',
@@ -115,7 +117,8 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
               ),
               SizedBox(height: 3.h),
               ElevatedButton.icon(
-                onPressed: () => Navigator.pushNamed(context, '/product-catalog'),
+                onPressed: () =>
+                    Navigator.pushNamed(context, '/product-catalog'),
                 icon: const Icon(Icons.add),
                 label: const Text('Nouvelle Commande'),
               ),
@@ -254,7 +257,8 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
     final statusLabel = _getStatusLabel(status);
     final totalAmount = (order['total_amount'] as num?)?.toDouble() ?? 0;
     final orderId = order['id']?.toString() ?? '';
-    final createdAt = DateTime.tryParse(order['created_at'] ?? '') ?? DateTime.now();
+    final createdAt =
+        DateTime.tryParse(order['created_at'] ?? '') ?? DateTime.now();
 
     return Slidable(
       key: ValueKey(orderId),
@@ -303,7 +307,9 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            orderId.length > 8 ? orderId.substring(0, 8).toUpperCase() : orderId.toUpperCase(),
+                            orderId.length > 8
+                                ? orderId.substring(0, 8).toUpperCase()
+                                : orderId.toUpperCase(),
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -422,17 +428,27 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
 
   String _formatDate(DateTime date) {
     final months = [
-      'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
-      'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'
+      'Jan',
+      'Fév',
+      'Mar',
+      'Avr',
+      'Mai',
+      'Juin',
+      'Juil',
+      'Août',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Déc'
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
   String _formatCurrency(double amount) {
     return amount.toStringAsFixed(0).replaceAllMapped(
-      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]} ',
-    );
+          RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]} ',
+        );
   }
 
   void _showOrderDetails(BuildContext context, Map<String, dynamic> order) {
@@ -440,7 +456,8 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
     final status = order['order_status'] as String? ?? 'pending';
     final totalAmount = (order['total_amount'] as num?)?.toDouble() ?? 0;
     final orderId = order['id']?.toString() ?? '';
-    final createdAt = DateTime.tryParse(order['created_at'] ?? '') ?? DateTime.now();
+    final createdAt =
+        DateTime.tryParse(order['created_at'] ?? '') ?? DateTime.now();
     final customerData = order['customers'] as Map<String, dynamic>?;
 
     showModalBottomSheet(
@@ -498,11 +515,19 @@ class _OrdersTabWidgetState extends State<OrdersTabWidget> {
                     child: ListView(
                       controller: scrollController,
                       children: [
-                        _buildDetailRow(context, 'Numéro', orderId.length > 8 ? orderId.substring(0, 8).toUpperCase() : orderId.toUpperCase()),
-                        _buildDetailRow(context, 'Date', _formatDate(createdAt)),
-                        _buildDetailRow(context, 'Statut', _getStatusLabel(status)),
+                        _buildDetailRow(
+                            context,
+                            'Numéro',
+                            orderId.length > 8
+                                ? orderId.substring(0, 8).toUpperCase()
+                                : orderId.toUpperCase()),
+                        _buildDetailRow(
+                            context, 'Date', _formatDate(createdAt)),
+                        _buildDetailRow(
+                            context, 'Statut', _getStatusLabel(status)),
                         if (customerData != null)
-                          _buildDetailRow(context, 'Client', customerData['company_name'] ?? ''),
+                          _buildDetailRow(context, 'Client',
+                              customerData['company_name'] ?? ''),
                         SizedBox(height: 2.h),
                         Divider(),
                         SizedBox(height: 1.h),

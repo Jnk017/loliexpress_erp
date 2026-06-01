@@ -109,9 +109,13 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
     if (_currentFilters['stockStatus'] != 'Tous') {
       filtered = filtered.where((product) {
-        final stock = (product['current_stock'] ?? product['currentStock'] ?? 0) as num;
-        final minStock = (product['min_stock_level'] ?? product['minStock'] ?? 0) as num;
-        final criticalStock = (product['critical_stock_level'] ?? product['criticalStock'] ?? 0) as num;
+        final stock =
+            (product['current_stock'] ?? product['currentStock'] ?? 0) as num;
+        final minStock =
+            (product['min_stock_level'] ?? product['minStock'] ?? 0) as num;
+        final criticalStock = (product['critical_stock_level'] ??
+            product['criticalStock'] ??
+            0) as num;
 
         switch (_currentFilters['stockStatus']) {
           case 'Suffisant':
@@ -128,11 +132,11 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
     final sortBy = _currentFilters['sortBy'] as String;
     if (sortBy.contains('Nom (A-Z)')) {
-      filtered.sort(
-          (a, b) => (a['name'] as String? ?? '').compareTo(b['name'] as String? ?? ''));
+      filtered.sort((a, b) =>
+          (a['name'] as String? ?? '').compareTo(b['name'] as String? ?? ''));
     } else if (sortBy.contains('Nom (Z-A)')) {
-      filtered.sort(
-          (a, b) => (b['name'] as String? ?? '').compareTo(a['name'] as String? ?? ''));
+      filtered.sort((a, b) =>
+          (b['name'] as String? ?? '').compareTo(a['name'] as String? ?? ''));
     } else if (sortBy.contains('Prix (Croissant)')) {
       filtered.sort((a, b) {
         final priceA = (a['unit_price'] ?? a['price'] ?? 0) as num;
@@ -266,7 +270,8 @@ class _ProductCatalogState extends State<ProductCatalog> {
       'semanticLabel': product['name'] ?? 'Image du produit',
       'lowStockAlertEnabled': product['low_stock_alert_enabled'] ?? false,
       'expiryDate': product['expiry_date'] != null
-          ? DateTime.tryParse(product['expiry_date']) ?? DateTime.now().add(const Duration(days: 365))
+          ? DateTime.tryParse(product['expiry_date']) ??
+              DateTime.now().add(const Duration(days: 365))
           : DateTime.now().add(const Duration(days: 365)),
     };
   }
@@ -340,7 +345,8 @@ class _ProductCatalogState extends State<ProductCatalog> {
           ),
         ],
       ),
-      floatingActionButton: _isMultiSelectMode || RoleService.instance.currentRole == UserRole.customer
+      floatingActionButton: _isMultiSelectMode ||
+              RoleService.instance.currentRole == UserRole.customer
           ? null
           : Column(
               mainAxisSize: MainAxisSize.min,
@@ -477,18 +483,20 @@ class _ProductCatalogState extends State<ProductCatalog> {
 
     if (filteredProducts.isEmpty) {
       return EmptyStateWidget(
-        message: _searchQuery.isNotEmpty || _currentFilters['category'] != 'Toutes'
-            ? 'Aucun produit trouvé'
-            : 'Aucun produit dans le catalogue',
-        actionText: _searchQuery.isNotEmpty || _currentFilters['category'] != 'Toutes'
-            ? 'Ajuster les filtres'
-            : 'Ajouter un produit',
+        message:
+            _searchQuery.isNotEmpty || _currentFilters['category'] != 'Toutes'
+                ? 'Aucun produit trouvé'
+                : 'Aucun produit dans le catalogue',
+        actionText:
+            _searchQuery.isNotEmpty || _currentFilters['category'] != 'Toutes'
+                ? 'Ajuster les filtres'
+                : 'Ajouter un produit',
         showFilterAdjustment:
             _searchQuery.isNotEmpty || _currentFilters['category'] != 'Toutes',
-        onActionPressed: _searchQuery.isNotEmpty ||
-                _currentFilters['category'] != 'Toutes'
-            ? _showFilterBottomSheet
-            : () => _openAddProductDialog(),
+        onActionPressed:
+            _searchQuery.isNotEmpty || _currentFilters['category'] != 'Toutes'
+                ? _showFilterBottomSheet
+                : () => _openAddProductDialog(),
       );
     }
 

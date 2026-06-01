@@ -15,7 +15,7 @@ import './widgets/receivables_report_widget.dart';
 import './widgets/report_card_widget.dart';
 
 class ReportsAnalyticsScreen extends StatefulWidget {
-  const ReportsAnalyticsScreen({Key? key}) : super(key: key);
+  const ReportsAnalyticsScreen({super.key});
 
   @override
   State<ReportsAnalyticsScreen> createState() => _ReportsAnalyticsScreenState();
@@ -26,7 +26,7 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
   late TabController _tabController;
   bool _isLoading = false;
   String _selectedDateRange = 'Ce mois';
-  bool _isLiveUpdatesEnabled = true;
+  final bool _isLiveUpdatesEnabled = true;
 
   // Service instance
   final ReportsAnalyticsService _analyticsService = ReportsAnalyticsService();
@@ -197,7 +197,8 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Génération du rapport personnalisé...')),
+                SnackBar(
+                    content: Text('Génération du rapport personnalisé...')),
               );
             },
             child: Text('Générer'),
@@ -427,8 +428,8 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             onTap: () => _showReportDetail(
               'Ventes par Catégorie de Produit',
               'Répartition des ventes par catégorie de produits.\n\n'
-              'Total ventes: ${_salesMetrics?['totalSales'] ?? 0} FC\n'
-              'Catégories actives: ${_salesMetrics?['activeCategories'] ?? 'N/A'}',
+                  'Total ventes: ${_salesMetrics?['totalSales'] ?? 0} FC\n'
+                  'Catégories actives: ${_salesMetrics?['activeCategories'] ?? 'N/A'}',
             ),
           ),
           SizedBox(height: 2.h),
@@ -439,8 +440,8 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             onTap: () => _showReportDetail(
               'Ventes par Représentant',
               'Performance de l\'équipe de vente.\n\n'
-              'Nombre de transactions: ${_salesMetrics?['transactionCount'] ?? 0}\n'
-              'Vente moyenne: ${_salesMetrics?['averageSale'] ?? 0} FC',
+                  'Nombre de transactions: ${_salesMetrics?['transactionCount'] ?? 0}\n'
+                  'Vente moyenne: ${_salesMetrics?['averageSale'] ?? 0} FC',
             ),
           ),
           SizedBox(height: 2.h),
@@ -451,8 +452,8 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             onTap: () => _showReportDetail(
               'Prévisions de Ventes',
               'Prévisions de vente pour la prochaine période.\n\n'
-              'Tendance actuelle: ${_salesMetrics?['trend'] ?? 'Stable'}\n'
-              'Estimation: ${(_salesMetrics?['totalSales'] ?? 0) * 1.1} FC',
+                  'Tendance actuelle: ${_salesMetrics?['trend'] ?? 'Stable'}\n'
+                  'Estimation: ${(_salesMetrics?['totalSales'] ?? 0) * 1.1} FC',
             ),
           ),
         ],
@@ -484,9 +485,9 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             onTap: () => _showReportDetail(
               'Analyse de Rotation des Stocks',
               'Analyse de rotation des stocks.\n\n'
-              'Produits total: ${_inventoryMetrics?['totalProducts'] ?? 0}\n'
-              'Ruptures de stock: ${_inventoryMetrics?['outOfStock'] ?? 0}\n'
-              'Stock faible: ${_inventoryMetrics?['lowStock'] ?? 0}',
+                  'Produits total: ${_inventoryMetrics?['totalProducts'] ?? 0}\n'
+                  'Ruptures de stock: ${_inventoryMetrics?['outOfStock'] ?? 0}\n'
+                  'Stock faible: ${_inventoryMetrics?['lowStock'] ?? 0}',
             ),
           ),
           SizedBox(height: 2.h),
@@ -497,8 +498,8 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             onTap: () => _showReportDetail(
               'Rapport d\'Évaluation du Stock',
               'Évaluation de la valeur du stock.\n\n'
-              'Valeur totale: ${_inventoryMetrics?['totalValue'] ?? 0} FC\n'
-              'Produits en stock: ${_inventoryMetrics?['totalProducts'] ?? 0}',
+                  'Valeur totale: ${_inventoryMetrics?['totalValue'] ?? 0} FC\n'
+                  'Produits en stock: ${_inventoryMetrics?['totalProducts'] ?? 0}',
             ),
           ),
           SizedBox(height: 2.h),
@@ -509,8 +510,8 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             onTap: () => _showReportDetail(
               'Performance Entrepôt',
               'Analyse multi-entrepôt.\n\n'
-              'Taux de rotation: ${_inventoryMetrics?['turnoverRate'] ?? 'N/A'}\n'
-              'Efficacité: ${_inventoryMetrics?['efficiency'] ?? 'N/A'}%',
+                  'Taux de rotation: ${_inventoryMetrics?['turnoverRate'] ?? 'N/A'}\n'
+                  'Efficacité: ${_inventoryMetrics?['efficiency'] ?? 'N/A'}%',
             ),
           ),
         ],
@@ -560,8 +561,8 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
                     _buildAgingBucket('Retard 90+ jours',
                         _agingReport!['agingTotals']['90-day'] ?? 0),
                     Divider(),
-                    _buildAgingBucket('Total Impayé',
-                        _agingReport!['totalOutstanding'] ?? 0,
+                    _buildAgingBucket(
+                        'Total Impayé', _agingReport!['totalOutstanding'] ?? 0,
                         isBold: true),
                   ],
                 ),
@@ -576,10 +577,10 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             onTap: () => _showReportDetail(
               'Compte de Résultat',
               'Compte de résultat.\n\n'
-              'Revenu Total: ${_financialMetrics?['totalRevenue'] ?? 0} FC\n'
-              'Dépenses Totales: ${_financialMetrics?['totalExpenses'] ?? 0} FC\n'
-              'Profit Net: ${_financialMetrics?['netProfit'] ?? 0} FC\n'
-              'Marge: ${_financialMetrics?['profitMargin'] ?? 0}%',
+                  'Revenu Total: ${_financialMetrics?['totalRevenue'] ?? 0} FC\n'
+                  'Dépenses Totales: ${_financialMetrics?['totalExpenses'] ?? 0} FC\n'
+                  'Profit Net: ${_financialMetrics?['netProfit'] ?? 0} FC\n'
+                  'Marge: ${_financialMetrics?['profitMargin'] ?? 0}%',
             ),
           ),
           SizedBox(height: 2.h),
@@ -590,8 +591,8 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             onTap: () => _showReportDetail(
               'Analyse des Dépenses',
               'Analyse des dépenses par catégorie.\n\n'
-              'Dépenses Totales: ${_financialMetrics?['totalExpenses'] ?? 0} FC\n'
-              'Ratio dépenses/revenu: ${_financialMetrics?['totalRevenue'] != null && _financialMetrics!['totalRevenue'] != 0 ? ((_financialMetrics!['totalExpenses'] ?? 0) / _financialMetrics!['totalRevenue'] * 100).toStringAsFixed(1) : 'N/A'}%',
+                  'Dépenses Totales: ${_financialMetrics?['totalExpenses'] ?? 0} FC\n'
+                  'Ratio dépenses/revenu: ${_financialMetrics?['totalRevenue'] != null && _financialMetrics!['totalRevenue'] != 0 ? ((_financialMetrics!['totalExpenses'] ?? 0) / _financialMetrics!['totalRevenue'] * 100).toStringAsFixed(1) : 'N/A'}%',
             ),
           ),
           SizedBox(height: 3.h),
@@ -643,9 +644,9 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             onTap: () => _showReportDetail(
               'Segmentation des Clients',
               'Segmentation des clients.\n\n'
-              'Total clients: ${_customerMetrics?['totalCustomers'] ?? 0}\n'
-              'Clients actifs: ${_customerMetrics?['activeCustomers'] ?? 0}\n'
-              'Nouveaux ce mois: ${_customerMetrics?['newThisMonth'] ?? 0}',
+                  'Total clients: ${_customerMetrics?['totalCustomers'] ?? 0}\n'
+                  'Clients actifs: ${_customerMetrics?['activeCustomers'] ?? 0}\n'
+                  'Nouveaux ce mois: ${_customerMetrics?['newThisMonth'] ?? 0}',
             ),
           ),
           SizedBox(height: 2.h),
@@ -656,8 +657,8 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             onTap: () => _showReportDetail(
               'Valeur Vie Client',
               'Valeur vie client (CLV).\n\n'
-              'CLV moyen: ${_customerMetrics?['averageCLV'] ?? 'N/A'} FC\n'
-              'Panier moyen: ${_customerMetrics?['averageOrderValue'] ?? 'N/A'} FC',
+                  'CLV moyen: ${_customerMetrics?['averageCLV'] ?? 'N/A'} FC\n'
+                  'Panier moyen: ${_customerMetrics?['averageOrderValue'] ?? 'N/A'} FC',
             ),
           ),
           SizedBox(height: 2.h),
@@ -668,8 +669,8 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             onTap: () => _showReportDetail(
               'Taux de Rétention Client',
               'Taux de rétention des clients.\n\n'
-              'Taux de rétention: ${_customerMetrics?['retentionRate'] ?? 'N/A'}%\n'
-              'Clients récurrents: ${_customerMetrics?['returningCustomers'] ?? 0}',
+                  'Taux de rétention: ${_customerMetrics?['retentionRate'] ?? 'N/A'}%\n'
+                  'Clients récurrents: ${_customerMetrics?['returningCustomers'] ?? 0}',
             ),
           ),
         ],
@@ -711,33 +712,45 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
             pw.Header(level: 0, text: 'LoliExpress - Rapport Analytique'),
-            pw.Header(level: 1, text: 'Date: ${DateTime.now().toString().substring(0, 10)}'),
+            pw.Header(
+                level: 1,
+                text: 'Date: ${DateTime.now().toString().substring(0, 10)}'),
             pw.SizedBox(height: 20),
             pw.TableHelper.fromTextArray(
               headers: ['Indicateur', 'Valeur'],
               data: [
-                ['Revenu Total', '${_financialMetrics?['totalRevenue'] ?? 0} FC'],
+                [
+                  'Revenu Total',
+                  '${_financialMetrics?['totalRevenue'] ?? 0} FC'
+                ],
                 ['Marge Brute', '${_financialMetrics?['profitMargin'] ?? 0}%'],
                 ['Profit Net', '${_financialMetrics?['netProfit'] ?? 0} FC'],
-                ['Dépenses Totales', '${_financialMetrics?['totalExpenses'] ?? 0} FC'],
+                [
+                  'Dépenses Totales',
+                  '${_financialMetrics?['totalExpenses'] ?? 0} FC'
+                ],
               ],
             ),
           ],
         ),
       ),
     );
-    await Printing.sharePdf(bytes: await pdf.save(), filename: 'rapport_loliexpress.pdf');
+    await Printing.sharePdf(
+        bytes: await pdf.save(), filename: 'rapport_loliexpress.pdf');
   }
 
   Future<void> _exportToCSV() async {
     final buffer = StringBuffer();
     buffer.writeln('Indicateur,Valeur,Devise');
-    buffer.writeln('Revenu Total,${_financialMetrics?['totalRevenue'] ?? 0},FC');
+    buffer
+        .writeln('Revenu Total,${_financialMetrics?['totalRevenue'] ?? 0},FC');
     buffer.writeln('Marge Brute,${_financialMetrics?['profitMargin'] ?? 0},%');
     buffer.writeln('Profit Net,${_financialMetrics?['netProfit'] ?? 0},FC');
-    buffer.writeln('Dépenses Totales,${_financialMetrics?['totalExpenses'] ?? 0},FC');
+    buffer.writeln(
+        'Dépenses Totales,${_financialMetrics?['totalExpenses'] ?? 0},FC');
 
-    await SharePlus.instance.share(ShareParams(text: buffer.toString(), subject: 'Rapport LoliExpress CSV'));
+    await SharePlus.instance.share(ShareParams(
+        text: buffer.toString(), subject: 'Rapport LoliExpress CSV'));
   }
 
   Widget _buildAgingBucket(String label, double amount, {bool isBold = false}) {

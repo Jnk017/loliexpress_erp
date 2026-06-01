@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../core/app_export.dart';
+import '../../../services/document_service.dart';
 
 /// Documents Tab Widget
 /// Provides secure access to invoices, delivery notes, and statements
@@ -15,60 +16,66 @@ class DocumentsTabWidget extends StatefulWidget {
 class _DocumentsTabWidgetState extends State<DocumentsTabWidget> {
   String _selectedFilter = 'all';
   final TextEditingController _searchController = TextEditingController();
+  bool _isLoading = true;
+  String? _error;
 
-  // Mock documents data
-  final List<Map<String, dynamic>> _documents = [
-    {
-      "id": "FAC-2024-0892",
-      "type": "invoice",
-      "typeLabel": "Facture",
-      "date": DateTime(2025, 11, 25),
-      "amount": "245 000 CDF",
-      "status": "paid",
-      "statusLabel": "Payée",
-      "orderId": "CMD-2024-1156",
-    },
-    {
-      "id": "BL-2024-1203",
-      "type": "delivery",
-      "typeLabel": "Bon de livraison",
-      "date": DateTime(2025, 11, 22),
-      "amount": "180 000 CDF",
-      "status": "delivered",
-      "statusLabel": "Livrée",
-      "orderId": "CMD-2024-1142",
-    },
-    {
-      "id": "FAC-2024-0875",
-      "type": "invoice",
-      "typeLabel": "Facture",
-      "date": DateTime(2025, 11, 20),
-      "amount": "320 000 CDF",
-      "status": "pending",
-      "statusLabel": "En attente",
-      "orderId": "CMD-2024-1128",
-    },
-    {
-      "id": "REL-2024-11",
-      "type": "statement",
-      "typeLabel": "Relevé de compte",
-      "date": DateTime(2025, 11, 1),
-      "amount": "1 245 000 CDF",
+  List<Map<String, dynamic>> _documents = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDocuments();
+  }
+
+  Future<void> _loadDocuments() async {
+    try {
+      final documents = await DocumentService().getMyDocuments();
+      if (!mounted) return;
+      setState(() {
+        _documents = documents.map(_mapDocument).toList();
+        _isLoading = false;
+        _error = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
+
+  Map<String, dynamic> _mapDocument(Map<String, dynamic> row) {
+    final type = row['entity_type'] as String? ?? 'document';
+    return {
+      "id": row['id'] as String? ?? '',
+      "type": type,
+      "typeLabel": _typeLabel(type),
+      "date": DateTime.tryParse(row['uploaded_at'] as String? ?? '') ??
+          DateTime.now(),
+      "amount": "",
       "status": "available",
       "statusLabel": "Disponible",
-      "orderId": null,
-    },
-    {
-      "id": "FAC-2024-0856",
-      "type": "invoice",
-      "typeLabel": "Facture",
-      "date": DateTime(2025, 11, 15),
-      "amount": "95 000 CDF",
-      "status": "overdue",
-      "statusLabel": "En retard",
-      "orderId": "CMD-2024-1115",
-    },
-  ];
+      "orderId": row['entity_id'] as String?,
+      "filePath": row['file_path'],
+      "fileName": row['file_name'],
+    };
+  }
+
+  String _typeLabel(String type) {
+    switch (type) {
+      case 'invoice':
+        return 'Facture';
+      case 'delivery':
+        return 'Bon de livraison';
+      case 'expense':
+        return 'Dépense';
+      case 'purchase_order':
+        return 'Bon d’achat';
+      default:
+        return 'Document';
+    }
+  }
 
   @override
   void dispose() {
@@ -79,6 +86,35 @@ class _DocumentsTabWidgetState extends State<DocumentsTabWidget> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_error != null) {
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.all(6.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline,
+                  color: theme.colorScheme.error, size: 48),
+              SizedBox(height: 2.h),
+              Text('Erreur de chargement des documents',
+                  style: theme.textTheme.titleMedium),
+              SizedBox(height: 1.h),
+              Text(_error!, textAlign: TextAlign.center),
+              SizedBox(height: 2.h),
+              ElevatedButton(
+                onPressed: _loadDocuments,
+                child: const Text('Réessayer'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     final filteredDocuments = _filterDocuments();
 

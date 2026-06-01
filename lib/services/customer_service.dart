@@ -7,13 +7,16 @@ class CustomerService {
 
   SupabaseClient get _client => Supabase.instance.client;
 
-  Future<List<Map<String, dynamic>>> getCustomers({String? search, int limit = 50, int offset = 0}) async {
+  Future<List<Map<String, dynamic>>> getCustomers(
+      {String? search, int limit = 50, int offset = 0}) async {
     try {
       var query = _client.from('customers').select();
       if (search != null && search.isNotEmpty) {
-        query = query.or('company_name.ilike.%$search%,contact_person.ilike.%$search%,email.ilike.%$search%');
+        query = query.or(
+            'company_name.ilike.%$search%,contact_person.ilike.%$search%,email.ilike.%$search%');
       }
-      final response = await query.order('company_name').range(offset, offset + limit - 1);
+      final response =
+          await query.order('company_name').range(offset, offset + limit - 1);
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
       throw Exception('Erreur lors du chargement des clients: $e');
@@ -22,7 +25,11 @@ class CustomerService {
 
   Future<Map<String, dynamic>?> getCustomerById(String id) async {
     try {
-      return await _client.from('customers').select().eq('id', id).maybeSingle();
+      return await _client
+          .from('customers')
+          .select()
+          .eq('id', id)
+          .maybeSingle();
     } catch (e) {
       throw Exception('Erreur lors du chargement du client: $e');
     }
@@ -30,19 +37,23 @@ class CustomerService {
 
   Future<Map<String, dynamic>> createCustomer(Map<String, dynamic> data) async {
     try {
-      final response = await _client.from('customers').insert({
-        ...data,
-        'created_by': _client.auth.currentUser?.id,
-      }).select().single();
+      final response =
+          await _client.from('customers').insert(data).select().single();
       return response;
     } catch (e) {
       throw Exception('Erreur lors de la création du client: $e');
     }
   }
 
-  Future<Map<String, dynamic>> updateCustomer(String id, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> updateCustomer(
+      String id, Map<String, dynamic> data) async {
     try {
-      final response = await _client.from('customers').update(data).eq('id', id).select().single();
+      final response = await _client
+          .from('customers')
+          .update(data)
+          .eq('id', id)
+          .select()
+          .single();
       return response;
     } catch (e) {
       throw Exception('Erreur lors de la mise à jour du client: $e');
@@ -59,7 +70,9 @@ class CustomerService {
 
   Future<Map<String, dynamic>> getCustomerStats() async {
     try {
-      final customers = await _client.from('customers').select('id, credit_limit, current_balance');
+      final customers = await _client
+          .from('customers')
+          .select('id, credit_limit, current_balance');
       int total = customers.length;
       double totalCredit = 0;
       double totalBalance = 0;

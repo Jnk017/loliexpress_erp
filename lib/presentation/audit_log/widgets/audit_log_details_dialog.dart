@@ -349,7 +349,6 @@ class AuditLogDetailsDialog extends StatelessWidget {
     if (value is bool) return value.toString();
     return value.toString();
   }
-
 }
 
 class _InfoRow {

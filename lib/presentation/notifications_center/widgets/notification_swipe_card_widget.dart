@@ -11,13 +11,13 @@ class NotificationSwipeCardWidget extends StatelessWidget {
   final VoidCallback? onDismiss;
 
   const NotificationSwipeCardWidget({
-    Key? key,
+    super.key,
     required this.notification,
     required this.priority,
     this.onMarkAsRead,
     this.onTakeAction,
     this.onDismiss,
-  }) : super(key: key);
+  });
 
   IconData _getNotificationIcon(String notificationType) {
     switch (notificationType) {
@@ -223,8 +223,8 @@ class NotificationSwipeCardWidget extends StatelessWidget {
                               priority == 'critical'
                                   ? 'Critique'
                                   : priority == 'important'
-                                  ? 'Important'
-                                  : 'Info',
+                                      ? 'Important'
+                                      : 'Info',
                               style: TextStyle(
                                 fontSize: 10.sp,
                                 fontWeight: FontWeight.w600,

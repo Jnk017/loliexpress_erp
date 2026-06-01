@@ -12,20 +12,27 @@ class AuthService {
 
   Stream<AuthState> get authStateChanges => _client.auth.onAuthStateChange;
 
-  Future<AuthResponse> signIn({required String email, required String password}) async {
+  Future<AuthResponse> signIn(
+      {required String email, required String password}) async {
     try {
-      return await _client.auth.signInWithPassword(email: email, password: password);
+      return await _client.auth
+          .signInWithPassword(email: email, password: password);
     } catch (e) {
       throw Exception('Échec de connexion: ${e.toString()}');
     }
   }
 
-  Future<AuthResponse> signUp({required String email, required String password, String? fullName, String? role}) async {
+  Future<AuthResponse> signUp({
+    required String email,
+    required String password,
+    String? fullName,
+    String? role,
+  }) async {
     try {
       final response = await _client.auth.signUp(
         email: email,
         password: password,
-        data: {'full_name': fullName ?? '', 'role': role ?? 'sales_rep'},
+        data: {'full_name': fullName ?? ''},
       );
       return response;
     } catch (e) {
@@ -53,10 +60,14 @@ class AuthService {
     final user = currentUser;
     if (user == null) return null;
     try {
-      final response = await _client.from('user_profiles').select('role').eq('id', user.id).maybeSingle();
+      final response = await _client
+          .from('user_profiles')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle();
       return response?['role'] as String?;
     } catch (e) {
-      return user.userMetadata?['role'] as String?;
+      return null;
     }
   }
 
@@ -64,7 +75,11 @@ class AuthService {
     final user = currentUser;
     if (user == null) return null;
     try {
-      return await _client.from('user_profiles').select().eq('id', user.id).maybeSingle();
+      return await _client
+          .from('user_profiles')
+          .select()
+          .eq('id', user.id)
+          .maybeSingle();
     } catch (e) {
       return null;
     }

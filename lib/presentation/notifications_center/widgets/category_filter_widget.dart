@@ -8,11 +8,11 @@ class CategoryFilterWidget extends StatelessWidget {
   final Function(String) onCategorySelected;
 
   const CategoryFilterWidget({
-    Key? key,
+    super.key,
     required this.categories,
     required this.selectedCategory,
     required this.onCategorySelected,
-  }) : super(key: key);
+  });
 
   IconData _getCategoryIcon(String category) {
     switch (category) {
@@ -60,9 +60,8 @@ class CategoryFilterWidget extends StatelessWidget {
                   Text(
                     category,
                     style: TextStyle(
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.w500,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.w500,
                     ),
                   ),
                 ],

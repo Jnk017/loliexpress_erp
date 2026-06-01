@@ -9,9 +9,9 @@ class UserListWidget extends StatefulWidget {
   final VoidCallback onRefresh;
 
   const UserListWidget({
-    Key? key,
+    super.key,
     required this.onRefresh,
-  }) : super(key: key);
+  });
 
   @override
   State<UserListWidget> createState() => _UserListWidgetState();

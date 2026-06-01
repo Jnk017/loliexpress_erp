@@ -6,7 +6,7 @@ import './widgets/user_list_widget.dart';
 import './widgets/user_stats_widget.dart';
 
 class UserRoleManagementScreen extends StatefulWidget {
-  const UserRoleManagementScreen({Key? key}) : super(key: key);
+  const UserRoleManagementScreen({super.key});
 
   @override
   State<UserRoleManagementScreen> createState() =>

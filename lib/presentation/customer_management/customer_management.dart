@@ -116,7 +116,8 @@ class _CustomerManagementState extends State<CustomerManagement> {
               ? 'Standard'
               : 'Nouveau',
       'accountStatus': isActive ? 'Actif' : 'Inactif',
-      'accountNumber': 'CL-${(raw['id'] as String).substring(0, 4).toUpperCase()}',
+      'accountNumber':
+          'CL-${(raw['id'] as String).substring(0, 4).toUpperCase()}',
     };
   }
 
@@ -204,7 +205,8 @@ class _CustomerManagementState extends State<CustomerManagement> {
   void _exportContacts() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Export de ${_selectedCustomers.length} contacts en cours...'),
+        content:
+            Text('Export de ${_selectedCustomers.length} contacts en cours...'),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -213,7 +215,8 @@ class _CustomerManagementState extends State<CustomerManagement> {
   void _sendStatements() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Envoi des relevés à ${_selectedCustomers.length} clients...'),
+        content:
+            Text('Envoi des relevés à ${_selectedCustomers.length} clients...'),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -222,7 +225,8 @@ class _CustomerManagementState extends State<CustomerManagement> {
   void _updateTerms() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Mise à jour des conditions pour ${_selectedCustomers.length} clients...'),
+        content: Text(
+            'Mise à jour des conditions pour ${_selectedCustomers.length} clients...'),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -385,7 +389,9 @@ class _CustomerManagementState extends State<CustomerManagement> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    e.toString().replaceFirst('Exception: ', ''),
+                                    e
+                                        .toString()
+                                        .replaceFirst('Exception: ', ''),
                                   ),
                                   backgroundColor:
                                       Theme.of(context).colorScheme.error,
@@ -663,13 +669,10 @@ class _CustomerManagementState extends State<CustomerManagement> {
                       _navigateToCustomerDetail(customer);
                     }
                   },
-                  onCall: () =>
-                      _makePhoneCall(customer['phone'] as String),
-                  onEmail: () =>
-                      _sendEmail(customer['email'] as String),
+                  onCall: () => _makePhoneCall(customer['phone'] as String),
+                  onEmail: () => _sendEmail(customer['email'] as String),
                   onNewOrder: () {
-                    Navigator.pushNamed(
-                        context, '/sales-order-processing');
+                    Navigator.pushNamed(context, '/sales-order-processing');
                   },
                   onPaymentReceipt: () {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -692,8 +695,7 @@ class _CustomerManagementState extends State<CustomerManagement> {
                   onNotes: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(
-                            'Notes pour ${customer['companyName']}'),
+                        content: Text('Notes pour ${customer['companyName']}'),
                         duration: const Duration(seconds: 2),
                       ),
                     );

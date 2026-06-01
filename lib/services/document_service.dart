@@ -121,6 +121,21 @@ class DocumentService {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getMyDocuments() async {
+    try {
+      final user = _client.auth.currentUser;
+      if (user == null) return [];
+      final response = await _client
+          .from('document_attachments')
+          .select('*')
+          .eq('uploaded_by', user.id)
+          .order('uploaded_at', ascending: false);
+      return List<Map<String, dynamic>>.from(response);
+    } catch (e) {
+      throw Exception('Failed to fetch user documents: $e');
+    }
+  }
+
   /// Get signed URL for private document
   Future<String> getDocumentUrl(String filePath) async {
     try {

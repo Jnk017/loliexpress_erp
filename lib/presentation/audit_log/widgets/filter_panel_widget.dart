@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-
 class FilterPanelWidget extends StatelessWidget {
   final String? selectedUser;
   final String? selectedModule;
@@ -76,7 +75,7 @@ class FilterPanelWidget extends StatelessWidget {
             'Filter by User',
             Icons.person_outline,
             DropdownButtonFormField<String>(
-              value: selectedUser,
+              initialValue: selectedUser,
               decoration: InputDecoration(
                 hintText: 'Select user',
                 border: OutlineInputBorder(
@@ -105,7 +104,7 @@ class FilterPanelWidget extends StatelessWidget {
             'Filter by Module',
             Icons.folder_outlined,
             DropdownButtonFormField<String>(
-              value: selectedModule,
+              initialValue: selectedModule,
               decoration: InputDecoration(
                 hintText: 'Select module',
                 border: OutlineInputBorder(
@@ -134,7 +133,7 @@ class FilterPanelWidget extends StatelessWidget {
             'Filter by Action Type',
             Icons.play_circle_outline,
             DropdownButtonFormField<String>(
-              value: selectedActionType,
+              initialValue: selectedActionType,
               decoration: InputDecoration(
                 hintText: 'Select action type',
                 border: OutlineInputBorder(

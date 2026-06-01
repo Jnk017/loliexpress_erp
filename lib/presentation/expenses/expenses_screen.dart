@@ -11,7 +11,8 @@ class ExpensesScreen extends StatefulWidget {
   State<ExpensesScreen> createState() => _ExpensesScreenState();
 }
 
-class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStateMixin {
+class _ExpensesScreenState extends State<ExpensesScreen>
+    with TickerProviderStateMixin {
   late TabController _tabController;
   final _expenseService = ExpenseService.instance;
   final _roleService = RoleService.instance;
@@ -30,8 +31,12 @@ class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStat
   }
 
   int _getTabCount() {
-    if (_roleService.canApproveExpenses && _roleService.canPayExpenses) return 4;
-    if (_roleService.canApproveExpenses || _roleService.canPayExpenses) return 3;
+    if (_roleService.canApproveExpenses && _roleService.canPayExpenses) {
+      return 4;
+    }
+    if (_roleService.canApproveExpenses || _roleService.canPayExpenses) {
+      return 3;
+    }
     return 2;
   }
 
@@ -134,7 +139,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStat
       child: ListView.builder(
         padding: EdgeInsets.all(2.w),
         itemCount: expenses.length,
-        itemBuilder: (context, index) => _buildExpenseCard(expenses[index], type),
+        itemBuilder: (context, index) =>
+            _buildExpenseCard(expenses[index], type),
       ),
     );
   }
@@ -180,7 +186,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStat
               children: [
                 Icon(Icons.category, size: 12.sp, color: Colors.grey[600]),
                 SizedBox(width: 1.w),
-                Text(category, style: TextStyle(fontSize: 10.sp, color: Colors.grey[600])),
+                Text(category,
+                    style: TextStyle(fontSize: 10.sp, color: Colors.grey[600])),
               ],
             ),
             SizedBox(height: 0.5.h),
@@ -214,14 +221,16 @@ class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStat
                   TextButton.icon(
                     onPressed: () => _showRejectDialog(expense['id']),
                     icon: const Icon(Icons.close, color: Colors.red),
-                    label: const Text('Rejeter', style: TextStyle(color: Colors.red)),
+                    label: const Text('Rejeter',
+                        style: TextStyle(color: Colors.red)),
                   ),
                   SizedBox(width: 2.w),
                   ElevatedButton.icon(
                     onPressed: () => _approveExpense(expense['id']),
                     icon: const Icon(Icons.check),
                     label: const Text('Approuver'),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   ),
                 ],
               ),
@@ -235,7 +244,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStat
                     onPressed: () => _markAsPaid(expense['id']),
                     icon: const Icon(Icons.payment),
                     label: const Text('Marquer Payé'),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                   ),
                 ],
               ),
@@ -316,7 +326,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStat
       await _expenseService.approveExpense(id);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Dépense approuvée'), backgroundColor: Colors.green),
+          const SnackBar(
+              content: Text('Dépense approuvée'),
+              backgroundColor: Colors.green),
         );
       }
       _loadData();
@@ -334,7 +346,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStat
       await _expenseService.markAsPaid(id);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Dépense marquée comme payée'), backgroundColor: Colors.green),
+          const SnackBar(
+              content: Text('Dépense marquée comme payée'),
+              backgroundColor: Colors.green),
         );
       }
       _loadData();
@@ -371,17 +385,22 @@ class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStat
               if (reasonController.text.isEmpty) return;
               Navigator.pop(ctx);
               try {
-                await _expenseService.rejectExpense(id, reason: reasonController.text);
+                await _expenseService.rejectExpense(id,
+                    reason: reasonController.text);
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Dépense rejetée'), backgroundColor: Colors.orange),
+                    const SnackBar(
+                        content: Text('Dépense rejetée'),
+                        backgroundColor: Colors.orange),
                   );
                 }
                 _loadData();
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
+                    SnackBar(
+                        content: Text('Erreur: $e'),
+                        backgroundColor: Colors.red),
                   );
                 }
               }
@@ -423,7 +442,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStat
               children: [
                 Text(
                   'Nouvelle Demande de Dépense',
-                  style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
+                  style:
+                      TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 2.h),
                 TextField(
@@ -462,7 +482,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStat
                     SizedBox(width: 2.w),
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        value: currency,
+                        initialValue: currency,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           contentPadding: EdgeInsets.symmetric(horizontal: 12),
@@ -471,7 +491,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStat
                           DropdownMenuItem(value: 'CDF', child: Text('CDF')),
                           DropdownMenuItem(value: 'USD', child: Text('USD')),
                         ],
-                        onChanged: (v) => setModalState(() => currency = v ?? 'CDF'),
+                        onChanged: (v) =>
+                            setModalState(() => currency = v ?? 'CDF'),
                       ),
                     ),
                   ],
@@ -487,7 +508,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStat
                 ),
                 SizedBox(height: 1.5.h),
                 DropdownButtonFormField<String>(
-                  value: urgency,
+                  initialValue: urgency,
                   decoration: const InputDecoration(
                     labelText: 'Urgence',
                     border: OutlineInputBorder(),
@@ -499,7 +520,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStat
                     DropdownMenuItem(value: 'high', child: Text('Haute')),
                     DropdownMenuItem(value: 'urgent', child: Text('Urgente')),
                   ],
-                  onChanged: (v) => setModalState(() => urgency = v ?? 'normal'),
+                  onChanged: (v) =>
+                      setModalState(() => urgency = v ?? 'normal'),
                 ),
                 SizedBox(height: 2.h),
                 ElevatedButton.icon(
@@ -509,13 +531,15 @@ class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStat
                         amountController.text.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Veuillez remplir tous les champs obligatoires'),
+                          content: Text(
+                              'Veuillez remplir tous les champs obligatoires'),
                           backgroundColor: Colors.orange,
                         ),
                       );
                       return;
                     }
                     Navigator.pop(ctx);
+                    final messenger = ScaffoldMessenger.of(context);
                     try {
                       await _expenseService.createExpenseRequest(
                         category: categoryController.text,
@@ -528,7 +552,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStat
                         urgency: urgency,
                       );
                       if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        messenger.showSnackBar(
                           const SnackBar(
                             content: Text('Demande créée avec succès'),
                             backgroundColor: Colors.green,
@@ -538,8 +562,10 @@ class _ExpensesScreenState extends State<ExpensesScreen> with TickerProviderStat
                       _loadData();
                     } catch (e) {
                       if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
+                        messenger.showSnackBar(
+                          SnackBar(
+                              content: Text('Erreur: $e'),
+                              backgroundColor: Colors.red),
                         );
                       }
                     }

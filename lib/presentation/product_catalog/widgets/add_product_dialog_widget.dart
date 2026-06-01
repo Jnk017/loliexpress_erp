@@ -59,7 +59,8 @@ class _AddProductDialogWidgetState extends State<AddProductDialogWidget> {
     _nameController.text = product['name'] ?? '';
     _skuController.text = product['sku'] ?? '';
     _barcodeController.text = product['barcode'] ?? '';
-    _priceController.text = (product['unit_price'] ?? product['price'] ?? '').toString();
+    _priceController.text =
+        (product['unit_price'] ?? product['price'] ?? '').toString();
     _descriptionController.text = product['description'] ?? '';
     _minStockController.text = (product['min_stock_level'] ?? 0).toString();
     _imageUrlController.text = product['image_url'] ?? '';
@@ -92,8 +93,10 @@ class _AddProductDialogWidgetState extends State<AddProductDialogWidget> {
   String _generateSku() {
     final name = _nameController.text.trim();
     if (name.isEmpty) return '';
-    final prefix = name.substring(0, name.length >= 3 ? 3 : name.length).toUpperCase();
-    final timestamp = DateTime.now().millisecondsSinceEpoch.toString().substring(8);
+    final prefix =
+        name.substring(0, name.length >= 3 ? 3 : name.length).toUpperCase();
+    final timestamp =
+        DateTime.now().millisecondsSinceEpoch.toString().substring(8);
     return '$prefix-$timestamp';
   }
 
@@ -302,7 +305,8 @@ class _AddProductDialogWidgetState extends State<AddProductDialogWidget> {
             ),
             textInputAction: TextInputAction.next,
             validator: (value) {
-              if (!_autoGenerateSku && (value == null || value.trim().isEmpty)) {
+              if (!_autoGenerateSku &&
+                  (value == null || value.trim().isEmpty)) {
                 return 'Le SKU est requis si non auto-généré';
               }
               return null;
@@ -328,7 +332,7 @@ class _AddProductDialogWidgetState extends State<AddProductDialogWidget> {
 
   Widget _buildCategoryDropdown(ThemeData theme, ColorScheme colorScheme) {
     return DropdownButtonFormField<String>(
-      value: _selectedCategoryId,
+      initialValue: _selectedCategoryId,
       decoration: const InputDecoration(
         labelText: 'Catégorie',
         prefixIcon: Icon(Icons.category_outlined),
@@ -375,7 +379,7 @@ class _AddProductDialogWidgetState extends State<AddProductDialogWidget> {
 
   Widget _buildUnitDropdown(ThemeData theme, ColorScheme colorScheme) {
     return DropdownButtonFormField<String>(
-      value: _selectedUnit,
+      initialValue: _selectedUnit,
       decoration: const InputDecoration(
         labelText: 'Unité de mesure',
         prefixIcon: Icon(Icons.straighten),

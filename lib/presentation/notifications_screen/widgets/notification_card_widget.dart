@@ -7,10 +7,10 @@ class NotificationCardWidget extends StatelessWidget {
   final VoidCallback? onMarkAsRead;
 
   const NotificationCardWidget({
-    Key? key,
+    super.key,
     required this.notification,
     this.onMarkAsRead,
-  }) : super(key: key);
+  });
 
   IconData _getNotificationIcon(String notificationType) {
     switch (notificationType) {

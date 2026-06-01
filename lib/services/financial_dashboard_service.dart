@@ -120,7 +120,7 @@ class FinancialDashboardService {
       for (var payment in paymentsResponse) {
         totalPayments += (payment['amount'] as num?)?.toDouble() ?? 0;
       }
-    
+
       // Calculate total expenses
       final expensesResponse = await _supabase
           .from('expenses')
@@ -135,7 +135,7 @@ class FinancialDashboardService {
       for (var expense in expensesResponse) {
         totalExpenses += (expense['amount'] as num?)?.toDouble() ?? 0;
       }
-    
+
       final cashPosition = totalPayments - totalExpenses;
 
       return {
@@ -171,7 +171,7 @@ class FinancialDashboardService {
       for (var order in ordersResponse) {
         totalRevenue += (order['total_amount'] as num?)?.toDouble() ?? 0;
       }
-    
+
       return {
         'amount': totalRevenue,
         'currency': 'CDF',
@@ -203,7 +203,7 @@ class FinancialDashboardService {
         final paid = (invoice['amount_paid'] as num?)?.toDouble() ?? 0;
         totalOutstanding += (total - paid);
       }
-    
+
       return {
         'amount': totalOutstanding,
         'currency': 'CDF',
@@ -236,7 +236,7 @@ class FinancialDashboardService {
       for (var expense in expensesResponse) {
         totalExpenses += (expense['amount'] as num?)?.toDouble() ?? 0;
       }
-    
+
       return {
         'amount': totalExpenses,
         'currency': 'CDF',
@@ -276,8 +276,7 @@ class FinancialDashboardService {
 
       return response.map((invoice) {
         final customer = invoice['customers'] as Map<String, dynamic>?;
-        final totalAmount =
-            (invoice['total_amount'] as num?)?.toDouble() ?? 0;
+        final totalAmount = (invoice['total_amount'] as num?)?.toDouble() ?? 0;
         final amountPaid = (invoice['amount_paid'] as num?)?.toDouble() ?? 0;
         final dueDate = DateTime.parse(invoice['due_date'] as String);
         final now = DateTime.now();

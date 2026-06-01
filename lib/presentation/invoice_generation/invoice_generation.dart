@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -7,6 +6,8 @@ import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
+import '../../services/customer_service.dart';
+import '../../services/product_service.dart';
 import '../../widgets/custom_app_bar.dart';
 import './widgets/invoice_details_widget.dart';
 import './widgets/invoice_header_widget.dart';
@@ -36,76 +37,19 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
   String _currency = 'CDF';
   String _paymentMethod = 'Virement bancaire';
   int _paymentDays = 30;
-  List<Map<String, dynamic>> _lineItems = [];
+  final List<Map<String, dynamic>> _lineItems = [];
   bool _isProcessing = false;
 
-  // Mock Data
-  final List<Map<String, dynamic>> _customers = [
-    {
-      "id": 1,
-      "name": "Supermarché Carrefour Dakar",
-      "email": "contact@carrefour-dakar.sn",
-      "phone": "+221 33 824 50 00",
-      "address": "Avenue Cheikh Anta Diop, Dakar",
-      "paymentTerms": 30,
-    },
-    {
-      "id": 2,
-      "name": "Hôtel Terrou-Bi",
-      "email": "achats@terroubihotel.com",
-      "phone": "+221 33 839 90 00",
-      "address": "Route de la Corniche Ouest, Dakar",
-      "paymentTerms": 45,
-    },
-    {
-      "id": 3,
-      "name": "Restaurant Le Lagon",
-      "email": "direction@lelagon.sn",
-      "phone": "+221 33 820 10 20",
-      "address": "Almadies, Dakar",
-      "paymentTerms": 15,
-    },
-  ];
-
-  final List<Map<String, dynamic>> _products = [
-    {
-      "id": 1,
-      "name": "Coca-Cola 33cl (Pack de 24)",
-      "unitPrice": 12000.0,
-      "taxRate": 18.0,
-    },
-    {
-      "id": 2,
-      "name": "Sprite 1.5L (Pack de 12)",
-      "unitPrice": 18000.0,
-      "taxRate": 18.0,
-    },
-    {
-      "id": 3,
-      "name": "Fanta Orange 33cl (Pack de 24)",
-      "unitPrice": 11500.0,
-      "taxRate": 18.0,
-    },
-    {
-      "id": 4,
-      "name": "Eau minérale Kirène 1.5L (Pack de 12)",
-      "unitPrice": 6000.0,
-      "taxRate": 18.0,
-    },
-    {
-      "id": 5,
-      "name": "Jus Tropicana Orange 1L (Pack de 12)",
-      "unitPrice": 24000.0,
-      "taxRate": 18.0,
-    },
-  ];
+  List<Map<String, dynamic>> _customers = [];
+  List<Map<String, dynamic>> _products = [];
 
   @override
   void initState() {
     super.initState();
     _generateInvoiceNumber();
+    _loadInvoiceSources();
     _termsController.text =
-        'Paiement à effectuer dans les ${_paymentDays} jours suivant la date de facturation. Pénalités de retard applicables selon les conditions générales de vente.';
+        'Paiement à effectuer dans les $_paymentDays jours suivant la date de facturation. Pénalités de retard applicables selon les conditions générales de vente.';
   }
 
   @override
@@ -123,6 +67,34 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
         (now.millisecondsSinceEpoch % 10000).toString().padLeft(4, '0');
     setState(() {
       _invoiceNumber = 'INV-$year$month-$random';
+    });
+  }
+
+  Future<void> _loadInvoiceSources() async {
+    final results = await Future.wait([
+      CustomerService.instance.getCustomers(limit: 1000),
+      ProductService.instance.getProducts(limit: 1000),
+    ]);
+    if (!mounted) return;
+    setState(() {
+      _customers = (results[0]).map((customer) {
+        return {
+          'id': customer['id'],
+          'name': customer['company_name'] ?? 'Client inconnu',
+          'email': customer['email'] ?? '',
+          'phone': customer['phone'] ?? '',
+          'address': customer['address'] ?? '',
+          'paymentTerms': 30,
+        };
+      }).toList();
+      _products = (results[1]).map((product) {
+        return {
+          'id': product['id'],
+          'name': product['name'] ?? 'Produit inconnu',
+          'unitPrice': (product['unit_price'] as num?)?.toDouble() ?? 0,
+          'taxRate': 0.0,
+        };
+      }).toList();
     });
   }
 
@@ -163,7 +135,7 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
         _paymentDays = selected['paymentTerms'] as int;
         _dueDate = _issueDate.add(Duration(days: _paymentDays));
         _termsController.text =
-            'Paiement à effectuer dans les ${_paymentDays} jours suivant la date de facturation. Pénalités de retard applicables selon les conditions générales de vente.';
+            'Paiement à effectuer dans les $_paymentDays jours suivant la date de facturation. Pénalités de retard applicables selon les conditions générales de vente.';
       });
     }
   }
@@ -359,7 +331,7 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
         _paymentDays = selected;
         _dueDate = _issueDate.add(Duration(days: _paymentDays));
         _termsController.text =
-            'Paiement à effectuer dans les ${_paymentDays} jours suivant la date de facturation. Pénalités de retard applicables selon les conditions générales de vente.';
+            'Paiement à effectuer dans les $_paymentDays jours suivant la date de facturation. Pénalités de retard applicables selon les conditions générales de vente.';
       });
     }
   }
@@ -895,11 +867,13 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
         mimeType: 'application/pdf',
       );
 
-      await Share.shareXFiles(
-        [tempFile],
-        subject: 'Facture $_invoiceNumber',
-        text:
-            'Veuillez trouver ci-joint la facture $_invoiceNumber pour un montant de ${_formatCurrency(_calculateTotal())} $_currency.',
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [tempFile],
+          subject: 'Facture $_invoiceNumber',
+          text:
+              'Veuillez trouver ci-joint la facture $_invoiceNumber pour un montant de ${_formatCurrency(_calculateTotal())} $_currency.',
+        ),
       );
 
       _showSuccessSnackBar('Facture partagée avec succès');

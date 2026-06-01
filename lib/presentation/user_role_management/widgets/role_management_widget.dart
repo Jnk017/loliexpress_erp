@@ -7,9 +7,9 @@ class RoleManagementWidget extends StatefulWidget {
   final VoidCallback onRefresh;
 
   const RoleManagementWidget({
-    Key? key,
+    super.key,
     required this.onRefresh,
-  }) : super(key: key);
+  });
 
   @override
   State<RoleManagementWidget> createState() => _RoleManagementWidgetState();

@@ -32,7 +32,7 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
       FinancialDashboardService();
 
   // Real-time financial data
-  Map<String, dynamic> _financialData = {
+  final Map<String, dynamic> _financialData = {
     "cashPosition": {
       "amount": 0,
       "currency": "CDF",

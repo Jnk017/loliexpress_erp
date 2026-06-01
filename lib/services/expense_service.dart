@@ -7,12 +7,14 @@ class ExpenseService {
 
   SupabaseClient get _client => Supabase.instance.client;
 
-  Future<List<Map<String, dynamic>>> getExpenses({String? status, String? userId, int limit = 50}) async {
+  Future<List<Map<String, dynamic>>> getExpenses(
+      {String? status, String? userId, int limit = 50}) async {
     try {
-      var query = _client.from('expenses').select('*, user_profiles!requested_by(full_name, email)');
+      var query = _client.from('expenses').select('*');
       if (status != null) query = query.eq('status', status);
       if (userId != null) query = query.eq('requested_by', userId);
-      final response = await query.order('created_at', ascending: false).limit(limit);
+      final response =
+          await query.order('created_at', ascending: false).limit(limit);
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
       throw Exception('Erreur chargement dépenses: $e');
@@ -21,8 +23,9 @@ class ExpenseService {
 
   Future<List<Map<String, dynamic>>> getPendingApprovals() async {
     try {
-      final response = await _client.from('expenses')
-          .select('*, user_profiles!requested_by(full_name, email)')
+      final response = await _client
+          .from('expenses')
+          .select('*')
           .eq('status', 'pending_approval')
           .order('created_at', ascending: false);
       return List<Map<String, dynamic>>.from(response);
@@ -33,8 +36,9 @@ class ExpenseService {
 
   Future<List<Map<String, dynamic>>> getPendingPayments() async {
     try {
-      final response = await _client.from('expenses')
-          .select('*, user_profiles!requested_by(full_name, email)')
+      final response = await _client
+          .from('expenses')
+          .select('*')
           .eq('status', 'pending_payment')
           .order('created_at', ascending: false);
       return List<Map<String, dynamic>>.from(response);
@@ -53,18 +57,22 @@ class ExpenseService {
   }) async {
     try {
       final userId = _client.auth.currentUser?.id;
-      final response = await _client.from('expenses').insert({
-        'category': category,
-        'description': description,
-        'amount': amount,
-        'currency': currency,
-        'status': 'pending_approval',
-        'requested_by': userId,
-        'created_by': userId,
-        'expense_date': DateTime.now().toIso8601String().substring(0, 10),
-        if (beneficiary != null) 'beneficiary': beneficiary,
-        'urgency': urgency,
-      }).select().single();
+      final response = await _client
+          .from('expenses')
+          .insert({
+            'category': category,
+            'description': description,
+            'amount': amount,
+            'currency': currency,
+            'status': 'pending_approval',
+            'requested_by': userId,
+            'created_by': userId,
+            'expense_date': DateTime.now().toIso8601String().substring(0, 10),
+            if (beneficiary != null) 'beneficiary': beneficiary,
+            'urgency': urgency,
+          })
+          .select()
+          .single();
 
       await _addHistory(response['id'], 'submitted', null);
       return response;
@@ -137,7 +145,8 @@ class ExpenseService {
     }
   }
 
-  Future<void> _addHistory(String expenseId, String action, String? comment) async {
+  Future<void> _addHistory(
+      String expenseId, String action, String? comment) async {
     try {
       await _client.from('expense_approval_history').insert({
         'expense_id': expenseId,
@@ -152,8 +161,9 @@ class ExpenseService {
 
   Future<List<Map<String, dynamic>>> getExpenseHistory(String expenseId) async {
     try {
-      final response = await _client.from('expense_approval_history')
-          .select('*, user_profiles!performed_by(full_name)')
+      final response = await _client
+          .from('expense_approval_history')
+          .select('*')
           .eq('expense_id', expenseId)
           .order('created_at');
       return List<Map<String, dynamic>>.from(response);
@@ -164,7 +174,8 @@ class ExpenseService {
 
   Future<Map<String, dynamic>> getExpenseStats() async {
     try {
-      final expenses = await _client.from('expenses').select('amount, currency, status');
+      final expenses =
+          await _client.from('expenses').select('amount, currency, status');
       double totalCDF = 0, totalUSD = 0;
       int pending = 0, approved = 0, paid = 0, rejected = 0;
       for (final e in expenses) {
@@ -175,10 +186,20 @@ class ExpenseService {
           totalCDF += amount;
         }
         switch (e['status']) {
-          case 'pending_approval': pending++; break;
-          case 'pending_payment': case 'approved': approved++; break;
-          case 'paid': case 'executed': paid++; break;
-          case 'rejected': rejected++; break;
+          case 'pending_approval':
+            pending++;
+            break;
+          case 'pending_payment':
+          case 'approved':
+            approved++;
+            break;
+          case 'paid':
+          case 'executed':
+            paid++;
+            break;
+          case 'rejected':
+            rejected++;
+            break;
         }
       }
       return {

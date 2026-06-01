@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../core/app_export.dart';
+import '../../../services/support_service.dart';
 
 /// Support Tab Widget
 /// Provides direct messaging with sales representatives and FAQ section
@@ -15,42 +16,7 @@ class SupportTabWidget extends StatefulWidget {
 class _SupportTabWidgetState extends State<SupportTabWidget> {
   final TextEditingController _messageController = TextEditingController();
 
-  // Mock messages data
-  final List<Map<String, dynamic>> _messages = [
-    {
-      "id": 1,
-      "sender": "support",
-      "senderName": "Marie Kouassi",
-      "message": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
-      "timestamp": DateTime(2025, 11, 27, 9, 30),
-      "isRead": true,
-    },
-    {
-      "id": 2,
-      "sender": "customer",
-      "senderName": "Vous",
-      "message": "Bonjour, j'ai une question concernant ma dernière commande.",
-      "timestamp": DateTime(2025, 11, 27, 9, 32),
-      "isRead": true,
-    },
-    {
-      "id": 3,
-      "sender": "support",
-      "senderName": "Marie Kouassi",
-      "message":
-          "Bien sûr ! Pouvez-vous me donner le numéro de votre commande ?",
-      "timestamp": DateTime(2025, 11, 27, 9, 33),
-      "isRead": true,
-    },
-    {
-      "id": 4,
-      "sender": "customer",
-      "senderName": "Vous",
-      "message": "C'est la commande CMD-2024-1156",
-      "timestamp": DateTime(2025, 11, 27, 9, 35),
-      "isRead": true,
-    },
-  ];
+  List<Map<String, dynamic>> _messages = [];
 
   // Mock FAQ data
   final List<Map<String, dynamic>> _faqs = [
@@ -97,6 +63,30 @@ class _SupportTabWidgetState extends State<SupportTabWidget> {
       "isExpanded": false,
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTickets();
+  }
+
+  Future<void> _loadTickets() async {
+    final tickets = await SupportService.instance.getMyTickets();
+    if (!mounted) return;
+    setState(() {
+      _messages = tickets.map((ticket) {
+        return {
+          "id": ticket['id'],
+          "sender": "customer",
+          "senderName": "Vous",
+          "message": ticket['message'] ?? '',
+          "timestamp":
+              DateTime.tryParse(ticket['created_at'] ?? '') ?? DateTime.now(),
+          "isRead": ticket['status'] == 'resolved',
+        };
+      }).toList();
+    });
+  }
 
   @override
   void dispose() {
@@ -498,32 +488,20 @@ class _SupportTabWidgetState extends State<SupportTabWidget> {
     }
   }
 
-  void _sendMessage(String message) {
+  Future<void> _sendMessage(String message) async {
+    await SupportService.instance.createTicket(
+      subject: 'Demande portail client',
+      message: message,
+    );
     setState(() {
       _messages.add({
-        "id": _messages.length + 1,
+        "id": DateTime.now().microsecondsSinceEpoch,
         "sender": "customer",
         "senderName": "Vous",
         "message": message,
         "timestamp": DateTime.now(),
         "isRead": true,
       });
-    });
-
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() {
-          _messages.add({
-            "id": _messages.length + 1,
-            "sender": "support",
-            "senderName": "Marie Kouassi",
-            "message":
-                "Merci pour votre message. Je vérifie cela et je reviens vers vous dans quelques instants.",
-            "timestamp": DateTime.now(),
-            "isRead": false,
-          });
-        });
-      }
     });
   }
 

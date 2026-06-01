@@ -8,9 +8,9 @@ class DocumentPreviewWidget extends StatefulWidget {
   final Map<String, dynamic> document;
 
   const DocumentPreviewWidget({
-    Key? key,
+    super.key,
     required this.document,
-  }) : super(key: key);
+  });
 
   @override
   State<DocumentPreviewWidget> createState() => _DocumentPreviewWidgetState();

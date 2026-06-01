@@ -12,7 +12,8 @@ class PurchaseService {
     try {
       var query = _client.from('suppliers').select();
       if (search != null && search.isNotEmpty) {
-        query = query.or('company_name.ilike.%$search%,contact_person.ilike.%$search%');
+        query = query
+            .or('company_name.ilike.%$search%,contact_person.ilike.%$search%');
       }
       final response = await query.order('company_name');
       return List<Map<String, dynamic>>.from(response);
@@ -29,21 +30,31 @@ class PurchaseService {
     }
   }
 
-  Future<Map<String, dynamic>> updateSupplier(String id, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> updateSupplier(
+      String id, Map<String, dynamic> data) async {
     try {
-      return await _client.from('suppliers').update(data).eq('id', id).select().single();
+      return await _client
+          .from('suppliers')
+          .update(data)
+          .eq('id', id)
+          .select()
+          .single();
     } catch (e) {
       throw Exception('Erreur mise à jour fournisseur: $e');
     }
   }
 
   // Purchases
-  Future<List<Map<String, dynamic>>> getPurchases({String? status, String? supplierId, int limit = 50}) async {
+  Future<List<Map<String, dynamic>>> getPurchases(
+      {String? status, String? supplierId, int limit = 50}) async {
     try {
-      var query = _client.from('purchases').select('*, suppliers(company_name, contact_person)');
+      var query = _client
+          .from('purchases')
+          .select('*, suppliers(company_name, contact_person)');
       if (status != null) query = query.eq('status', status);
       if (supplierId != null) query = query.eq('supplier_id', supplierId);
-      final response = await query.order('created_at', ascending: false).limit(limit);
+      final response =
+          await query.order('created_at', ascending: false).limit(limit);
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
       throw Exception('Erreur chargement achats: $e');
@@ -52,7 +63,12 @@ class PurchaseService {
 
   Future<Map<String, dynamic>?> getPurchaseById(String id) async {
     try {
-      return await _client.from('purchases').select('*, suppliers(company_name), purchase_items(*, products(name, sku))').eq('id', id).maybeSingle();
+      return await _client
+          .from('purchases')
+          .select(
+              '*, suppliers(company_name), purchase_items(*, products(name, sku))')
+          .eq('id', id)
+          .maybeSingle();
     } catch (e) {
       throw Exception('Erreur chargement achat: $e');
     }
@@ -71,16 +87,21 @@ class PurchaseService {
         totalAmount += (item['quantity'] as num) * (item['unit_cost'] as num);
       }
 
-      final purchase = await _client.from('purchases').insert({
-        'supplier_id': supplierId,
-        'total_amount': totalAmount,
-        'currency': currency,
-        'exchange_rate': exchangeRate,
-        'status': 'pending',
-        'payment_status': 'pending',
-        'received_by': _client.auth.currentUser?.id,
-        if (notes != null) 'notes': notes,
-      }).select().single();
+      final purchase = await _client
+          .from('purchases')
+          .insert({
+            'supplier_id': supplierId,
+            'total_amount': totalAmount,
+            'currency': currency,
+            'exchange_rate': exchangeRate,
+            'status': 'pending',
+            'payment_status': 'pending',
+            'created_by': _client.auth.currentUser?.id,
+            'received_by': _client.auth.currentUser?.id,
+            if (notes != null) 'notes': notes,
+          })
+          .select()
+          .single();
 
       for (final item in items) {
         await _client.from('purchase_items').insert({
@@ -98,12 +119,18 @@ class PurchaseService {
     }
   }
 
-  Future<Map<String, dynamic>> updatePurchaseStatus(String id, String status) async {
+  Future<Map<String, dynamic>> updatePurchaseStatus(
+      String id, String status) async {
     try {
-      return await _client.from('purchases').update({
-        'status': status,
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('id', id).select().single();
+      return await _client
+          .from('purchases')
+          .update({
+            'status': status,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', id)
+          .select()
+          .single();
     } catch (e) {
       throw Exception('Erreur mise à jour statut: $e');
     }
@@ -112,7 +139,9 @@ class PurchaseService {
   // Stats
   Future<Map<String, dynamic>> getPurchaseStats() async {
     try {
-      final purchases = await _client.from('purchases').select('total_amount, currency, status, payment_status');
+      final purchases = await _client
+          .from('purchases')
+          .select('total_amount, currency, status, payment_status');
       double totalCDF = 0, totalUSD = 0;
       int pending = 0, received = 0, unpaid = 0;
       for (final p in purchases) {
@@ -172,10 +201,18 @@ class PurchaseService {
         }
 
         switch (bracket) {
-          case '0-30 jours': count0_30++; break;
-          case '31-60 jours': count31_60++; break;
-          case '61-90 jours': count61_90++; break;
-          case '90+ jours': count90plus++; break;
+          case '0-30 jours':
+            count0_30++;
+            break;
+          case '31-60 jours':
+            count31_60++;
+            break;
+          case '61-90 jours':
+            count61_90++;
+            break;
+          case '90+ jours':
+            count90plus++;
+            break;
         }
       }
 

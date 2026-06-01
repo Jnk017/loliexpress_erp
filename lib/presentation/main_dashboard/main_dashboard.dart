@@ -486,12 +486,14 @@ class _MainDashboardState extends State<MainDashboard>
                     labelColor: theme.colorScheme.primary,
                     unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
                     indicatorColor: theme.colorScheme.primary,
-                    tabs: _visibleTabs
-                        .map((t) => Tab(text: t.label))
-                        .toList(),
+                    tabs: _visibleTabs.map((t) => Tab(text: t.label)).toList(),
                   ),
                 ),
                 SizedBox(height: 2.h),
+                if (RoleService.instance.currentRole == UserRole.admin) ...[
+                  _buildAdministrationSection(theme),
+                  SizedBox(height: 2.h),
+                ],
               ],
             ),
           ),
@@ -513,8 +515,7 @@ class _MainDashboardState extends State<MainDashboard>
                         change: kpi["change"],
                         isPositive: kpi["isPositive"],
                         icon: kpi["icon"],
-                        onTap: () =>
-                            Navigator.pushNamed(context, kpi["route"]),
+                        onTap: () => Navigator.pushNamed(context, kpi["route"]),
                       ),
                     ),
                   );
@@ -535,10 +536,59 @@ class _MainDashboardState extends State<MainDashboard>
       ),
     );
   }
+
+  Widget _buildAdministrationSection(ThemeData theme) {
+    final items = [
+      _AdminItem('Audit', 'history', '/audit-log'),
+      _AdminItem('Sécurité', 'security', '/security-dashboard'),
+      _AdminItem('Alertes', 'warning', '/security-alert-center'),
+      _AdminItem('Automations', 'rule', '/automation-rules-manager'),
+      _AdminItem('Incidents', 'report_problem', '/incident-management-center'),
+      _AdminItem('Utilisateurs', 'manage_accounts', '/user-role-management'),
+    ];
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 4.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Administration',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          SizedBox(height: 1.h),
+          Wrap(
+            spacing: 2.w,
+            runSpacing: 1.h,
+            children: items.map((item) {
+              return ActionChip(
+                avatar: CustomIconWidget(
+                  iconName: item.icon,
+                  color: theme.colorScheme.primary,
+                  size: 18,
+                ),
+                label: Text(item.label),
+                onPressed: () => Navigator.pushNamed(context, item.route),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _TabInfo {
   final String label;
   final String route;
   const _TabInfo({required this.label, required this.route});
+}
+
+class _AdminItem {
+  final String label;
+  final String icon;
+  final String route;
+  const _AdminItem(this.label, this.icon, this.route);
 }

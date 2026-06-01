@@ -5,9 +5,9 @@ class UploadButtonWidget extends StatelessWidget {
   final VoidCallback onUpload;
 
   const UploadButtonWidget({
-    Key? key,
+    super.key,
     required this.onUpload,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

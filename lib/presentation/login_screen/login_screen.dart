@@ -96,7 +96,8 @@ class _LoginScreenState extends State<LoginScreen> {
       await RoleService.instance.refreshRole();
       if (!mounted) return;
 
-      Navigator.pushReplacementNamed(context, RoleService.instance.getHomeRoute());
+      Navigator.pushReplacementNamed(
+          context, RoleService.instance.getHomeRoute());
     } catch (e) {
       if (!mounted) return;
       setState(() {

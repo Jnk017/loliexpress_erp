@@ -11,7 +11,7 @@ import './widgets/settings_section_widget.dart';
 import './widgets/user_profile_header_widget.dart';
 
 class SettingsConfigurationScreen extends StatefulWidget {
-  const SettingsConfigurationScreen({Key? key}) : super(key: key);
+  const SettingsConfigurationScreen({super.key});
 
   @override
   State<SettingsConfigurationScreen> createState() =>
@@ -41,7 +41,8 @@ class _SettingsConfigurationScreenState
     final user = AuthService.instance.currentUser;
     if (mounted) {
       setState(() {
-        _userName = profile?['full_name'] ?? user?.userMetadata?['full_name'] ?? 'User';
+        _userName =
+            profile?['full_name'] ?? user?.userMetadata?['full_name'] ?? 'User';
         _userEmail = user?.email ?? '';
         _userRole = profile?['role'] ?? user?.userMetadata?['role'] ?? 'User';
       });
@@ -566,20 +567,19 @@ class _SettingsConfigurationScreenState
         title: Text('Data Sync Frequency'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children:
-              [
-                    'Every 5 minutes',
-                    'Every 15 minutes',
-                    'Every 30 minutes',
-                    'Every hour',
-                  ]
-                  .map(
-                    (freq) => ListTile(
-                      title: Text(freq),
-                      onTap: () => Navigator.pop(context),
-                    ),
-                  )
-                  .toList(),
+          children: [
+            'Every 5 minutes',
+            'Every 15 minutes',
+            'Every 30 minutes',
+            'Every hour',
+          ]
+              .map(
+                (freq) => ListTile(
+                  title: Text(freq),
+                  onTap: () => Navigator.pop(context),
+                ),
+              )
+              .toList(),
         ),
       ),
     );
@@ -782,12 +782,13 @@ class _SettingsConfigurationScreenState
           ),
           ElevatedButton(
             onPressed: () async {
+              final navigator = Navigator.of(context);
               Navigator.pop(context);
               try {
                 await AuthService.instance.signOut();
               } catch (_) {}
               if (mounted) {
-                Navigator.of(context).pushNamedAndRemoveUntil(
+                navigator.pushNamedAndRemoveUntil(
                   AppRoutes.login,
                   (route) => false,
                 );

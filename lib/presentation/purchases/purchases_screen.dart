@@ -227,7 +227,8 @@ class _PurchasesScreenState extends State<PurchasesScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.shopping_bag_outlined, size: 64, color: Colors.grey.shade400),
+            Icon(Icons.shopping_bag_outlined,
+                size: 64, color: Colors.grey.shade400),
             SizedBox(height: 2.h),
             Text(
               'Aucun achat trouvé',
@@ -293,9 +294,10 @@ class _PurchasesScreenState extends State<PurchasesScreen>
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(status).withOpacity(0.1),
+                    color: _getStatusColor(status).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -339,9 +341,11 @@ class _PurchasesScreenState extends State<PurchasesScreen>
                 Icon(Icons.payment, size: 14, color: Colors.grey),
                 SizedBox(width: 1.w),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 1.5.w, vertical: 0.3.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 1.5.w, vertical: 0.3.h),
                   decoration: BoxDecoration(
-                    color: _getPaymentStatusColor(paymentStatus).withOpacity(0.1),
+                    color: _getPaymentStatusColor(paymentStatus)
+                        .withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -440,10 +444,13 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
       return;
     }
 
-    final validItems = _items.where((i) => i.productId != null && i.quantity > 0 && i.unitCost > 0).toList();
+    final validItems = _items
+        .where((i) => i.productId != null && i.quantity > 0 && i.unitCost > 0)
+        .toList();
     if (validItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Veuillez remplir les détails des produits')),
+        const SnackBar(
+            content: Text('Veuillez remplir les détails des produits')),
       );
       return;
     }
@@ -452,11 +459,13 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
     try {
       await PurchaseService.instance.createPurchase(
         supplierId: _selectedSupplierId!,
-        items: validItems.map((i) => {
-          'product_id': i.productId!,
-          'quantity': i.quantity,
-          'unit_cost': i.unitCost,
-        }).toList(),
+        items: validItems
+            .map((i) => {
+                  'product_id': i.productId!,
+                  'quantity': i.quantity,
+                  'unit_cost': i.unitCost,
+                })
+            .toList(),
         currency: _selectedCurrency,
       );
       if (!mounted) return;
@@ -494,11 +503,12 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                 children: [
                   Text(
                     'Nouvel Achat',
-                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                    style:
+                        TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 2.h),
                   DropdownButtonFormField<String>(
-                    value: _selectedSupplierId,
+                    initialValue: _selectedSupplierId,
                     decoration: const InputDecoration(
                       labelText: 'Fournisseur',
                       border: OutlineInputBorder(),
@@ -514,17 +524,20 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                   ),
                   SizedBox(height: 2.h),
                   DropdownButtonFormField<String>(
-                    value: _selectedCurrency,
+                    initialValue: _selectedCurrency,
                     decoration: const InputDecoration(
                       labelText: 'Devise',
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.monetization_on),
                     ),
                     items: const [
-                      DropdownMenuItem(value: 'CDF', child: Text('CDF (Franc Congolais)')),
-                      DropdownMenuItem(value: 'USD', child: Text('USD (Dollar US)')),
+                      DropdownMenuItem(
+                          value: 'CDF', child: Text('CDF (Franc Congolais)')),
+                      DropdownMenuItem(
+                          value: 'USD', child: Text('USD (Dollar US)')),
                     ],
-                    onChanged: (v) => setState(() => _selectedCurrency = v ?? 'CDF'),
+                    onChanged: (v) =>
+                        setState(() => _selectedCurrency = v ?? 'CDF'),
                   ),
                   SizedBox(height: 2.h),
                   Row(
@@ -532,7 +545,8 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                     children: [
                       Text(
                         'Produits',
-                        style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                            fontSize: 13.sp, fontWeight: FontWeight.w600),
                       ),
                       TextButton.icon(
                         onPressed: _addItem,
@@ -553,7 +567,8 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                       children: [
                         Text(
                           'Total:',
-                          style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 14.sp, fontWeight: FontWeight.bold),
                         ),
                         Text(
                           '$currencySymbol ${_totalAmount.toStringAsFixed(_selectedCurrency == "USD" ? 2 : 0)}',
@@ -571,7 +586,8 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        onPressed: _isSubmitting ? null : () => Navigator.pop(context),
+                        onPressed:
+                            _isSubmitting ? null : () => Navigator.pop(context),
                         child: const Text('Annuler'),
                       ),
                       SizedBox(width: 2.w),
@@ -581,7 +597,8 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                             ? const SizedBox(
                                 width: 20,
                                 height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
                               )
                             : const Text('Créer'),
                       ),
@@ -604,7 +621,7 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: item.productId,
+                    initialValue: item.productId,
                     decoration: const InputDecoration(
                       labelText: 'Produit',
                       border: OutlineInputBorder(),
@@ -642,7 +659,8 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                       isDense: true,
                     ),
                     keyboardType: TextInputType.number,
-                    initialValue: item.quantity > 0 ? item.quantity.toString() : '',
+                    initialValue:
+                        item.quantity > 0 ? item.quantity.toString() : '',
                     onChanged: (v) {
                       setState(() {
                         item.quantity = int.tryParse(v) ?? 0;
@@ -659,7 +677,8 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                       isDense: true,
                     ),
                     keyboardType: TextInputType.number,
-                    initialValue: item.unitCost > 0 ? item.unitCost.toString() : '',
+                    initialValue:
+                        item.unitCost > 0 ? item.unitCost.toString() : '',
                     onChanged: (v) {
                       setState(() {
                         item.unitCost = double.tryParse(v) ?? 0;

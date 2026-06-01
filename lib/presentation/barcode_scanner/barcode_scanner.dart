@@ -4,6 +4,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
+import '../../services/product_service.dart';
 import '../../widgets/custom_icon_widget.dart';
 import './widgets/scan_history_item.dart';
 import './widgets/scan_result_bottom_sheet.dart';
@@ -45,46 +46,6 @@ class _BarcodeScannerState extends State<BarcodeScanner>
       "context": "Réception",
     },
   ];
-
-  // Mock product database
-  final Map<String, Map<String, dynamic>> _productDatabase = {
-    "3760074380213": {
-      "name": "Coca-Cola Original 330ml",
-      "sku": "COC-330-001",
-      "stock": 245,
-      "price": "450 FC",
-      "image":
-          "https://images.unsplash.com/photo-1675599591199-7bced32f7f97",
-      "semanticLabel":
-          "Red Coca-Cola can with white logo on white background, classic 330ml size",
-      "category": "Boissons gazeuses",
-      "location": "Entrepôt A - Allée 3",
-    },
-    "8901234567890": {
-      "name": "Sprite Citron 500ml",
-      "sku": "SPR-500-002",
-      "stock": 189,
-      "price": "550 FC",
-      "image":
-          "https://images.unsplash.com/photo-1592860893757-84536a1c9b82",
-      "semanticLabel":
-          "Green Sprite bottle with lemon-lime graphics, 500ml plastic bottle",
-      "category": "Boissons gazeuses",
-      "location": "Entrepôt A - Allée 4",
-    },
-    "QR-ORD-2024-001": {
-      "name": "Commande #2024-001",
-      "sku": "ORD-2024-001",
-      "stock": 0,
-      "price": "125 000 FC",
-      "image":
-          "https://images.unsplash.com/photo-1644507881446-41ed9ee2c928",
-      "semanticLabel":
-          "Cardboard boxes stacked on warehouse pallet with shipping labels",
-      "category": "Commande",
-      "location": "Zone de réception",
-    },
-  };
 
   @override
   void initState() {
@@ -182,7 +143,7 @@ class _BarcodeScannerState extends State<BarcodeScanner>
     );
   }
 
-  void _handleScanResult(String code, String format) {
+  Future<void> _handleScanResult(String code, String format) async {
     if (_lastScannedCode == code) return;
 
     setState(() {
@@ -193,15 +154,35 @@ class _BarcodeScannerState extends State<BarcodeScanner>
     // Haptic feedback
     HapticFeedback.mediumImpact();
 
-    // Audio confirmation would go here
-    // For now, we'll just show the result
-
-    final product = _productDatabase[code];
+    final product = await _findProductByBarcode(code);
+    await ProductService.instance.recordBarcodeScan(
+      code,
+      productId: product?['id'] as String?,
+      scanType: format,
+    );
+    if (!mounted) return;
     if (product != null) {
       _showProductBottomSheet(product, code, format);
     } else {
       _showProductNotFound(code, format);
     }
+  }
+
+  Future<Map<String, dynamic>?> _findProductByBarcode(String code) async {
+    final product = await ProductService.instance.getProductByBarcode(code);
+    if (product == null) return null;
+    final category = product['product_categories'] as Map<String, dynamic>?;
+    return {
+      'id': product['id'],
+      'name': product['name'] as String? ?? 'Produit inconnu',
+      'sku': product['sku'] as String? ?? 'N/A',
+      'stock': (product['current_stock'] as num?)?.toInt() ?? 0,
+      'price': '${product['unit_price'] ?? 0} ${product['currency'] ?? 'CDF'}',
+      'image': product['image_url'] as String? ?? '',
+      'semanticLabel': product['name'] as String? ?? 'Produit',
+      'category': category?['name'] as String? ?? 'Non classé',
+      'location': 'Voir inventaire',
+    };
   }
 
   void _showProductBottomSheet(

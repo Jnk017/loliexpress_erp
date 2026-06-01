@@ -107,7 +107,7 @@ class _UploadEvidenceDialogWidgetState
               ),
               SizedBox(height: 2.h),
               DropdownButtonFormField<String>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 decoration: const InputDecoration(
                   labelText: 'Category',
                   border: OutlineInputBorder(),

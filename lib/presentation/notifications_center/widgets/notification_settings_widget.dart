@@ -3,7 +3,7 @@ import 'package:sizer/sizer.dart';
 
 /// Bottom sheet for notification settings and preferences
 class NotificationSettingsWidget extends StatefulWidget {
-  const NotificationSettingsWidget({Key? key}) : super(key: key);
+  const NotificationSettingsWidget({super.key});
 
   @override
   State<NotificationSettingsWidget> createState() =>
@@ -167,7 +167,7 @@ class _NotificationSettingsWidgetState
                 });
               },
             );
-          }).toList(),
+          }),
 
           SizedBox(height: 2.h),
 

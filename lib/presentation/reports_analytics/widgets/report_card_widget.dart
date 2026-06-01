@@ -8,12 +8,12 @@ class ReportCardWidget extends StatelessWidget {
   final VoidCallback onTap;
 
   const ReportCardWidget({
-    Key? key,
+    super.key,
     required this.title,
     required this.subtitle,
     required this.icon,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

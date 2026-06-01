@@ -29,8 +29,7 @@ class UserManagementService {
           users.where((u) => u['role'] == 'warehouse_staff').length;
       final comptableCount =
           users.where((u) => u['role'] == 'comptable').length;
-      final acheteurCount =
-          users.where((u) => u['role'] == 'acheteur').length;
+      final acheteurCount = users.where((u) => u['role'] == 'acheteur').length;
       final customerCount =
           users.where((u) => u['role'] == 'b2b_customer').length;
 

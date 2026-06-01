@@ -7,7 +7,7 @@ class CurrencyService {
 
   static const String defaultCurrency = 'CDF';
   static const List<String> supportedCurrencies = ['CDF', 'USD'];
-  
+
   double _exchangeRate = 2750.0; // 1 USD = 2750 CDF (default)
 
   double get exchangeRate => _exchangeRate;
@@ -27,9 +27,15 @@ class CurrencyService {
   double convertToCDF(double amountUSD) => amountUSD * _exchangeRate;
 
   double convert(double amount, String fromCurrency, String toCurrency) {
-    if (fromCurrency == toCurrency) return amount;
-    if (fromCurrency == 'CDF' && toCurrency == 'USD') return convertToUSD(amount);
-    if (fromCurrency == 'USD' && toCurrency == 'CDF') return convertToCDF(amount);
+    if (fromCurrency == toCurrency) {
+      return amount;
+    }
+    if (fromCurrency == 'CDF' && toCurrency == 'USD') {
+      return convertToUSD(amount);
+    }
+    if (fromCurrency == 'USD' && toCurrency == 'CDF') {
+      return convertToCDF(amount);
+    }
     return amount;
   }
 

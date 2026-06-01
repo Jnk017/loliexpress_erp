@@ -130,9 +130,8 @@ class UserAnalyticsService {
       return {
         'total_sessions': totalSessions,
         'avg_duration_minutes': avgDuration.toStringAsFixed(1),
-        'peak_login_hours': (hourlyDistribution.entries
-            .toList()
-            ..sort((a, b) => b.value.compareTo(a.value)))
+        'peak_login_hours': (hourlyDistribution.entries.toList()
+              ..sort((a, b) => b.value.compareTo(a.value)))
             .take(3)
             .map((e) => '${e.key}:00')
             .toList(),

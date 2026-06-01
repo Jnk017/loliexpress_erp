@@ -182,7 +182,7 @@ class _IncidentDetailsDialogWidgetState
                     ),
                     SizedBox(height: 1.h),
                     DropdownButtonFormField<String>(
-                      value: _selectedStatus,
+                      initialValue: _selectedStatus,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),

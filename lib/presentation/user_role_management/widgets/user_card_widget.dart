@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-
 class UserCardWidget extends StatelessWidget {
   final Map<String, dynamic> user;
   final VoidCallback onEdit;
@@ -9,12 +8,12 @@ class UserCardWidget extends StatelessWidget {
   final VoidCallback onResetPassword;
 
   const UserCardWidget({
-    Key? key,
+    super.key,
     required this.user,
     required this.onEdit,
     required this.onToggleStatus,
     required this.onResetPassword,
-  }) : super(key: key);
+  });
 
   Color _getRoleColor(String role) {
     switch (role.toUpperCase()) {

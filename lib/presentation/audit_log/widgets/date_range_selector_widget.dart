@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 
-
 class DateRangeSelectorWidget extends StatelessWidget {
   final DateTimeRange? selectedDateRange;
   final Function(DateTimeRange?) onDateRangeChanged;

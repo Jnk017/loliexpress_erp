@@ -22,7 +22,7 @@ class TimeRangeSelectorWidget extends StatelessWidget {
         SizedBox(width: 2.w),
         Expanded(
           child: DropdownButtonFormField<String>(
-            value: selectedRange,
+            initialValue: selectedRange,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),

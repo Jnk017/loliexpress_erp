@@ -13,11 +13,11 @@ class DocumentsScreen extends StatefulWidget {
   final String entityName;
 
   const DocumentsScreen({
-    Key? key,
+    super.key,
     required this.entityType,
     required this.entityId,
     required this.entityName,
-  }) : super(key: key);
+  });
 
   @override
   State<DocumentsScreen> createState() => _DocumentsScreenState();
@@ -59,14 +59,16 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 
   Future<void> _handleUpload() async {
+    final messenger = ScaffoldMessenger.of(context);
     try {
       final documentId = await _documentService.pickAndUploadDocument(
         entityType: widget.entityType,
         entityId: widget.entityId,
       );
+      if (!mounted) return;
 
       if (documentId != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           const SnackBar(
             content: Text('Document téléchargé avec succès'),
             backgroundColor: Colors.green,
@@ -75,7 +77,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         _loadDocuments();
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (!mounted) return;
+      messenger.showSnackBar(
         SnackBar(
           content: Text('Erreur: ${e.toString()}'),
           backgroundColor: Colors.red,
@@ -104,9 +107,12 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     );
 
     if (confirm == true) {
+      if (!mounted) return;
+      final messenger = ScaffoldMessenger.of(context);
       try {
         await _documentService.deleteDocument(documentId, filePath);
-        ScaffoldMessenger.of(context).showSnackBar(
+        if (!mounted) return;
+        messenger.showSnackBar(
           const SnackBar(
             content: Text('Document supprimé'),
             backgroundColor: Colors.green,
@@ -114,7 +120,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         );
         _loadDocuments();
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        if (!mounted) return;
+        messenger.showSnackBar(
           SnackBar(
             content: Text('Erreur: ${e.toString()}'),
             backgroundColor: Colors.red,

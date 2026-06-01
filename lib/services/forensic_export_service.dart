@@ -202,63 +202,103 @@ class ForensicExportService {
         ''').order('exported_at', ascending: false).limit(limit);
 
     if (status != null) {
-      final statusQuery = await _client.from(tableExportHistory).select('''
+      final statusQuery = await _client
+          .from(tableExportHistory)
+          .select('''
           *,
           template:template_id(*),
           exporter:exported_by(id, full_name, email)
-        ''').eq('status', status).order('exported_at', ascending: false).limit(limit);
-      
+        ''')
+          .eq('status', status)
+          .order('exported_at', ascending: false)
+          .limit(limit);
+
       if (startDate != null) {
-        final startDateQuery = await _client.from(tableExportHistory).select('''
+        final startDateQuery = await _client
+            .from(tableExportHistory)
+            .select('''
           *,
           template:template_id(*),
           exporter:exported_by(id, full_name, email)
-        ''').eq('status', status).gte('exported_at', startDate.toIso8601String()).order('exported_at', ascending: false).limit(limit);
-        
+        ''')
+            .eq('status', status)
+            .gte('exported_at', startDate.toIso8601String())
+            .order('exported_at', ascending: false)
+            .limit(limit);
+
         if (endDate != null) {
-          final response = await _client.from(tableExportHistory).select('''
+          final response = await _client
+              .from(tableExportHistory)
+              .select('''
           *,
           template:template_id(*),
           exporter:exported_by(id, full_name, email)
-        ''').eq('status', status).gte('exported_at', startDate.toIso8601String()).lte('exported_at', endDate.toIso8601String()).order('exported_at', ascending: false).limit(limit);
+        ''')
+              .eq('status', status)
+              .gte('exported_at', startDate.toIso8601String())
+              .lte('exported_at', endDate.toIso8601String())
+              .order('exported_at', ascending: false)
+              .limit(limit);
           return List<Map<String, dynamic>>.from(response);
         }
         return List<Map<String, dynamic>>.from(startDateQuery);
       } else if (endDate != null) {
-        final endDateQuery = await _client.from(tableExportHistory).select('''
+        final endDateQuery = await _client
+            .from(tableExportHistory)
+            .select('''
           *,
           template:template_id(*),
           exporter:exported_by(id, full_name, email)
-        ''').eq('status', status).lte('exported_at', endDate.toIso8601String()).order('exported_at', ascending: false).limit(limit);
+        ''')
+            .eq('status', status)
+            .lte('exported_at', endDate.toIso8601String())
+            .order('exported_at', ascending: false)
+            .limit(limit);
         return List<Map<String, dynamic>>.from(endDateQuery);
       }
       return List<Map<String, dynamic>>.from(statusQuery);
     }
 
     if (startDate != null) {
-      final startDateQuery = await _client.from(tableExportHistory).select('''
+      final startDateQuery = await _client
+          .from(tableExportHistory)
+          .select('''
           *,
           template:template_id(*),
           exporter:exported_by(id, full_name, email)
-        ''').gte('exported_at', startDate.toIso8601String()).order('exported_at', ascending: false).limit(limit);
-      
+        ''')
+          .gte('exported_at', startDate.toIso8601String())
+          .order('exported_at', ascending: false)
+          .limit(limit);
+
       if (endDate != null) {
-        final response = await _client.from(tableExportHistory).select('''
+        final response = await _client
+            .from(tableExportHistory)
+            .select('''
           *,
           template:template_id(*),
           exporter:exported_by(id, full_name, email)
-        ''').gte('exported_at', startDate.toIso8601String()).lte('exported_at', endDate.toIso8601String()).order('exported_at', ascending: false).limit(limit);
+        ''')
+            .gte('exported_at', startDate.toIso8601String())
+            .lte('exported_at', endDate.toIso8601String())
+            .order('exported_at', ascending: false)
+            .limit(limit);
         return List<Map<String, dynamic>>.from(response);
       }
       return List<Map<String, dynamic>>.from(startDateQuery);
     }
 
     if (endDate != null) {
-      final endDateQuery = await _client.from(tableExportHistory).select('''
+      final endDateQuery = await _client
+          .from(tableExportHistory)
+          .select('''
           *,
           template:template_id(*),
           exporter:exported_by(id, full_name, email)
-        ''').lte('exported_at', endDate.toIso8601String()).order('exported_at', ascending: false).limit(limit);
+        ''')
+          .lte('exported_at', endDate.toIso8601String())
+          .order('exported_at', ascending: false)
+          .limit(limit);
       return List<Map<String, dynamic>>.from(endDateQuery);
     }
 

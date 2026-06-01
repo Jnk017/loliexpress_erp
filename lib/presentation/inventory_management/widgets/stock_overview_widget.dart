@@ -3,6 +3,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../core/app_export.dart';
+import '../../../services/inventory_service.dart';
 
 class StockOverviewWidget extends StatefulWidget {
   final String selectedLocation;
@@ -21,92 +22,72 @@ class StockOverviewWidget extends StatefulWidget {
 class _StockOverviewWidgetState extends State<StockOverviewWidget> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  bool _isLoading = true;
+  String? _error;
+  List<Map<String, dynamic>> _stockItems = [];
 
-  final List<Map<String, dynamic>> _stockItems = [
-    {
-      "id": "PRD001",
-      "name": "Coca-Cola 33cl",
-      "sku": "CC-33CL-001",
-      "currentQuantity": 1250,
+  @override
+  void initState() {
+    super.initState();
+    _loadStock();
+  }
+
+  @override
+  void didUpdateWidget(covariant StockOverviewWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isRefreshing && !oldWidget.isRefreshing) {
+      _loadStock();
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadStock() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    try {
+      final stock = await InventoryService.instance.getStock();
+      if (!mounted) return;
+      setState(() {
+        _stockItems = stock.map(_mapStockItem).toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
+
+  Map<String, dynamic> _mapStockItem(Map<String, dynamic> row) {
+    final product = row['products'] as Map<String, dynamic>?;
+    final warehouse = row['warehouse_locations'] as Map<String, dynamic>?;
+    final quantity = (row['quantity'] as num?)?.toInt() ?? 0;
+    final reorderLevel = (row['reorder_level'] as num?)?.toInt() ?? 10;
+    return {
+      "id": row['id'] as String? ?? '',
+      "name": product?['name'] as String? ?? 'Produit inconnu',
+      "sku": product?['sku'] as String? ?? 'N/A',
+      "currentQuantity": quantity,
       "unit": "unités",
-      "reservedStock": 180,
-      "reorderPoint": 500,
-      "nextExpiration": DateTime(2025, 3, 15),
-      "location": "Entrepôt Principal",
-      "status": "normal",
-      "image":
-          "https://images.unsplash.com/photo-1685357038527-38722464a04d",
-      "semanticLabel": "Red Coca-Cola can with white logo on white background",
-      "batchNumber": "LOT2024-CC-001",
-    },
-    {
-      "id": "PRD002",
-      "name": "Sprite 1.5L",
-      "sku": "SP-15L-002",
-      "currentQuantity": 85,
-      "unit": "unités",
-      "reservedStock": 45,
-      "reorderPoint": 200,
-      "nextExpiration": DateTime(2025, 2, 28),
-      "location": "Entrepôt Principal",
-      "status": "low",
-      "image":
-          "https://images.unsplash.com/photo-1592860893757-84536a1c9b82",
-      "semanticLabel":
-          "Green Sprite bottle with yellow-green label on white background",
-      "batchNumber": "LOT2024-SP-002",
-    },
-    {
-      "id": "PRD003",
-      "name": "Fanta Orange 50cl",
-      "sku": "FO-50CL-003",
-      "currentQuantity": 420,
-      "unit": "unités",
-      "reservedStock": 95,
-      "reorderPoint": 300,
-      "nextExpiration": DateTime(2025, 1, 20),
-      "location": "Entrepôt Secondaire",
-      "status": "expiring",
-      "image":
-          "https://images.unsplash.com/photo-1670969658708-9542cd32a008",
-      "semanticLabel": "Orange Fanta bottle with bright orange label and cap",
-      "batchNumber": "LOT2024-FO-003",
-    },
-    {
-      "id": "PRD004",
-      "name": "Eau Minérale 1L",
-      "sku": "EM-1L-004",
-      "currentQuantity": 2100,
-      "unit": "unités",
-      "reservedStock": 320,
-      "reorderPoint": 800,
-      "nextExpiration": DateTime(2026, 6, 30),
-      "location": "Entrepôt Principal",
-      "status": "normal",
-      "image":
-          "https://images.unsplash.com/photo-1598993894567-3b4065ea7120",
-      "semanticLabel":
-          "Clear plastic water bottle with blue cap on white background",
-      "batchNumber": "LOT2024-EM-004",
-    },
-    {
-      "id": "PRD005",
-      "name": "Jus d'Orange 25cl",
-      "sku": "JO-25CL-005",
-      "currentQuantity": 15,
-      "unit": "unités",
-      "reservedStock": 8,
-      "reorderPoint": 150,
-      "nextExpiration": DateTime(2024, 12, 31),
-      "location": "Zone de Transit",
-      "status": "expired",
-      "image":
-          "https://images.unsplash.com/photo-1593398480897-63b0cb42f9de",
-      "semanticLabel":
-          "Orange juice carton with orange fruit illustration on front",
-      "batchNumber": "LOT2024-JO-005",
-    },
-  ];
+      "reservedStock": 0,
+      "reorderPoint": reorderLevel,
+      "nextExpiration": DateTime.now().add(const Duration(days: 365)),
+      "location": warehouse?['name'] as String? ?? 'Entrepôt non défini',
+      "status": quantity <= reorderLevel ? "low" : "normal",
+      "image": product?['image_url'] as String? ?? '',
+      "semanticLabel": product?['name'] as String? ?? 'Produit',
+      "batchNumber": row['id'] as String? ?? '',
+    };
+  }
 
   List<Map<String, dynamic>> get _filteredItems {
     if (_searchQuery.isEmpty) {
@@ -327,6 +308,37 @@ class _StockOverviewWidgetState extends State<StockOverviewWidget> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_error != null) {
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.all(4.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline,
+                  color: theme.colorScheme.error, size: 48),
+              SizedBox(height: 2.h),
+              Text(
+                'Erreur de chargement du stock',
+                style: theme.textTheme.titleMedium,
+              ),
+              SizedBox(height: 1.h),
+              Text(_error!, textAlign: TextAlign.center),
+              SizedBox(height: 2.h),
+              ElevatedButton(
+                onPressed: _loadStock,
+                child: const Text('Réessayer'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return Column(
       children: [

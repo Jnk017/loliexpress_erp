@@ -30,8 +30,8 @@ class _ForensicExportDialogWidgetState
   String _selectedFormat = 'pdf';
   DateTime? _startDate;
   DateTime? _endDate;
-  List<String> _selectedAnomalyTypes = [];
-  List<String> _selectedSeverityLevels = [];
+  final List<String> _selectedAnomalyTypes = [];
+  final List<String> _selectedSeverityLevels = [];
 
   List<Map<String, dynamic>> _templates = [];
   bool _isLoadingTemplates = true;
@@ -228,7 +228,7 @@ class _ForensicExportDialogWidgetState
                         _isLoadingTemplates
                             ? const Center(child: CircularProgressIndicator())
                             : DropdownButtonFormField<String>(
-                                value: _selectedTemplateId,
+                                initialValue: _selectedTemplateId,
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   contentPadding: EdgeInsets.symmetric(
