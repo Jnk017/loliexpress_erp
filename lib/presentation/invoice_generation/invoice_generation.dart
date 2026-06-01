@@ -9,6 +9,7 @@ import '../../core/app_export.dart';
 import '../../services/customer_service.dart';
 import '../../services/product_service.dart';
 import '../../widgets/custom_app_bar.dart';
+import '../../widgets/quick_currency_converter_widget.dart';
 import './widgets/invoice_details_widget.dart';
 import './widgets/invoice_header_widget.dart';
 import './widgets/invoice_summary_widget.dart';
@@ -961,6 +962,8 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
                   ),
                   SizedBox(height: 2.h),
                   NotesWidget(notesController: _notesController),
+                  SizedBox(height: 2.h),
+                  const QuickCurrencyConverterWidget(),
                   SizedBox(height: 20.h),
                 ],
               ),

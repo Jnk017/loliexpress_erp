@@ -28,6 +28,11 @@ supabase functions deploy track-failed-login
 supabase functions deploy forensic-export
 supabase functions deploy invoice-reminder
 supabase functions deploy stock-alert
+supabase functions deploy bootstrap_admin
+supabase functions deploy create_user
+supabase functions deploy ai_assistant
 ```
 
 Set function secrets: `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `NOTIFICATION_FROM_EMAIL`, and `AUTH_WEBHOOK_SECRET`.
+
+For the first production admin, set `BOOTSTRAP_ADMIN_SECRET` and call `bootstrap_admin` once with `x-bootstrap-secret`; it refuses to run when an admin already exists.

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../services/user_management_service.dart';
+import './create_user_dialog.dart';
 import './edit_user_dialog.dart';
 import './user_card_widget.dart';
 
@@ -80,6 +81,17 @@ class _UserListWidgetState extends State<UserListWidget> {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => EditUserDialog(user: user),
+    );
+    if (result == true) {
+      await _loadUsers();
+      widget.onRefresh();
+    }
+  }
+
+  Future<void> _createUser() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => const CreateUserDialog(),
     );
     if (result == true) {
       await _loadUsers();
@@ -166,6 +178,15 @@ class _UserListWidgetState extends State<UserListWidget> {
           color: Colors.white,
           child: Column(
             children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton.icon(
+                  onPressed: _createUser,
+                  icon: const Icon(Icons.person_add),
+                  label: const Text('Créer un utilisateur'),
+                ),
+              ),
+              SizedBox(height: 2.h),
               TextField(
                 controller: _searchController,
                 onChanged: _filterUsers,
@@ -201,6 +222,8 @@ class _UserListWidgetState extends State<UserListWidget> {
                     _buildRoleChip('WAREHOUSE_STAFF'),
                     SizedBox(width: 2.w),
                     _buildRoleChip('B2B_CUSTOMER'),
+                    SizedBox(width: 2.w),
+                    _buildRoleChip('DELIVERY_AGENT'),
                   ],
                 ),
               ),

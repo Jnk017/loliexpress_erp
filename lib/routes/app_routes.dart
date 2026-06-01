@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../presentation/audit_log/audit_log.dart';
+import '../presentation/admin_dashboard/admin_dashboard.dart';
+import '../presentation/ai_assistant/ai_assistant_screen.dart';
 import '../presentation/automation_rules_manager/automation_rules_manager.dart';
 import '../presentation/barcode_scanner/barcode_scanner.dart';
 import '../presentation/customer_management/customer_management.dart';
@@ -57,10 +59,14 @@ class AppRoutes {
   static const String purchases = '/purchases';
   static const String expenses = '/expenses';
   static const String productDetail = '/product-detail';
+  static const String adminDashboard = '/admin-dashboard';
+  static const String aiAssistant = '/ai-assistant';
 
   static Map<String, WidgetBuilder> get routes => {
         initial: (context) => const SplashScreen(),
         mainDashboard: (context) => const MainDashboard(),
+        adminDashboard: (context) => const AdminDashboard(),
+        aiAssistant: (context) => const AiAssistantScreen(),
         financialDashboard: (context) => const FinancialDashboard(),
         splash: (context) => const SplashScreen(),
         invoiceGeneration: (context) => const InvoiceGeneration(),

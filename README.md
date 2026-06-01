@@ -52,3 +52,4 @@ Migrations live in `supabase/migrations/`, seed data lives in `supabase/seed.sql
 - `docs/supabase_local.md`
 - `docs/deployment.md`
 - `docs/roles.md`
+- `docs/ai_assistant.md`

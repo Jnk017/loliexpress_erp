@@ -58,24 +58,17 @@ class UserManagementService {
     String? companyName,
   }) async {
     try {
-      // Create auth user
-      final authResponse = await _supabase.auth.signUp(
-        email: email,
-        password: password,
-      );
-
-      if (authResponse.user == null) {
-        throw Exception('Failed to create auth user');
-      }
-
-      // Update user profile with additional data
-      await _supabase.from('user_profiles').update({
+      final response = await _supabase.functions.invoke('create_user', body: {
+        'email': email,
+        'password': password,
         'full_name': fullName,
         'role': role,
         'phone': phone,
         'company_name': companyName,
-        'is_active': true,
-      }).eq('id', authResponse.user!.id);
+      });
+      if (response.status >= 400) {
+        throw Exception(response.data);
+      }
     } catch (e) {
       throw Exception('Failed to create user: $e');
     }

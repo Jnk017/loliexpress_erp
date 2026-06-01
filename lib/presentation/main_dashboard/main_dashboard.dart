@@ -539,6 +539,8 @@ class _MainDashboardState extends State<MainDashboard>
 
   Widget _buildAdministrationSection(ThemeData theme) {
     final items = [
+      _AdminItem('Dashboard admin', 'dashboard', '/admin-dashboard'),
+      _AdminItem('Assistant IA', 'auto_awesome', '/ai-assistant'),
       _AdminItem('Audit', 'history', '/audit-log'),
       _AdminItem('Sécurité', 'security', '/security-dashboard'),
       _AdminItem('Alertes', 'warning', '/security-alert-center'),

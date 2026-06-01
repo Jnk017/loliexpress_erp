@@ -20,7 +20,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
   final _phoneController = TextEditingController();
   final _companyNameController = TextEditingController();
 
-  String _selectedRole = 'b2b_customer';
+  String _selectedRole = 'sales_rep';
   bool _isLoading = false;
   bool _obscurePassword = true;
 
@@ -181,19 +181,19 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
                     ),
                   ),
                   items: const [
-                    DropdownMenuItem(value: 'admin', child: Text('Admin')),
                     DropdownMenuItem(
-                        value: 'sales_rep',
-                        child: Text('Sales Representative')),
+                        value: 'sales_rep', child: Text('Commercial')),
                     DropdownMenuItem(
-                        value: 'warehouse_staff',
-                        child: Text('Warehouse Staff')),
+                        value: 'warehouse_staff', child: Text('Magasinier')),
                     DropdownMenuItem(
                         value: 'comptable', child: Text('Comptable')),
                     DropdownMenuItem(
                         value: 'acheteur', child: Text('Acheteur')),
                     DropdownMenuItem(
-                        value: 'b2b_customer', child: Text('B2B Customer')),
+                        value: 'delivery_agent',
+                        child: Text('Agent livraison')),
+                    DropdownMenuItem(
+                        value: 'b2b_customer', child: Text('Client')),
                   ],
                   onChanged: (value) {
                     setState(() => _selectedRole = value!);

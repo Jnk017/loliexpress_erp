@@ -8,6 +8,7 @@ enum UserRole {
   customer,
   comptable,
   acheteur,
+  deliveryAgent,
   unknown
 }
 
@@ -38,6 +39,8 @@ class RoleService {
         return UserRole.comptable;
       case 'acheteur':
         return UserRole.acheteur;
+      case 'delivery_agent':
+        return UserRole.deliveryAgent;
       default:
         return UserRole.unknown;
     }
@@ -61,6 +64,8 @@ class RoleService {
         return _comptableRoutes.contains(route);
       case UserRole.acheteur:
         return _acheteurRoutes.contains(route);
+      case UserRole.deliveryAgent:
+        return _deliveryAgentRoutes.contains(route);
       case UserRole.unknown:
         return false;
     }
@@ -88,7 +93,7 @@ class RoleService {
   String getHomeRoute() {
     switch (_currentRole) {
       case UserRole.admin:
-        return '/main-dashboard';
+        return '/admin-dashboard';
       case UserRole.salesRep:
         return '/main-dashboard';
       case UserRole.warehouseStaff:
@@ -99,6 +104,8 @@ class RoleService {
         return '/main-dashboard';
       case UserRole.acheteur:
         return '/purchases';
+      case UserRole.deliveryAgent:
+        return '/delivery-tracking';
       case UserRole.unknown:
         return '/login-screen';
     }
@@ -169,6 +176,13 @@ class RoleService {
     '/expenses',
   };
 
+  static const _deliveryAgentRoutes = {
+    '/delivery-tracking',
+    '/notifications-screen',
+    '/notifications-center',
+    '/settings-configuration',
+  };
+
   List<BottomNavItem> getBottomNavItems() {
     switch (_currentRole) {
       case UserRole.admin:
@@ -176,7 +190,7 @@ class RoleService {
           BottomNavItem(
               icon: Icons.dashboard,
               label: 'Dashboard',
-              route: '/main-dashboard'),
+              route: '/admin-dashboard'),
           BottomNavItem(
               icon: Icons.inventory_2,
               label: 'Stock',
@@ -266,6 +280,17 @@ class RoleService {
               icon: Icons.inventory_2,
               label: 'Stock',
               route: '/inventory-management'),
+        ];
+      case UserRole.deliveryAgent:
+        return [
+          BottomNavItem(
+              icon: Icons.local_shipping,
+              label: 'Livraisons',
+              route: '/delivery-tracking'),
+          BottomNavItem(
+              icon: Icons.notifications,
+              label: 'Alertes',
+              route: '/notifications-center'),
         ];
       case UserRole.unknown:
         return [];
