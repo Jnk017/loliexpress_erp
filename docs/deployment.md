@@ -33,6 +33,6 @@ supabase functions deploy create_user
 supabase functions deploy ai_assistant
 ```
 
-Set function secrets: `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `NOTIFICATION_FROM_EMAIL`, and `AUTH_WEBHOOK_SECRET`.
+Set function secrets: `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `NOTIFICATION_FROM_EMAIL`, and `AUTH_WEBHOOK_SECRET`. `RESEND_API_KEY` is required for OTP password reset and notification emails.
 
 For the first production admin, set `BOOTSTRAP_ADMIN_SECRET` and call `bootstrap_admin` once with `x-bootstrap-secret`; it refuses to run when an admin already exists.

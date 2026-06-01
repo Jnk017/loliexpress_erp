@@ -58,6 +58,13 @@ class AuthService {
         throw Exception(response.data?.toString() ?? 'Erreur OTP');
       }
     } catch (e) {
+      final message = e.toString();
+      if (message.contains('email_provider_missing') ||
+          message.contains('RESEND_API_KEY')) {
+        throw Exception(
+          'Le service OTP email n’est pas configuré. Ajoutez RESEND_API_KEY dans les secrets Supabase.',
+        );
+      }
       throw Exception('Échec de réinitialisation: ${e.toString()}');
     }
   }

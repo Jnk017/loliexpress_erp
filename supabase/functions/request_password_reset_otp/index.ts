@@ -37,6 +37,19 @@ Deno.serve(async (req) => {
     return Response.json({ ok: true });
   }
 
+  const resendKey = Deno.env.get("RESEND_API_KEY");
+  if (!resendKey) {
+    return Response.json(
+      {
+        ok: false,
+        code: "email_provider_missing",
+        message:
+          "Le service d'envoi OTP n'est pas configuré. Ajoutez le secret Supabase RESEND_API_KEY.",
+      },
+      { status: 503 },
+    );
+  }
+
   const code = otp();
   const hash = await sha256(`${normalizedEmail}:${code}`);
   await supabase.from("password_reset_otps").insert({
@@ -45,11 +58,6 @@ Deno.serve(async (req) => {
     otp_hash: hash,
     expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
   });
-
-  const resendKey = Deno.env.get("RESEND_API_KEY");
-  if (!resendKey) {
-    return new Response("RESEND_API_KEY is not configured", { status: 500 });
-  }
 
   const sent = await fetch("https://api.resend.com/emails", {
     method: "POST",
