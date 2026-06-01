@@ -50,9 +50,37 @@ class AuthService {
 
   Future<void> resetPassword(String email) async {
     try {
-      await _client.auth.resetPasswordForEmail(email);
+      final response = await _client.functions.invoke(
+        'request_password_reset_otp',
+        body: {'email': email},
+      );
+      if (response.status >= 400) {
+        throw Exception(response.data?.toString() ?? 'Erreur OTP');
+      }
     } catch (e) {
       throw Exception('Échec de réinitialisation: ${e.toString()}');
+    }
+  }
+
+  Future<void> verifyPasswordResetOtp({
+    required String email,
+    required String otp,
+    required String password,
+  }) async {
+    try {
+      final response = await _client.functions.invoke(
+        'verify_password_reset_otp',
+        body: {
+          'email': email,
+          'otp': otp,
+          'password': password,
+        },
+      );
+      if (response.status >= 400) {
+        throw Exception(response.data?.toString() ?? 'Code OTP invalide');
+      }
+    } catch (e) {
+      throw Exception('Échec de validation OTP: ${e.toString()}');
     }
   }
 

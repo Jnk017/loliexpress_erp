@@ -110,85 +110,188 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _handleForgotPassword() {
     final resetEmailController = TextEditingController();
+    final otpController = TextEditingController();
+    final newPasswordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
+    bool codeSent = false;
+    bool isSubmitting = false;
+    String? resetError;
+
     showDialog(
       context: context,
       builder: (dialogContext) {
         final theme = Theme.of(dialogContext);
-        return AlertDialog(
-          title: Text(
-            'Mot de passe oublié',
-            style: theme.textTheme.titleLarge,
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Entrez votre adresse email pour recevoir un lien de réinitialisation.',
-                style: theme.textTheme.bodyMedium,
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            final rootMessenger = ScaffoldMessenger.of(this.context);
+            Future<void> requestOtp() async {
+              final email = resetEmailController.text.trim();
+              if (email.isEmpty || isSubmitting) return;
+              setDialogState(() {
+                isSubmitting = true;
+                resetError = null;
+              });
+              try {
+                await AuthService.instance.resetPassword(email);
+                setDialogState(() {
+                  codeSent = true;
+                  isSubmitting = false;
+                });
+              } catch (e) {
+                setDialogState(() {
+                  resetError = e.toString().replaceFirst('Exception: ', '');
+                  isSubmitting = false;
+                });
+              }
+            }
+
+            Future<void> verifyOtp() async {
+              final email = resetEmailController.text.trim();
+              final password = newPasswordController.text;
+              if (isSubmitting) return;
+              if (password.length < 8) {
+                setDialogState(() {
+                  resetError =
+                      'Le mot de passe doit contenir au moins 8 caractères.';
+                });
+                return;
+              }
+              if (password != confirmPasswordController.text) {
+                setDialogState(() {
+                  resetError = 'Les mots de passe ne correspondent pas.';
+                });
+                return;
+              }
+              setDialogState(() {
+                isSubmitting = true;
+                resetError = null;
+              });
+              try {
+                await AuthService.instance.verifyPasswordResetOtp(
+                  email: email,
+                  otp: otpController.text.trim(),
+                  password: password,
+                );
+                if (!mounted) return;
+                if (dialogContext.mounted) {
+                  Navigator.pop(dialogContext);
+                }
+                rootMessenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('Mot de passe réinitialisé. Connectez-vous.'),
+                  ),
+                );
+              } catch (e) {
+                setDialogState(() {
+                  resetError = e.toString().replaceFirst('Exception: ', '');
+                  isSubmitting = false;
+                });
+              }
+            }
+
+            return AlertDialog(
+              title: Text(
+                'Réinitialisation par OTP',
+                style: theme.textTheme.titleLarge,
               ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: resetEmailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'votre@email.com',
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: Text(
-                'Annuler',
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () async {
-                final email = resetEmailController.text.trim();
-                if (email.isEmpty) return;
-                try {
-                  await AuthService.instance.resetPassword(email);
-                  if (dialogContext.mounted) {
-                    Navigator.pop(dialogContext);
-                  }
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Email de réinitialisation envoyé.'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      codeSent
+                          ? 'Entrez le code reçu par email et votre nouveau mot de passe.'
+                          : 'Entrez votre email pour recevoir un code OTP à 6 chiffres.',
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: resetEmailController,
+                      enabled: !codeSent,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        hintText: 'votre@email.com',
                       ),
-                    );
-                  }
-                } catch (e) {
-                  if (dialogContext.mounted) {
-                    Navigator.pop(dialogContext);
-                  }
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          e.toString().replaceFirst('Exception: ', ''),
+                    ),
+                    if (codeSent) ...[
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: otpController,
+                        keyboardType: TextInputType.number,
+                        maxLength: 6,
+                        decoration: const InputDecoration(
+                          labelText: 'Code OTP',
+                          counterText: '',
                         ),
                       ),
-                    );
-                  }
-                }
-              },
-              child: Text(
-                'Envoyer',
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: theme.colorScheme.primary,
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: newPasswordController,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          labelText: 'Nouveau mot de passe',
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: confirmPasswordController,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          labelText: 'Confirmer le mot de passe',
+                        ),
+                      ),
+                    ],
+                    if (resetError != null) ...[
+                      const SizedBox(height: 12),
+                      Text(
+                        resetError!,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.error,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
-            ),
-          ],
+              actions: [
+                TextButton(
+                  onPressed:
+                      isSubmitting ? null : () => Navigator.pop(dialogContext),
+                  child: Text(
+                    'Annuler',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed:
+                      isSubmitting ? null : (codeSent ? verifyOtp : requestOtp),
+                  child: isSubmitting
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(
+                          codeSent ? 'Valider' : 'Envoyer le code',
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                ),
+              ],
+            );
+          },
         );
       },
-    );
+    ).whenComplete(() {
+      resetEmailController.dispose();
+      otpController.dispose();
+      newPasswordController.dispose();
+      confirmPasswordController.dispose();
+    });
   }
 
   @override
@@ -251,22 +354,24 @@ class _LoginScreenState extends State<LoginScreen> {
                           SizedBox(height: 2.h),
 
                           // Forgot Password Link
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: _handleForgotPassword,
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 2.w,
-                                  vertical: 1.h,
-                                ),
+                          OutlinedButton.icon(
+                            onPressed: _handleForgotPassword,
+                            icon: const Icon(Icons.lock_reset),
+                            style: OutlinedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 1.5.h),
+                              side: BorderSide(
+                                color: theme.colorScheme.primary,
                               ),
-                              child: Text(
-                                'Mot de passe oublié?',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.primary,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            label: Text(
+                              'Mot de passe oublié ? Réinitialiser par OTP',
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
