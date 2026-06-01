@@ -35,6 +35,10 @@ supabase functions deploy ai_assistant
 
 Set function secrets: `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `NOTIFICATION_FROM_EMAIL`, and `AUTH_WEBHOOK_SECRET` for server-side admin actions and notification emails.
 
-Password reset OTP uses Supabase Auth email OTP directly. Configure the Supabase Auth email OTP template to include `{{ .Token }}`; no Resend secret is required for password reset.
+Password reset OTP uses Supabase Auth email OTP directly. The repository template `supabase/templates/magic_link.html` includes `{{ .Token }}` so Supabase sends a 6-digit code instead of a magic link. Push config with:
+
+```bash
+supabase config push --project-ref <project-ref>
+```
 
 For the first production admin, set `BOOTSTRAP_ADMIN_SECRET` and call `bootstrap_admin` once with `x-bootstrap-secret`; it refuses to run when an admin already exists.
