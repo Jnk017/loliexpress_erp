@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
   }
 
   const body = await req.json().catch(() => ({}));
-  const email = body.email ?? "admin@loliexpress.com";
+  const email = body.email ?? "eaglejnk@gmail.com";
   const password = body.password;
   if (!password) return new Response("password is required", { status: 400 });
 
