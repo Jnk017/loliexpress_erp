@@ -50,21 +50,11 @@ class AuthService {
 
   Future<void> resetPassword(String email) async {
     try {
-      final response = await _client.functions.invoke(
-        'request_password_reset_otp',
-        body: {'email': email},
+      await _client.auth.signInWithOtp(
+        email: email,
+        shouldCreateUser: false,
       );
-      if (response.status >= 400) {
-        throw Exception(response.data?.toString() ?? 'Erreur OTP');
-      }
     } catch (e) {
-      final message = e.toString();
-      if (message.contains('email_provider_missing') ||
-          message.contains('RESEND_API_KEY')) {
-        throw Exception(
-          'Le service OTP email n’est pas configuré. Ajoutez RESEND_API_KEY dans les secrets Supabase.',
-        );
-      }
       throw Exception('Échec de réinitialisation: ${e.toString()}');
     }
   }
@@ -75,17 +65,13 @@ class AuthService {
     required String password,
   }) async {
     try {
-      final response = await _client.functions.invoke(
-        'verify_password_reset_otp',
-        body: {
-          'email': email,
-          'otp': otp,
-          'password': password,
-        },
+      await _client.auth.verifyOTP(
+        email: email,
+        token: otp,
+        type: OtpType.email,
       );
-      if (response.status >= 400) {
-        throw Exception(response.data?.toString() ?? 'Code OTP invalide');
-      }
+      await _client.auth.updateUser(UserAttributes(password: password));
+      await _client.auth.signOut();
     } catch (e) {
       throw Exception('Échec de validation OTP: ${e.toString()}');
     }
