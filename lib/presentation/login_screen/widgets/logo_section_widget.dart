@@ -9,6 +9,8 @@ class LogoSectionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final shortestSide = MediaQuery.sizeOf(context).shortestSide;
+    final logoSize = (shortestSide * 0.22).clamp(88.0, 132.0);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -16,11 +18,11 @@ class LogoSectionWidget extends StatelessWidget {
         // Official Loliexpress Logo
         Image.asset(
           'assets/images/logo_loliexpress.png',
-          width: 35.w,
-          height: 35.w,
+          width: logoSize,
+          height: logoSize,
           fit: BoxFit.contain,
         ),
-        SizedBox(height: 2.h),
+        SizedBox(height: 1.2.h),
         // Tagline
         Text(
           'GRANDIR ENSEMBLE',

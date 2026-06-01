@@ -214,12 +214,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    SizedBox(height: 4.h),
+                    SizedBox(height: 2.h),
 
                     // Logo Section
                     const LogoSectionWidget(),
 
-                    SizedBox(height: 5.h),
+                    SizedBox(height: 2.5.h),
 
                     // Login Form
                     Form(
@@ -232,22 +232,18 @@ class _LoginScreenState extends State<LoginScreen> {
                             controller: _emailController,
                             errorText: _emailError,
                             onChanged: (_) {
-                              if (_emailError != null) {
-                                setState(() => _emailError = null);
-                              }
+                              setState(() => _emailError = null);
                             },
                           ),
 
-                          SizedBox(height: 3.h),
+                          SizedBox(height: 2.h),
 
                           // Password Input
                           PasswordInputWidget(
                             controller: _passwordController,
                             errorText: _passwordError,
                             onChanged: (_) {
-                              if (_passwordError != null) {
-                                setState(() => _passwordError = null);
-                              }
+                              setState(() => _passwordError = null);
                             },
                             onSubmitted: _handleLogin,
                           ),
@@ -317,8 +313,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           LoginButtonWidget(
                             onPressed: _handleLogin,
                             isLoading: _isLoading,
-                            isEnabled: _emailController.text.isNotEmpty &&
-                                _passwordController.text.isNotEmpty,
+                            isEnabled: true,
                           ),
                         ],
                       ),
