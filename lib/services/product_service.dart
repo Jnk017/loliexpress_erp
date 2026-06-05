@@ -1,6 +1,11 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProductService {
+  static const _productSelection = '''
+    id, sku, name, description, category_id, unit_price, image_url,
+    barcode, is_active, created_at, updated_at, currency,
+    product_categories(name)
+  ''';
   static ProductService? _instance;
   static ProductService get instance => _instance ??= ProductService._();
   ProductService._();
@@ -13,8 +18,7 @@ class ProductService {
       int limit = 50,
       int offset = 0}) async {
     try {
-      var query =
-          _client.from('products').select('*, product_categories(name)');
+      var query = _client.from('products').select(_productSelection);
       if (categoryId != null) query = query.eq('category_id', categoryId);
       if (search != null && search.isNotEmpty) {
         query = query.or(
@@ -32,7 +36,7 @@ class ProductService {
     try {
       return await _client
           .from('products')
-          .select('*, product_categories(name)')
+          .select(_productSelection)
           .eq('id', id)
           .maybeSingle();
     } catch (e) {
@@ -44,7 +48,7 @@ class ProductService {
     try {
       return await _client
           .from('products')
-          .select('*, product_categories(name)')
+          .select(_productSelection)
           .eq('barcode', barcode)
           .maybeSingle();
     } catch (e) {
@@ -55,8 +59,11 @@ class ProductService {
   Future<Map<String, dynamic>> createProduct(
       Map<String, dynamic> productData) async {
     try {
-      final response =
-          await _client.from('products').insert(productData).select().single();
+      final response = await _client
+          .from('products')
+          .insert(productData)
+          .select(_productSelection)
+          .single();
       return response;
     } catch (e) {
       throw Exception('Erreur lors de la création du produit: $e');
@@ -70,7 +77,7 @@ class ProductService {
           .from('products')
           .update(productData)
           .eq('id', id)
-          .select()
+          .select(_productSelection)
           .single();
       return response;
     } catch (e) {

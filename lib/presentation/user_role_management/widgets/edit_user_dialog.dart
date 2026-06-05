@@ -166,6 +166,9 @@ class _EditUserDialogState extends State<EditUserDialog> {
                     DropdownMenuItem(
                         value: 'acheteur', child: Text('Acheteur')),
                     DropdownMenuItem(
+                        value: 'delivery_agent',
+                        child: Text('Delivery Agent')),
+                    DropdownMenuItem(
                         value: 'b2b_customer', child: Text('B2B Customer')),
                   ],
                   onChanged: (value) {

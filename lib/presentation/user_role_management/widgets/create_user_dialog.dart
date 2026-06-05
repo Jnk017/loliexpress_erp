@@ -15,14 +15,12 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
   final UserManagementService _userService = UserManagementService();
 
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   final _fullNameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _companyNameController = TextEditingController();
 
   String _selectedRole = 'sales_rep';
   bool _isLoading = false;
-  bool _obscurePassword = true;
 
   Future<void> _createUser() async {
     if (!_formKey.currentState!.validate()) return;
@@ -32,7 +30,6 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
     try {
       await _userService.createUser(
         email: _emailController.text.trim(),
-        password: _passwordController.text,
         fullName: _fullNameController.text.trim(),
         role: _selectedRole,
         phone: _phoneController.text.trim().isEmpty
@@ -46,7 +43,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
       if (mounted) {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User created successfully')),
+          const SnackBar(content: Text('Invitation envoyée avec succès')),
         );
       }
     } catch (e) {
@@ -134,41 +131,10 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
                   },
                 ),
                 SizedBox(height: 2.h),
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Password *',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() => _obscurePassword = !_obscurePassword);
-                      },
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                  ),
-                  obscureText: _obscurePassword,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Password is required';
-                    }
-                    if (value.length < 8) {
-                      return 'Password must be at least 8 characters';
-                    }
-                    if (!RegExp(r'[A-Z]').hasMatch(value)) {
-                      return 'Must contain at least one uppercase letter';
-                    }
-                    if (!RegExp(r'[0-9]').hasMatch(value)) {
-                      return 'Must contain at least one number';
-                    }
-                    return null;
-                  },
+                const Text(
+                  'Un lien sécurisé d’invitation sera envoyé par Supabase. '
+                  'L’utilisateur choisira lui-même son mot de passe.',
+                  style: TextStyle(color: Colors.black54),
                 ),
                 SizedBox(height: 2.h),
                 DropdownButtonFormField<String>(
@@ -277,7 +243,6 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
   @override
   void dispose() {
     _emailController.dispose();
-    _passwordController.dispose();
     _fullNameController.dispose();
     _phoneController.dispose();
     _companyNameController.dispose();

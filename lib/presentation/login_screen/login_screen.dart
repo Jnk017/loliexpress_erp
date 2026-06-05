@@ -90,6 +90,16 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (!mounted) return;
+      if (await AuthService.instance.mustChangePassword()) {
+        if (!mounted) return;
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/force-password-change',
+          (route) => false,
+        );
+        return;
+      }
+      if (!mounted) return;
 
       HapticFeedback.mediumImpact();
 

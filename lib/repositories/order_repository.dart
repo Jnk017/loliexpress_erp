@@ -4,10 +4,13 @@ import '../models/order.dart';
 import '../services/order_service.dart';
 
 class OrderRepository {
-  OrderRepository({SupabaseClient? client})
-      : _client = client ?? Supabase.instance.client;
+  OrderRepository({SupabaseClient? client, OrderService? orderService})
+      : _injectedClient = client,
+        _orderService = orderService ?? OrderService(client: client);
 
-  final SupabaseClient _client;
+  final SupabaseClient? _injectedClient;
+  SupabaseClient get _client => _injectedClient ?? Supabase.instance.client;
+  final OrderService _orderService;
 
   Future<List<Order>> fetchOrders({String? status}) async {
     var query = _client.from('sales_orders').select();
@@ -23,7 +26,7 @@ class OrderRepository {
     required List<OrderItem> items,
     String? notes,
   }) async {
-    final created = await OrderService.instance.createOrder(
+    final created = await _orderService.createOrder(
       customerId: customerId,
       items: items
           .map((item) => {
