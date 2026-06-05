@@ -49,26 +49,29 @@ class DocumentService {
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final filePath = '${user.id}/$entityType/${timestamp}_$fileName';
 
-      // Upload to Supabase storage
+      // Storage and PostgreSQL cannot share a transaction. Remove the object if
+      // metadata validation/RLS fails so an orphaned private file is not left behind.
       await _client.storage.from('erp-documents').upload(filePath, file);
-
-      // Create metadata record in database
-      final response = await _client
-          .from('document_attachments')
-          .insert({
-            'entity_type': entityType,
-            'entity_id': entityId,
-            'file_name': fileName,
-            'file_path': filePath,
-            'file_size': fileSize,
-            'mime_type': mimeType,
-            'uploaded_by': user.id,
-            'description': description,
-          })
-          .select()
-          .single();
-
-      return response['id'];
+      try {
+        final response = await _client
+            .from('document_attachments')
+            .insert({
+              'entity_type': entityType,
+              'entity_id': entityId,
+              'file_name': fileName,
+              'file_path': filePath,
+              'file_size': fileSize,
+              'mime_type': mimeType,
+              'uploaded_by': user.id,
+              'description': description,
+            })
+            .select()
+            .single();
+        return response['id'];
+      } catch (_) {
+        await _client.storage.from('erp-documents').remove([filePath]);
+        rethrow;
+      }
     } catch (e) {
       throw Exception('Failed to upload document: $e');
     }

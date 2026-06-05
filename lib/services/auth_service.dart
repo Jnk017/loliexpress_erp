@@ -77,6 +77,32 @@ class AuthService {
     }
   }
 
+  Future<bool> mustChangePassword() async {
+    if (currentUser == null) return false;
+    final profile = await getUserProfile();
+    if (profile == null) {
+      throw StateError('Profil utilisateur introuvable.');
+    }
+    if (profile['is_active'] != true) {
+      await signOut();
+      throw StateError('Ce compte utilisateur est désactivé.');
+    }
+    return profile['must_change_password'] == true;
+  }
+
+  Future<void> changePassword(String password) async {
+    if (password.length < 8) {
+      throw ArgumentError(
+        'Le mot de passe doit contenir au moins 8 caractères.',
+      );
+    }
+    await _client.auth.updateUser(UserAttributes(password: password));
+    final user = currentUser;
+    if (user != null) {
+      await _client.rpc('complete_password_setup');
+    }
+  }
+
   Future<String?> getUserRole() async {
     final user = currentUser;
     if (user == null) return null;

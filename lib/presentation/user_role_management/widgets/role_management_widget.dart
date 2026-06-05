@@ -36,6 +36,7 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
         'warehouse_staff': [],
         'comptable': [],
         'acheteur': [],
+        'delivery_agent': [],
         'b2b_customer': [],
       };
 
@@ -72,6 +73,8 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
         return Colors.purple;
       case 'acheteur':
         return Colors.teal;
+      case 'delivery_agent':
+        return Colors.indigo;
       case 'b2b_customer':
         return Colors.green;
       default:
@@ -91,6 +94,8 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
         return 'Comptables';
       case 'acheteur':
         return 'Acheteurs';
+      case 'delivery_agent':
+        return 'Agents de livraison';
       case 'b2b_customer':
         return 'B2B Customers';
       default:
@@ -110,6 +115,8 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
         return 'Finance management: expenses, payments, and financial reports';
       case 'acheteur':
         return 'Purchasing: supplier management and purchase orders';
+      case 'delivery_agent':
+        return 'Access assigned routes and confirm deliveries';
       case 'b2b_customer':
         return 'View orders, track deliveries, and access portal features';
       default:
@@ -159,6 +166,13 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
           'Purchase Reports',
           'Supplier Invoices',
         ];
+      case 'delivery_agent':
+        return [
+          'View Assigned Routes',
+          'View Assigned Deliveries',
+          'Confirm Deliveries',
+          'Access Delivery Documents',
+        ];
       case 'b2b_customer':
         return [
           'View Own Orders',
@@ -190,6 +204,8 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
                 _buildRoleCard('comptable'),
                 SizedBox(height: 2.h),
                 _buildRoleCard('acheteur'),
+                SizedBox(height: 2.h),
+                _buildRoleCard('delivery_agent'),
                 SizedBox(height: 2.h),
                 _buildRoleCard('b2b_customer'),
               ],
@@ -342,6 +358,8 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
         return Icons.account_balance;
       case 'acheteur':
         return Icons.shopping_cart;
+      case 'delivery_agent':
+        return Icons.local_shipping;
       case 'b2b_customer':
         return Icons.shopping_bag;
       default:

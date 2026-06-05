@@ -66,3 +66,26 @@ CROSS JOIN public.warehouse_locations w
 WHERE p.sku = 'LEX-WATER-1L'
   AND w.name = 'Entrepôt Principal'
 ON CONFLICT (product_id, warehouse_id) DO NOTHING;
+
+-- Keep seeded stock and the movement ledger consistent. Runtime stock changes are
+-- derived exclusively from stock_movements by the synchronization trigger.
+INSERT INTO public.stock_movements (
+    product_id, warehouse_id, movement_type, quantity,
+    reference_type, notes, created_by
+)
+SELECT
+    inventory.product_id,
+    inventory.warehouse_id,
+    'adjustment'::public.stock_movement_type,
+    inventory.quantity,
+    'seed_baseline',
+    'Local development seed baseline',
+    NULL
+FROM public.inventory_stock AS inventory
+WHERE inventory.quantity <> 0
+  AND NOT EXISTS (
+      SELECT 1
+      FROM public.stock_movements movement
+      WHERE movement.product_id = inventory.product_id
+        AND movement.warehouse_id = inventory.warehouse_id
+  );

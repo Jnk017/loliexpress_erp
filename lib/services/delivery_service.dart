@@ -3,9 +3,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class DeliveryService {
   static DeliveryService? _instance;
   static DeliveryService get instance => _instance ??= DeliveryService._();
-  DeliveryService._();
+  DeliveryService._() : _injectedClient = null;
+  DeliveryService({SupabaseClient? client}) : _injectedClient = client;
 
-  SupabaseClient get _client => Supabase.instance.client;
+  final SupabaseClient? _injectedClient;
+  SupabaseClient get _client => _injectedClient ?? Supabase.instance.client;
 
   Future<List<Map<String, dynamic>>> getDeliveries({
     String? status,
@@ -41,17 +43,20 @@ class DeliveryService {
   }
 
   Future<void> updateDeliveryStatus(String deliveryId, String status) async {
+    if (status != 'delivered') {
+      throw ArgumentError.value(
+        status,
+        'status',
+        'Seule la confirmation de livraison est disponible via ce service',
+      );
+    }
     try {
-      final updates = <String, dynamic>{
-        'status': status,
-        'updated_at': DateTime.now().toIso8601String(),
-      };
-      if (status == 'delivered') {
-        updates['actual_delivery_time'] = DateTime.now().toIso8601String();
-      }
-      await _client.from('deliveries').update(updates).eq('id', deliveryId);
+      await _client.rpc(
+        'confirm_delivery',
+        params: {'p_delivery_id': deliveryId},
+      );
     } catch (e) {
-      throw Exception('Erreur lors de la mise à jour de la livraison: $e');
+      throw Exception('Erreur lors de la confirmation de la livraison: $e');
     }
   }
 }

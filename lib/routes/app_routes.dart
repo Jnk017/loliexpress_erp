@@ -14,6 +14,7 @@ import '../presentation/incident_investigation_workspace/incident_investigation_
 import '../presentation/incident_management_center/incident_management_center.dart';
 import '../presentation/inventory_management/inventory_management.dart';
 import '../presentation/invoice_generation/invoice_generation.dart';
+import '../presentation/force_password_change/force_password_change_screen.dart';
 import '../presentation/login_screen/login_screen.dart';
 import '../presentation/main_dashboard/main_dashboard.dart';
 import '../presentation/notifications_center/notifications_center.dart';
@@ -39,6 +40,7 @@ class AppRoutes {
   static const String customerManagement = '/customer-management';
   static const String barcodeScanner = '/barcode-scanner';
   static const String login = '/login-screen';
+  static const String forcePasswordChange = '/force-password-change';
   static const String salesOrderProcessing = '/sales-order-processing';
   static const String inventoryManagement = '/inventory-management';
   static const String productCatalog = '/product-catalog';
@@ -74,6 +76,7 @@ class AppRoutes {
         customerManagement: (context) => const CustomerManagement(),
         barcodeScanner: (context) => const BarcodeScanner(),
         login: (context) => const LoginScreen(),
+        forcePasswordChange: (context) => const ForcePasswordChangeScreen(),
         salesOrderProcessing: (context) => const SalesOrderProcessing(),
         inventoryManagement: (context) => const InventoryManagement(),
         productCatalog: (context) => const ProductCatalog(),

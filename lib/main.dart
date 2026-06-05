@@ -79,7 +79,8 @@ class MyApp extends StatelessWidget {
                 // Always allow these routes
                 if (routeName == '/' ||
                     routeName == '/splash-screen' ||
-                    routeName == '/login-screen') {
+                    routeName == '/login-screen' ||
+                    routeName == '/force-password-change') {
                   final routes = AppRoutes.routes;
                   final builder = routes[routeName];
                   if (builder != null) {
