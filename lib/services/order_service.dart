@@ -3,9 +3,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class OrderService {
   static OrderService? _instance;
   static OrderService get instance => _instance ??= OrderService._();
-  OrderService._();
+  OrderService._() : _injectedClient = null;
+  OrderService({SupabaseClient? client}) : _injectedClient = client;
 
-  SupabaseClient get _client => Supabase.instance.client;
+  final SupabaseClient? _injectedClient;
+  SupabaseClient get _client => _injectedClient ?? Supabase.instance.client;
 
   Future<List<Map<String, dynamic>>> getOrders(
       {String? status,
@@ -49,76 +51,57 @@ class OrderService {
     double exchangeRate = 1,
     String paymentType = 'cash',
   }) async {
+    if (items.isEmpty) {
+      throw ArgumentError.value(
+        items,
+        'items',
+        'Une commande doit contenir au moins un article',
+      );
+    }
+
     try {
-      double subtotal = 0;
-      for (final item in items) {
-        subtotal += (item['quantity'] as num) * (item['unit_price'] as num);
+      final response = await _client.rpc(
+        'create_order_with_items',
+        params: {
+          'p_customer_id': customerId,
+          'p_items': items
+              .map((item) => {
+                    'product_id': item['product_id'],
+                    'quantity': item['quantity'],
+                    if (item['unit_price'] != null)
+                      'unit_price': item['unit_price'],
+                  })
+              .toList(),
+          'p_notes': notes,
+          'p_currency': currency,
+          'p_exchange_rate': exchangeRate,
+          'p_payment_type': paymentType,
+          'p_discount': discount ?? 0,
+        },
+      );
+      if (response is! Map) {
+        throw const FormatException('Réponse RPC de commande invalide');
       }
-      final discountAmount = discount ?? 0;
-      final totalAmount = subtotal - discountAmount;
-      final orderNumber = await _generateOrderNumber();
-
-      final order = await _client
-          .from('sales_orders')
-          .insert({
-            'order_number': orderNumber,
-            'customer_id': customerId,
-            'subtotal': subtotal,
-            'total_amount': totalAmount,
-            'order_status': 'pending',
-            'payment_status': 'pending',
-            'sales_rep_id': _client.auth.currentUser?.id,
-            'currency': currency,
-            'exchange_rate': exchangeRate,
-            'payment_type': paymentType,
-            if (notes != null) 'notes': notes,
-            if (discountAmount > 0) 'discount_amount': discountAmount,
-          })
-          .select()
-          .single();
-
-      for (final item in items) {
-        final lineTotal =
-            (item['quantity'] as num) * (item['unit_price'] as num);
-        await _client.from('order_items').insert({
-          'order_id': order['id'],
-          'product_id': item['product_id'],
-          'quantity': item['quantity'],
-          'unit_price': item['unit_price'],
-          'line_total': lineTotal,
-        });
-      }
-
-      return order;
+      return Map<String, dynamic>.from(response);
     } catch (e) {
       throw Exception('Erreur lors de la création de la commande: $e');
     }
   }
 
-  Future<String> _generateOrderNumber() async {
-    try {
-      final value = await _client.rpc('generate_order_number');
-      if (value is String && value.isNotEmpty) return value;
-    } catch (_) {
-      // The database trigger also generates the value; this is only a client-side fallback.
-    }
-    final now = DateTime.now();
-    return 'ORD-${now.year}-${now.microsecondsSinceEpoch}';
-  }
-
   Future<Map<String, dynamic>> updateOrderStatus(
       String orderId, String newStatus) async {
     try {
-      final response = await _client
-          .from('sales_orders')
-          .update({
-            'order_status': newStatus,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', orderId)
-          .select()
-          .single();
-      return response;
+      final response = await _client.rpc(
+        'transition_order_status',
+        params: {
+          'p_order_id': orderId,
+          'p_new_status': newStatus,
+        },
+      );
+      if (response is! Map) {
+        throw const FormatException('Réponse RPC de statut invalide');
+      }
+      return Map<String, dynamic>.from(response);
     } catch (e) {
       throw Exception('Erreur lors de la mise à jour du statut: $e');
     }

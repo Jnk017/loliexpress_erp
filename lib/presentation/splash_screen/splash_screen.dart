@@ -78,6 +78,11 @@ class _SplashScreenState extends State<SplashScreen>
         if (!mounted) return;
 
         if (AuthService.instance.isAuthenticated) {
+          if (await AuthService.instance.mustChangePassword()) {
+            if (!mounted) return;
+            Navigator.pushReplacementNamed(context, '/force-password-change');
+            return;
+          }
           await RoleService.instance.refreshRole();
           if (!mounted) return;
 
@@ -88,6 +93,10 @@ class _SplashScreenState extends State<SplashScreen>
         }
       }
     } catch (e) {
+      if (!AuthService.instance.isAuthenticated && mounted) {
+        Navigator.pushReplacementNamed(context, '/login-screen');
+        return;
+      }
       if (mounted) {
         setState(() {
           _initializationStatus = 'Erreur d\'initialisation';

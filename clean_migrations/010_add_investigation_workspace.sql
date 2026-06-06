@@ -1,0 +1,22 @@
+-- Clean bootstrap 010: investigation workspace schema only.
+CREATE TABLE IF NOT EXISTS public.investigations(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),anomaly_id uuid REFERENCES public.security_anomalies(id) ON DELETE SET NULL,title text NOT NULL,description text,status text NOT NULL DEFAULT 'open',lead_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,created_at timestamptz NOT NULL DEFAULT now(),closed_at timestamptz);
+CREATE TABLE IF NOT EXISTS public.investigation_team_members(investigation_id uuid NOT NULL REFERENCES public.investigations(id) ON DELETE CASCADE,user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,role text NOT NULL,assigned_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,assigned_at timestamptz NOT NULL DEFAULT now(),PRIMARY KEY(investigation_id,user_id));
+CREATE TABLE IF NOT EXISTS public.investigation_tasks(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),investigation_id uuid NOT NULL REFERENCES public.investigations(id) ON DELETE CASCADE,title text NOT NULL,description text,status text NOT NULL DEFAULT 'assigned',priority integer NOT NULL DEFAULT 0,assigned_to uuid REFERENCES auth.users(id) ON DELETE SET NULL,created_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS public.investigation_evidence(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),investigation_id uuid NOT NULL REFERENCES public.investigations(id) ON DELETE CASCADE,category text NOT NULL,title text NOT NULL,description text,file_path text,collected_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,is_critical boolean NOT NULL DEFAULT false,created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS public.investigation_messages(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),investigation_id uuid NOT NULL REFERENCES public.investigations(id) ON DELETE CASCADE,sender_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,message text NOT NULL,is_decision boolean NOT NULL DEFAULT false,created_at timestamptz NOT NULL DEFAULT now());
+CREATE OR REPLACE FUNCTION public.is_investigation_member(p_investigation_id uuid) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT EXISTS(SELECT 1 FROM public.investigation_team_members WHERE investigation_id=p_investigation_id AND user_id=auth.uid()) $$;
+ALTER TABLE public.investigations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.investigation_team_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.investigation_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.investigation_evidence ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.investigation_messages ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS investigations_access ON public.investigations;
+CREATE POLICY investigations_access ON public.investigations FOR SELECT TO authenticated USING(public.is_admin() OR lead_id=auth.uid() OR public.is_investigation_member(id));
+DROP POLICY IF EXISTS investigation_members_access ON public.investigation_team_members;
+CREATE POLICY investigation_members_access ON public.investigation_team_members FOR SELECT TO authenticated USING(public.is_admin() OR user_id=auth.uid() OR public.is_investigation_member(investigation_id));
+DROP POLICY IF EXISTS investigation_tasks_access ON public.investigation_tasks;
+CREATE POLICY investigation_tasks_access ON public.investigation_tasks FOR SELECT TO authenticated USING(public.is_admin() OR assigned_to=auth.uid() OR public.is_investigation_member(investigation_id));
+DROP POLICY IF EXISTS investigation_evidence_access ON public.investigation_evidence;
+CREATE POLICY investigation_evidence_access ON public.investigation_evidence FOR SELECT TO authenticated USING(public.is_admin() OR public.is_investigation_member(investigation_id));
+DROP POLICY IF EXISTS investigation_messages_access ON public.investigation_messages;
+CREATE POLICY investigation_messages_access ON public.investigation_messages FOR SELECT TO authenticated USING(public.is_admin() OR sender_id=auth.uid() OR public.is_investigation_member(investigation_id));

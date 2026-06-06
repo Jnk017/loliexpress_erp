@@ -156,7 +156,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
                   items: const [
                     DropdownMenuItem(value: 'admin', child: Text('Admin')),
                     DropdownMenuItem(
-                        value: 'sales_rep',
+                        value: 'commercial_staff',
                         child: Text('Sales Representative')),
                     DropdownMenuItem(
                         value: 'warehouse_staff',
@@ -166,7 +166,10 @@ class _EditUserDialogState extends State<EditUserDialog> {
                     DropdownMenuItem(
                         value: 'acheteur', child: Text('Acheteur')),
                     DropdownMenuItem(
-                        value: 'b2b_customer', child: Text('B2B Customer')),
+                        value: 'delivery_agent',
+                        child: Text('Delivery Agent')),
+                    DropdownMenuItem(
+                        value: 'client_b2b', child: Text('B2B Customer')),
                   ],
                   onChanged: (value) {
                     setState(() => _selectedRole = value!);

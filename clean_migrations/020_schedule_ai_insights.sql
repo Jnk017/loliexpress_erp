@@ -1,0 +1,3 @@
+-- Clean bootstrap 020: internal AI insight refresh schedule.
+CREATE OR REPLACE FUNCTION public.generate_ai_insights() RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ BEGIN INSERT INTO public.ai_insights(insight_type,title,description,severity,payload) SELECT 'stock_alert','Produits sous le seuil','Des produits nécessitent un réapprovisionnement','warning',jsonb_build_object('count',count(*)) FROM public.inventory_stock WHERE quantity<=reorder_level HAVING count(*)>0; END $$;
+DO $$ BEGIN IF EXISTS(SELECT 1 FROM cron.job WHERE jobname='ai-insights-hourly') THEN PERFORM cron.unschedule('ai-insights-hourly'); END IF; PERFORM cron.schedule('ai-insights-hourly','15 * * * *','SELECT public.generate_ai_insights();'); END $$;

@@ -110,10 +110,12 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
       'image': raw['image_url'] ??
           'https://images.unsplash.com/photo-1633288485223-84bafb2a1e2d',
       'semanticLabel': raw['name'] ?? 'Product image',
+      // Discounts must come from a server-side pricing rule. No client-only
+      // tier reduction is applied to the authoritative product price.
       'tierDiscounts': <String, double>{
-        'Premium': 0.15,
-        'Gold': 0.10,
-        'Silver': 0.05,
+        'Premium': 0.0,
+        'Gold': 0.0,
+        'Silver': 0.0,
         'Standard': 0.0,
       },
     };
@@ -289,16 +291,15 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
   }
 
   double _calculateDiscount() {
-    final subtotal = _calculateSubtotal();
-    final tier = _selectedCustomer?['tier'] as String? ?? 'Standard';
-    final tierDiscount = tier == 'Premium' ? 0.05 : 0.0;
-    return subtotal * tierDiscount;
+    // PostgreSQL is authoritative. The current RPC has no server-side customer
+    // tier pricing rule, so Flutter must not invent a discount.
+    return 0;
   }
 
   double _calculateTax() {
-    final subtotal = _calculateSubtotal();
-    final discount = _calculateDiscount();
-    return (subtotal - discount) * 0.18;
+    // create_order_with_items currently stores tax_amount = 0. Keep the preview
+    // aligned with the persisted total until a server-side tax rule exists.
+    return 0;
   }
 
   double _calculateTotal() {

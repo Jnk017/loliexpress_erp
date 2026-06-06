@@ -3,9 +3,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class InventoryService {
   static InventoryService? _instance;
   static InventoryService get instance => _instance ??= InventoryService._();
-  InventoryService._();
+  InventoryService._() : _injectedClient = null;
+  InventoryService({SupabaseClient? client}) : _injectedClient = client;
 
-  SupabaseClient get _client => Supabase.instance.client;
+  final SupabaseClient? _injectedClient;
+  SupabaseClient get _client => _injectedClient ?? Supabase.instance.client;
 
   Future<List<Map<String, dynamic>>> getStock(
       {String? warehouseId,
@@ -59,21 +61,35 @@ class InventoryService {
     String? reference,
     String? notes,
   }) async {
+    final quantityDelta = switch (movementType) {
+      'in' || 'return' => quantity.abs(),
+      'out' => -quantity.abs(),
+      'adjustment' => quantity,
+      _ => throw ArgumentError.value(
+          movementType,
+          'movementType',
+          'Type de mouvement non pris en charge',
+        ),
+    };
+    final reason = notes?.trim().isNotEmpty == true
+        ? notes!.trim()
+        : 'Mouvement $movementType';
+
     try {
-      final response = await _client
-          .from('stock_movements')
-          .insert({
-            'product_id': productId,
-            'warehouse_id': warehouseId,
-            'quantity': quantity,
-            'movement_type': movementType,
-            'created_by': _client.auth.currentUser?.id,
-            if (reference != null) 'reference_type': reference,
-            if (notes != null) 'notes': notes,
-          })
-          .select()
-          .single();
-      return response;
+      final response = await _client.rpc(
+        'adjust_stock',
+        params: {
+          'p_product_id': productId,
+          'p_warehouse_id': warehouseId,
+          'p_quantity_delta': quantityDelta,
+          'p_reason': reason,
+          'p_reference_type': reference ?? movementType,
+        },
+      );
+      if (response is! Map) {
+        throw const FormatException('Réponse RPC de stock invalide');
+      }
+      return Map<String, dynamic>.from(response);
     } catch (e) {
       throw Exception('Erreur lors de la création du mouvement: $e');
     }

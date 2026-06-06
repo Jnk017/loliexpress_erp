@@ -1,0 +1,7 @@
+-- Clean bootstrap 009: forensic export schema only.
+CREATE TABLE IF NOT EXISTS public.forensic_export_templates(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),name text NOT NULL UNIQUE,description text,format text NOT NULL CHECK(format IN('pdf','csv','json','xlsx')),configuration jsonb NOT NULL DEFAULT '{}'::jsonb,is_active boolean NOT NULL DEFAULT true,created_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS public.forensic_export_history(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),template_id uuid REFERENCES public.forensic_export_templates(id) ON DELETE SET NULL,status text NOT NULL DEFAULT 'pending' CHECK(status IN('pending','processing','completed','failed')),file_path text,error_message text,exported_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,created_at timestamptz NOT NULL DEFAULT now(),completed_at timestamptz);
+ALTER TABLE public.forensic_export_templates ENABLE ROW LEVEL SECURITY; ALTER TABLE public.forensic_export_history ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS export_templates_admin ON public.forensic_export_templates;
+CREATE POLICY export_templates_admin ON public.forensic_export_templates FOR ALL TO authenticated USING(public.is_admin()) WITH CHECK(public.is_admin()); DROP POLICY IF EXISTS export_history_admin ON public.forensic_export_history;
+CREATE POLICY export_history_admin ON public.forensic_export_history FOR SELECT TO authenticated USING(public.is_admin());

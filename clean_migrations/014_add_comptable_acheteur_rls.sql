@@ -1,0 +1,20 @@
+-- Clean bootstrap 014: accounting and purchasing isolation.
+DO $$ DECLARE p record; BEGIN FOR p IN SELECT tablename,policyname FROM pg_policies WHERE schemaname='public' AND tablename IN('suppliers','purchases','purchase_order_items','expense_approval_history') LOOP EXECUTE format('DROP POLICY IF EXISTS %I ON public.%I',p.policyname,p.tablename); END LOOP; END $$;
+DROP POLICY IF EXISTS suppliers_procurement_read ON public.suppliers;
+CREATE POLICY suppliers_procurement_read ON public.suppliers FOR SELECT TO authenticated USING(public.is_admin() OR public.has_role('acheteur','comptable'));
+DROP POLICY IF EXISTS suppliers_buyer_manage ON public.suppliers;
+CREATE POLICY suppliers_buyer_manage ON public.suppliers FOR ALL TO authenticated USING(public.is_admin() OR public.has_role('acheteur')) WITH CHECK(public.is_admin() OR public.has_role('acheteur'));
+DROP POLICY IF EXISTS purchases_procurement_read ON public.purchases;
+CREATE POLICY purchases_procurement_read ON public.purchases FOR SELECT TO authenticated USING(public.is_admin() OR public.has_role('comptable') OR (public.has_role('acheteur') AND (buyer_id=auth.uid() OR created_by=auth.uid())));
+DROP POLICY IF EXISTS purchases_buyer_manage ON public.purchases;
+CREATE POLICY purchases_buyer_manage ON public.purchases FOR ALL TO authenticated USING(public.is_admin() OR (public.has_role('acheteur') AND (buyer_id=auth.uid() OR created_by=auth.uid()))) WITH CHECK(public.is_admin() OR (public.has_role('acheteur') AND (buyer_id=auth.uid() OR created_by=auth.uid())));
+DROP POLICY IF EXISTS purchase_items_read ON public.purchase_order_items;
+CREATE POLICY purchase_items_read ON public.purchase_order_items FOR SELECT TO authenticated USING(public.is_admin() OR public.has_role('comptable') OR EXISTS(SELECT 1 FROM public.purchases p WHERE p.id=purchase_id AND public.has_role('acheteur') AND (p.buyer_id=auth.uid() OR p.created_by=auth.uid())));
+DROP POLICY IF EXISTS expense_history_finance ON public.expense_approval_history;
+CREATE POLICY expense_history_finance ON public.expense_approval_history FOR SELECT TO authenticated USING(public.is_admin() OR public.has_role('comptable') OR performed_by=auth.uid());
+DROP POLICY IF EXISTS invoices_finance_manage ON public.invoices;
+CREATE POLICY invoices_finance_manage ON public.invoices FOR ALL TO authenticated USING(public.is_admin() OR public.has_role('comptable')) WITH CHECK(public.is_admin() OR public.has_role('comptable'));
+DROP POLICY IF EXISTS expenses_finance_manage ON public.expenses;
+CREATE POLICY expenses_finance_manage ON public.expenses FOR ALL TO authenticated USING(public.is_admin() OR public.has_role('comptable')) WITH CHECK(public.is_admin() OR public.has_role('comptable'));
+DROP POLICY IF EXISTS purchase_items_buyer_manage ON public.purchase_order_items;
+CREATE POLICY purchase_items_buyer_manage ON public.purchase_order_items FOR ALL TO authenticated USING(public.is_admin() OR EXISTS(SELECT 1 FROM public.purchases p WHERE p.id=purchase_id AND public.has_role('acheteur') AND (p.buyer_id=auth.uid() OR p.created_by=auth.uid()))) WITH CHECK(public.is_admin() OR EXISTS(SELECT 1 FROM public.purchases p WHERE p.id=purchase_id AND public.has_role('acheteur') AND (p.buyer_id=auth.uid() OR p.created_by=auth.uid())));

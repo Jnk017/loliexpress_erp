@@ -1,0 +1,19 @@
+-- Clean bootstrap 004: immutable audit and system configuration.
+CREATE TABLE IF NOT EXISTS public.audit_logs(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),action_type text NOT NULL,table_name text NOT NULL,record_id uuid,old_values jsonb,new_values jsonb,user_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,ip_address inet,user_agent text,request_id text,created_at timestamptz NOT NULL DEFAULT now());
+CREATE INDEX IF NOT EXISTS idx_audit_logs_record ON public.audit_logs(table_name,record_id,created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_user ON public.audit_logs(user_id,created_at DESC);
+CREATE TABLE IF NOT EXISTS public.system_configuration(config_key text PRIMARY KEY,config_value jsonb NOT NULL,description text,is_secret boolean NOT NULL DEFAULT false,updated_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,updated_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS public.user_permissions(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,module_name text NOT NULL,permissions jsonb NOT NULL DEFAULT '{}'::jsonb,created_at timestamptz NOT NULL DEFAULT now(),UNIQUE(user_id,module_name));
+CREATE OR REPLACE FUNCTION public.request_ip() RETURNS inet LANGUAGE plpgsql STABLE AS $$ BEGIN RETURN (NULLIF(current_setting('request.headers',true),'')::jsonb->>'x-forwarded-for')::inet; EXCEPTION WHEN OTHERS THEN RETURN NULL; END $$;
+CREATE OR REPLACE FUNCTION public.request_user_agent() RETURNS text LANGUAGE plpgsql STABLE AS $$ BEGIN RETURN NULLIF(current_setting('request.headers',true),'')::jsonb->>'user-agent'; EXCEPTION WHEN OTHERS THEN RETURN NULL; END $$;
+CREATE OR REPLACE FUNCTION public.write_audit_log(p_action text,p_table text,p_record uuid,p_old jsonb DEFAULT NULL,p_new jsonb DEFAULT NULL,p_user uuid DEFAULT auth.uid()) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ BEGIN INSERT INTO public.audit_logs(action_type,table_name,record_id,old_values,new_values,user_id,ip_address,user_agent,request_id) VALUES(p_action,p_table,p_record,p_old,p_new,p_user,public.request_ip(),public.request_user_agent(),current_setting('request.id',true)); END $$;
+REVOKE ALL ON FUNCTION public.write_audit_log(text,text,uuid,jsonb,jsonb,uuid) FROM PUBLIC,anon,authenticated;
+CREATE OR REPLACE FUNCTION public.audit_row_change() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE rid uuid; BEGIN rid:=COALESCE(NEW.id,OLD.id); PERFORM public.write_audit_log(lower(TG_OP),TG_TABLE_NAME,rid,CASE WHEN TG_OP IN('UPDATE','DELETE') THEN to_jsonb(OLD) END,CASE WHEN TG_OP IN('INSERT','UPDATE') THEN to_jsonb(NEW) END); RETURN COALESCE(NEW,OLD); END $$;
+ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY; ALTER TABLE public.system_configuration ENABLE ROW LEVEL SECURITY; ALTER TABLE public.user_permissions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS audit_admin_read ON public.audit_logs;
+CREATE POLICY audit_admin_read ON public.audit_logs FOR SELECT TO authenticated USING(public.is_admin());
+DROP POLICY IF EXISTS config_admin ON public.system_configuration;
+CREATE POLICY config_admin ON public.system_configuration FOR ALL TO authenticated USING(public.is_admin()) WITH CHECK(public.is_admin());
+DROP POLICY IF EXISTS permissions_self_read ON public.user_permissions;
+CREATE POLICY permissions_self_read ON public.user_permissions FOR SELECT TO authenticated USING(public.is_admin() OR user_id=auth.uid());
+INSERT INTO public.system_configuration(config_key,config_value,description) VALUES('bootstrap_admin_enabled','true','Disabled by bootstrap_admin after successful initialization'),('allowed_currencies','["CDF","USD"]','Currencies supported by ERP'),('max_sales_discount_percent','10','Maximum discount for commercial staff') ON CONFLICT(config_key) DO NOTHING;

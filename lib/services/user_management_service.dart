@@ -24,14 +24,17 @@ class UserManagementService {
 
       final activeUsers = users.where((u) => u['is_active'] == true).length;
       final adminCount = users.where((u) => u['role'] == 'admin').length;
-      final salesRepCount = users.where((u) => u['role'] == 'sales_rep').length;
+      final salesRepCount =
+          users.where((u) => u['role'] == 'commercial_staff').length;
       final warehouseCount =
           users.where((u) => u['role'] == 'warehouse_staff').length;
       final comptableCount =
           users.where((u) => u['role'] == 'comptable').length;
       final acheteurCount = users.where((u) => u['role'] == 'acheteur').length;
+      final deliveryAgentCount =
+          users.where((u) => u['role'] == 'delivery_agent').length;
       final customerCount =
-          users.where((u) => u['role'] == 'b2b_customer').length;
+          users.where((u) => u['role'] == 'client_b2b').length;
 
       return {
         'total_users': users.length,
@@ -41,6 +44,7 @@ class UserManagementService {
         'warehouse_staff_count': warehouseCount,
         'comptable_count': comptableCount,
         'acheteur_count': acheteurCount,
+        'delivery_agent_count': deliveryAgentCount,
         'b2b_customer_count': customerCount,
       };
     } catch (e) {
@@ -48,10 +52,9 @@ class UserManagementService {
     }
   }
 
-  // Create new user with Supabase auth
+  // Invite a new user through the privileged Edge Function; no password is handled by the admin UI.
   Future<void> createUser({
     required String email,
-    required String password,
     required String fullName,
     required String role,
     String? phone,
@@ -60,7 +63,6 @@ class UserManagementService {
     try {
       final response = await _supabase.functions.invoke('create_user', body: {
         'email': email,
-        'password': password,
         'full_name': fullName,
         'role': role,
         'phone': phone,
@@ -85,11 +87,19 @@ class UserManagementService {
     try {
       await _supabase.from('user_profiles').update({
         'full_name': fullName,
-        'role': role,
         'phone': phone,
         'company_name': companyName,
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', userId);
+      final roleRow = await _supabase
+          .from('roles')
+          .select('id')
+          .eq('name', role)
+          .single();
+      await _supabase.rpc('update_user_role', params: {
+        'p_target_user': userId,
+        'p_new_role': roleRow['id'],
+      });
     } catch (e) {
       throw Exception('Failed to update user: $e');
     }
@@ -98,10 +108,10 @@ class UserManagementService {
   // Update user status (active/inactive)
   Future<void> updateUserStatus(String userId, bool isActive) async {
     try {
-      await _supabase.from('user_profiles').update({
-        'is_active': isActive,
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('id', userId);
+      await _supabase.rpc('update_user_status', params: {
+        'p_target_user': userId,
+        'p_is_active': isActive,
+      });
     } catch (e) {
       throw Exception('Failed to update user status: $e');
     }

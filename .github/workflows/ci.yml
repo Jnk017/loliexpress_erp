@@ -1,0 +1,72 @@
+name: LoliExpress ERP CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.3'
+          channel: stable
+          cache: true
+      - run: cp env.json.example env.json
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+  supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Prepare isolated clean bootstrap workdir
+        run: |
+          mkdir -p .clean-ci/supabase/migrations
+          cp supabase/config.toml .clean-ci/supabase/config.toml
+          : > .clean-ci/supabase/seed.sql
+          for file in clean_migrations/[0-9][0-9][0-9]_*.sql; do
+            number=$(basename "$file" | cut -d_ -f1)
+            cp "$file" ".clean-ci/supabase/migrations/20260606${number}000_$(basename "$file")"
+          done
+          test "$(find .clean-ci/supabase/migrations -type f | wc -l)" -eq 24
+      - run: supabase --workdir .clean-ci start
+      - run: supabase --workdir .clean-ci db reset
+      - name: Verify clean schema and migration history
+        run: |
+          supabase --workdir .clean-ci status
+          supabase --workdir .clean-ci migration list --local
+          psql postgresql://postgres:postgres@127.0.0.1:54322/postgres -v ON_ERROR_STOP=1 -f clean_migrations/post_bootstrap_config.sql
+          psql postgresql://postgres:postgres@127.0.0.1:54322/postgres -v ON_ERROR_STOP=1 -f clean_migrations/verify_migration.sql
+      - run: supabase --workdir .clean-ci db lint --local --level warning
+      - name: Test Edge Function units
+        run: deno test --allow-env --allow-net supabase/functions/create_user/index_test.ts supabase/functions/bootstrap_admin/index_test.ts
+      - name: Test Edge Functions against local Supabase
+        run: supabase/tests/edge_functions_integration.sh
+
+  web-build:
+    runs-on: ubuntu-latest
+    needs: [flutter, supabase]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.3'
+          channel: stable
+          cache: true
+      - run: cp env.json.example env.json
+      - run: flutter pub get
+      - name: Scaffold ignored web platform
+        run: flutter create --platforms web .
+      - run: flutter build web --release --dart-define-from-file=env.json
