@@ -37,7 +37,7 @@ class _AssignInvestigatorDialogWidgetState
           .from('user_profiles')
           .select('id, full_name, email, role')
           .eq('is_active', true)
-          .inFilter('role', ['admin', 'sales_rep']);
+          .inFilter('role', ['admin', 'commercial_staff']);
 
       if (!mounted) return;
       setState(() {

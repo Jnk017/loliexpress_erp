@@ -29,11 +29,11 @@ class RoleService {
     switch (role) {
       case 'admin':
         return UserRole.admin;
-      case 'sales_rep':
+      case 'commercial_staff':
         return UserRole.salesRep;
       case 'warehouse_staff':
         return UserRole.warehouseStaff;
-      case 'b2b_customer':
+      case 'client_b2b':
         return UserRole.customer;
       case 'comptable':
         return UserRole.comptable;

@@ -1,0 +1,8 @@
+-- Clean bootstrap 018: delivery role and sector policy.
+INSERT INTO public.roles(name,display_name,description,sector,is_system,permissions) VALUES('delivery_agent','Livreur','Gestion des tournées et livraisons assignées','delivery',true,'{"deliveries":"assigned"}') ON CONFLICT(name) DO UPDATE SET display_name=EXCLUDED.display_name,sector=EXCLUDED.sector,is_system=true;
+DROP POLICY IF EXISTS routes_read ON public.delivery_routes; DROP POLICY IF EXISTS routes_read ON public.delivery_routes;
+CREATE POLICY routes_read ON public.delivery_routes FOR SELECT TO authenticated USING(public.is_admin() OR (public.has_role('delivery_agent') AND delivery_agent_id=auth.uid()) OR (public.has_role('warehouse_staff') AND warehouse_id=(SELECT warehouse_id FROM public.user_profiles WHERE id=auth.uid())));
+DROP POLICY IF EXISTS deliveries_read ON public.deliveries; DROP POLICY IF EXISTS deliveries_read ON public.deliveries;
+CREATE POLICY deliveries_read ON public.deliveries FOR SELECT TO authenticated USING(public.is_admin() OR (public.has_role('delivery_agent') AND delivery_agent_id=auth.uid()) OR (public.has_role('warehouse_staff') AND warehouse_id=(SELECT warehouse_id FROM public.user_profiles WHERE id=auth.uid())) OR public.can_read_order(order_id));
+DROP POLICY IF EXISTS routes_warehouse_manage ON public.delivery_routes;
+CREATE POLICY routes_warehouse_manage ON public.delivery_routes FOR ALL TO authenticated USING(public.is_admin() OR (public.has_role('warehouse_staff') AND warehouse_id=(SELECT warehouse_id FROM public.user_profiles WHERE id=auth.uid()))) WITH CHECK(public.is_admin() OR (public.has_role('warehouse_staff') AND warehouse_id=(SELECT warehouse_id FROM public.user_profiles WHERE id=auth.uid())));

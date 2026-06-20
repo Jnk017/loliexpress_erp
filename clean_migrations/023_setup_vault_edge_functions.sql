@@ -1,0 +1,14 @@
+-- Clean bootstrap 023: run only after Edge deployment and Vault secret creation.
+CREATE OR REPLACE FUNCTION public.edge_function_url(function_name text) RETURNS text LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path=public,vault AS $$ DECLARE base_url text; BEGIN IF function_name !~ '^[a-z0-9_-]+$' THEN RAISE EXCEPTION 'Invalid function name'; END IF; SELECT decrypted_secret INTO base_url FROM vault.decrypted_secrets WHERE name='supabase_url' LIMIT 1; IF NULLIF(base_url,'') IS NULL THEN RAISE EXCEPTION 'Vault secret supabase_url is missing'; END IF; RETURN rtrim(base_url,'/')||'/functions/v1/'||function_name; END $$;
+CREATE OR REPLACE FUNCTION public.invoke_send_email_notification() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=public,extensions AS $$ BEGIN IF NEW.status='pending' AND NEW.channel IN('email','both') THEN PERFORM net.http_post(url:=public.edge_function_url('send-email-notification'),headers:=public.edge_function_auth_headers(),body:=jsonb_build_object('notification_id',NEW.id)); END IF; RETURN NEW; END $$;
+DROP TRIGGER IF EXISTS invoke_send_email_notification_trigger ON public.notification_queue; CREATE TRIGGER invoke_send_email_notification_trigger AFTER INSERT ON public.notification_queue FOR EACH ROW EXECUTE FUNCTION public.invoke_send_email_notification();
+DO $$ DECLARE job text; BEGIN FOREACH job IN ARRAY ARRAY['forensic-export-daily','invoice-reminder-daily','stock-alert-hourly','admin-report-daily','admin-report-weekly','admin-report-monthly','admin-report-quarterly','admin-report-annual'] LOOP IF EXISTS(SELECT 1 FROM cron.job WHERE jobname=job) THEN PERFORM cron.unschedule(job); END IF; END LOOP;
+PERFORM cron.schedule('forensic-export-daily','0 2 * * *',$job$SELECT net.http_post(url:=public.edge_function_url('forensic-export'),headers:=public.edge_function_auth_headers(),body:='{}'::jsonb);$job$);
+PERFORM cron.schedule('invoice-reminder-daily','0 8 * * *',$job$SELECT net.http_post(url:=public.edge_function_url('invoice-reminder'),headers:=public.edge_function_auth_headers(),body:='{}'::jsonb);$job$);
+PERFORM cron.schedule('stock-alert-hourly','0 * * * *',$job$SELECT net.http_post(url:=public.edge_function_url('stock-alert'),headers:=public.edge_function_auth_headers(),body:='{}'::jsonb);$job$);
+PERFORM cron.schedule('admin-report-daily','5 0 * * *','REFRESH MATERIALIZED VIEW public.admin_daily_report;');
+PERFORM cron.schedule('admin-report-weekly','10 0 * * 1','REFRESH MATERIALIZED VIEW public.admin_weekly_report;');
+PERFORM cron.schedule('admin-report-monthly','15 0 1 * *','REFRESH MATERIALIZED VIEW public.admin_monthly_report;');
+PERFORM cron.schedule('admin-report-quarterly','20 0 1 1,4,7,10 *','REFRESH MATERIALIZED VIEW public.admin_quarterly_report;');
+PERFORM cron.schedule('admin-report-annual','30 0 1 1 *','REFRESH MATERIALIZED VIEW public.admin_annual_report;'); END $$;
+REVOKE ALL ON FUNCTION public.edge_function_url(text) FROM PUBLIC,anon,authenticated;

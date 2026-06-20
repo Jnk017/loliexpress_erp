@@ -82,7 +82,7 @@ request 400 /tmp/create-password.json \
   -X POST "${API_URL}/functions/v1/create_user" \
   -H "Authorization: Bearer ${admin_token}" \
   -H 'Content-Type: application/json' \
-  --data '{"email":"password@test.local","role":"sales_rep","password":"forbidden"}'
+  --data '{"email":"password@test.local","role":"commercial_staff","password":"forbidden"}'
 request 400 /tmp/create-role.json \
   -X POST "${API_URL}/functions/v1/create_user" \
   -H "Authorization: Bearer ${admin_token}" \
@@ -111,7 +111,7 @@ request 403 /tmp/create-non-admin.json \
   -X POST "${API_URL}/functions/v1/create_user" \
   -H "Authorization: Bearer ${invited_token}" \
   -H 'Content-Type: application/json' \
-  --data '{"email":"denied@test.local","role":"sales_rep"}'
+  --data '{"email":"denied@test.local","role":"commercial_staff"}'
 
 request 200 /tmp/create-audit.json \
   "${API_URL}/rest/v1/audit_logs?select=id&new_values-%3E%3Eoperation=eq.user_created_by_admin" \

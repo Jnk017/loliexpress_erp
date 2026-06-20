@@ -36,7 +36,7 @@ export function bootstrapAdminHandler(supabase: SupabaseClient) {
       await logAttempt(supabase, req, false, { reason: "configuration_read_failed" });
       return json({ error: "Bootstrap configuration is unavailable" }, 500);
     }
-    if (setting?.config_value !== "true") {
+    if (setting?.config_value !== true && setting?.config_value !== "true") {
       await logAttempt(supabase, req, false, { reason: "disabled" });
       return json({ error: "Bootstrap is disabled" }, 410);
     }
@@ -46,7 +46,7 @@ export function bootstrapAdminHandler(supabase: SupabaseClient) {
       return json({ error: "Unable to verify bootstrap state" }, 500);
     }
     if ((count ?? 0) > 0) {
-      await supabase.from("system_configuration").update({ config_value: "false", updated_at: new Date().toISOString() }).eq("config_key", "bootstrap_admin_enabled");
+      await supabase.from("system_configuration").update({ config_value: false, updated_at: new Date().toISOString() }).eq("config_key", "bootstrap_admin_enabled");
       await logAttempt(supabase, req, false, { reason: "admin_exists" });
       return json({ error: "Admin already exists" }, 409);
     }
@@ -67,8 +67,14 @@ export function bootstrapAdminHandler(supabase: SupabaseClient) {
       await logAttempt(supabase, req, false, { reason: "invite_failed" });
       return json({ error: error?.message ?? "Admin invitation failed" }, 400);
     }
-    const { error: profileError } = await supabase.from("user_profiles").upsert({
-      id: data.user.id, email, full_name: "Initial Admin", role: "admin", is_active: true, must_change_password: true,
+    const { error: profileError } = await supabase.rpc("provision_invited_user_profile", {
+      p_target_user: data.user.id,
+      p_email: email,
+      p_full_name: "Initial Admin",
+      p_role_name: "admin",
+      p_phone: null,
+      p_company_name: null,
+      p_actor: data.user.id,
     });
     if (profileError) {
       await supabase.auth.admin.deleteUser(data.user.id);
@@ -85,7 +91,7 @@ export function bootstrapAdminHandler(supabase: SupabaseClient) {
       return json({ error: "Admin bootstrap rolled back because audit logging failed" }, 500);
     }
     const { error: disableError } = await supabase.from("system_configuration").update({
-      config_value: "false",
+      config_value: false,
       updated_at: new Date().toISOString(),
     }).eq("config_key", "bootstrap_admin_enabled");
     if (disableError) {

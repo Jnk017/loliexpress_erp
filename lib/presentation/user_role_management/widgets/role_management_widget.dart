@@ -32,12 +32,12 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
       final users = await _userService.getAllUsers();
       final roleMap = <String, List<Map<String, dynamic>>>{
         'admin': [],
-        'sales_rep': [],
+        'commercial_staff': [],
         'warehouse_staff': [],
         'comptable': [],
         'acheteur': [],
         'delivery_agent': [],
-        'b2b_customer': [],
+        'client_b2b': [],
       };
 
       for (var user in users) {
@@ -65,7 +65,7 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
     switch (role.toLowerCase()) {
       case 'admin':
         return Colors.red;
-      case 'sales_rep':
+      case 'commercial_staff':
         return Colors.blue;
       case 'warehouse_staff':
         return Colors.orange;
@@ -75,7 +75,7 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
         return Colors.teal;
       case 'delivery_agent':
         return Colors.indigo;
-      case 'b2b_customer':
+      case 'client_b2b':
         return Colors.green;
       default:
         return Colors.grey;
@@ -86,7 +86,7 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
     switch (role.toLowerCase()) {
       case 'admin':
         return 'Administrators';
-      case 'sales_rep':
+      case 'commercial_staff':
         return 'Sales Representatives';
       case 'warehouse_staff':
         return 'Warehouse Staff';
@@ -96,7 +96,7 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
         return 'Acheteurs';
       case 'delivery_agent':
         return 'Agents de livraison';
-      case 'b2b_customer':
+      case 'client_b2b':
         return 'B2B Customers';
       default:
         return role.toUpperCase();
@@ -107,7 +107,7 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
     switch (role.toLowerCase()) {
       case 'admin':
         return 'Full system access with user and configuration management';
-      case 'sales_rep':
+      case 'commercial_staff':
         return 'Manage sales orders, customers, and assigned client accounts';
       case 'warehouse_staff':
         return 'Handle inventory, stock movements, and deliveries';
@@ -117,7 +117,7 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
         return 'Purchasing: supplier management and purchase orders';
       case 'delivery_agent':
         return 'Access assigned routes and confirm deliveries';
-      case 'b2b_customer':
+      case 'client_b2b':
         return 'View orders, track deliveries, and access portal features';
       default:
         return '';
@@ -134,7 +134,7 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
           'All Module Access',
           'Data Export',
         ];
-      case 'sales_rep':
+      case 'commercial_staff':
         return [
           'Create Sales Orders',
           'Manage Customers',
@@ -173,7 +173,7 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
           'Confirm Deliveries',
           'Access Delivery Documents',
         ];
-      case 'b2b_customer':
+      case 'client_b2b':
         return [
           'View Own Orders',
           'Track Deliveries',
@@ -197,7 +197,7 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
               children: [
                 _buildRoleCard('admin'),
                 SizedBox(height: 2.h),
-                _buildRoleCard('sales_rep'),
+                _buildRoleCard('commercial_staff'),
                 SizedBox(height: 2.h),
                 _buildRoleCard('warehouse_staff'),
                 SizedBox(height: 2.h),
@@ -207,7 +207,7 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
                 SizedBox(height: 2.h),
                 _buildRoleCard('delivery_agent'),
                 SizedBox(height: 2.h),
-                _buildRoleCard('b2b_customer'),
+                _buildRoleCard('client_b2b'),
               ],
             ),
           );
@@ -350,7 +350,7 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
     switch (role.toLowerCase()) {
       case 'admin':
         return Icons.admin_panel_settings;
-      case 'sales_rep':
+      case 'commercial_staff':
         return Icons.business_center;
       case 'warehouse_staff':
         return Icons.warehouse;
@@ -360,7 +360,7 @@ class _RoleManagementWidgetState extends State<RoleManagementWidget> {
         return Icons.shopping_cart;
       case 'delivery_agent':
         return Icons.local_shipping;
-      case 'b2b_customer':
+      case 'client_b2b':
         return Icons.shopping_bag;
       default:
         return Icons.person;

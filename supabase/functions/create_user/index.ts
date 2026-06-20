@@ -1,15 +1,11 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-export const allowedRoles = new Set([
-  "sales_rep", "warehouse_staff", "b2b_customer", "comptable", "acheteur", "delivery_agent",
-]);
-
 export function validateCreateUserPayload(body: Record<string, unknown> | null): string | null {
   const email = String(body?.email ?? "").trim().toLowerCase();
   const role = String(body?.role ?? "");
   if (!email || !email.includes("@")) return "Invalid email";
-  if (!allowedRoles.has(role)) return "Invalid role";
+  if (!/^[a-z][a-z0-9_]{1,63}$/.test(role) || role === "admin") return "Invalid role";
   if (body && "password" in body) return "Passwords must never be supplied by administrators";
   return null;
 }
@@ -48,6 +44,16 @@ export function createUserHandler(serviceClient: SupabaseClient, supabaseUrl: st
       return json({ error: validationError }, 400);
     }
 
+    const { data: roleRecord, error: roleError } = await serviceClient
+      .from("roles")
+      .select("id,name")
+      .eq("name", role)
+      .maybeSingle();
+    if (roleError || !roleRecord) {
+      console.warn(JSON.stringify({ event: "create_user_rejected", reason: "unknown_role", actor_id: authUser.user.id, role }));
+      return json({ error: "Invalid role" }, 400);
+    }
+
     const redirectTo = Deno.env.get("INVITE_REDIRECT_URL") ?? Deno.env.get("SITE_URL");
     const { data: invited, error } = await serviceClient.auth.admin.inviteUserByEmail(email, {
       redirectTo,
@@ -58,15 +64,14 @@ export function createUserHandler(serviceClient: SupabaseClient, supabaseUrl: st
       return json({ error: error?.message ?? "User invitation failed" }, 400);
     }
 
-    const { error: profileError } = await serviceClient.from("user_profiles").upsert({
-      id: invited.user.id,
-      email,
-      full_name: String(body?.full_name ?? email),
-      role,
-      phone: body?.phone || null,
-      company_name: body?.company_name || null,
-      is_active: true,
-      must_change_password: true,
+    const { error: profileError } = await serviceClient.rpc("provision_invited_user_profile", {
+      p_target_user: invited.user.id,
+      p_email: email,
+      p_full_name: String(body?.full_name ?? email),
+      p_role_name: role,
+      p_phone: body?.phone || null,
+      p_company_name: body?.company_name || null,
+      p_actor: authUser.user.id,
     });
     if (profileError) {
       await serviceClient.auth.admin.deleteUser(invited.user.id);

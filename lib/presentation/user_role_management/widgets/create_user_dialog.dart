@@ -19,7 +19,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
   final _phoneController = TextEditingController();
   final _companyNameController = TextEditingController();
 
-  String _selectedRole = 'sales_rep';
+  String _selectedRole = 'commercial_staff';
   bool _isLoading = false;
 
   Future<void> _createUser() async {
@@ -148,7 +148,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
                   ),
                   items: const [
                     DropdownMenuItem(
-                        value: 'sales_rep', child: Text('Commercial')),
+                        value: 'commercial_staff', child: Text('Commercial')),
                     DropdownMenuItem(
                         value: 'warehouse_staff', child: Text('Magasinier')),
                     DropdownMenuItem(
@@ -159,7 +159,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
                         value: 'delivery_agent',
                         child: Text('Agent livraison')),
                     DropdownMenuItem(
-                        value: 'b2b_customer', child: Text('Client')),
+                        value: 'client_b2b', child: Text('Client')),
                   ],
                   onChanged: (value) {
                     setState(() => _selectedRole = value!);

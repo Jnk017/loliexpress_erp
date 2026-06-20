@@ -1,0 +1,24 @@
+-- Clean bootstrap 024: final sector-aware document metadata and Storage policies.
+CREATE OR REPLACE FUNCTION public.can_access_document(entity_type text,entity_id uuid,sensitive boolean DEFAULT false) RETURNS boolean LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path=public AS $$ BEGIN IF public.is_admin() THEN RETURN true; END IF; IF sensitive AND NOT public.has_role('comptable') THEN RETURN false; END IF; RETURN CASE entity_type WHEN 'customer' THEN public.can_read_customer(entity_id) WHEN 'sales_order' THEN public.can_read_order(entity_id) WHEN 'invoice' THEN EXISTS(SELECT 1 FROM public.invoices i WHERE i.id=entity_id AND (public.has_role('comptable') OR public.can_read_customer(i.customer_id))) WHEN 'delivery' THEN EXISTS(SELECT 1 FROM public.deliveries d WHERE d.id=entity_id AND (d.delivery_agent_id=auth.uid() OR public.can_read_order(d.order_id) OR public.has_role('warehouse_staff') AND d.warehouse_id=(SELECT warehouse_id FROM public.user_profiles WHERE id=auth.uid()))) WHEN 'expense' THEN public.has_role('comptable') WHEN 'purchase' THEN EXISTS(SELECT 1 FROM public.purchases p WHERE p.id=entity_id AND (public.has_role('comptable') OR public.has_role('acheteur') AND (p.buyer_id=auth.uid() OR p.created_by=auth.uid()))) ELSE false END; END $$;
+DROP POLICY IF EXISTS documents_read ON public.document_attachments; DROP POLICY IF EXISTS documents_insert ON public.document_attachments; DROP POLICY IF EXISTS documents_update ON public.document_attachments; DROP POLICY IF EXISTS documents_delete ON public.document_attachments;
+DROP POLICY IF EXISTS documents_read ON public.document_attachments;
+CREATE POLICY documents_read ON public.document_attachments FOR SELECT TO authenticated USING(uploaded_by=auth.uid() OR public.can_access_document(entity_type,entity_id,is_sensitive));
+DROP POLICY IF EXISTS documents_insert ON public.document_attachments;
+CREATE POLICY documents_insert ON public.document_attachments FOR INSERT TO authenticated WITH CHECK(uploaded_by=auth.uid() AND public.can_access_document(entity_type,entity_id,is_sensitive));
+DROP POLICY IF EXISTS documents_update ON public.document_attachments;
+CREATE POLICY documents_update ON public.document_attachments FOR UPDATE TO authenticated USING(uploaded_by=auth.uid() OR public.is_admin()) WITH CHECK(uploaded_by=auth.uid() OR public.is_admin());
+DROP POLICY IF EXISTS documents_delete ON public.document_attachments;
+CREATE POLICY documents_delete ON public.document_attachments FOR DELETE TO authenticated USING(uploaded_by=auth.uid() OR public.is_admin());
+CREATE OR REPLACE FUNCTION public.can_access_document_path(path text) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT EXISTS(SELECT 1 FROM public.document_attachments d WHERE d.file_path=path AND (d.uploaded_by=auth.uid() OR public.can_access_document(d.entity_type,d.entity_id,d.is_sensitive))) $$;
+DO $$ DECLARE p record; BEGIN FOR p IN SELECT policyname FROM pg_policies WHERE schemaname='storage' AND tablename='objects' AND policyname LIKE 'erp_documents_%' LOOP EXECUTE format('DROP POLICY IF EXISTS %I ON storage.objects',p.policyname); END LOOP; END $$;
+DROP POLICY IF EXISTS erp_documents_read ON storage.objects;
+CREATE POLICY erp_documents_read ON storage.objects FOR SELECT TO authenticated USING(bucket_id='erp-documents' AND (owner=auth.uid() OR public.can_access_document_path(name)));
+DROP POLICY IF EXISTS erp_documents_insert ON storage.objects;
+CREATE POLICY erp_documents_insert ON storage.objects FOR INSERT TO authenticated WITH CHECK(bucket_id='erp-documents' AND owner=auth.uid());
+DROP POLICY IF EXISTS erp_documents_update ON storage.objects;
+CREATE POLICY erp_documents_update ON storage.objects FOR UPDATE TO authenticated USING(bucket_id='erp-documents' AND (owner=auth.uid() OR public.is_admin())) WITH CHECK(bucket_id='erp-documents' AND (owner=auth.uid() OR public.is_admin()));
+DROP POLICY IF EXISTS erp_documents_delete ON storage.objects;
+CREATE POLICY erp_documents_delete ON storage.objects FOR DELETE TO authenticated USING(bucket_id='erp-documents' AND (owner=auth.uid() OR public.is_admin()));
+CREATE OR REPLACE FUNCTION public.log_sensitive_document_access(p_document_id uuid) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE d public.document_attachments; BEGIN SELECT * INTO STRICT d FROM public.document_attachments WHERE id=p_document_id; IF NOT public.can_access_document(d.entity_type,d.entity_id,d.is_sensitive) THEN RAISE EXCEPTION 'Document access denied' USING ERRCODE='42501'; END IF; IF d.is_sensitive THEN PERFORM public.write_audit_log('access_sensitive_document','document_attachments',d.id,NULL,jsonb_build_object('file_path',d.file_path)); END IF; END $$;
+REVOKE ALL ON FUNCTION public.log_sensitive_document_access(uuid) FROM PUBLIC,anon;
+GRANT EXECUTE ON FUNCTION public.log_sensitive_document_access(uuid) TO authenticated;

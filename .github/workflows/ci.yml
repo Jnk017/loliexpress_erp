@@ -31,14 +31,25 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-      - run: supabase start
-      - run: supabase db reset
-      - name: Verify local Supabase services and migrations
+      - name: Prepare isolated clean bootstrap workdir
         run: |
-          supabase status
-          supabase migration list --local
-      - run: supabase db lint --local --level warning
-      - run: supabase test db
+          mkdir -p .clean-ci/supabase/migrations
+          cp supabase/config.toml .clean-ci/supabase/config.toml
+          : > .clean-ci/supabase/seed.sql
+          for file in clean_migrations/[0-9][0-9][0-9]_*.sql; do
+            number=$(basename "$file" | cut -d_ -f1)
+            cp "$file" ".clean-ci/supabase/migrations/20260606${number}000_$(basename "$file")"
+          done
+          test "$(find .clean-ci/supabase/migrations -type f | wc -l)" -eq 24
+      - run: supabase --workdir .clean-ci start
+      - run: supabase --workdir .clean-ci db reset
+      - name: Verify clean schema and migration history
+        run: |
+          supabase --workdir .clean-ci status
+          supabase --workdir .clean-ci migration list --local
+          psql postgresql://postgres:postgres@127.0.0.1:54322/postgres -v ON_ERROR_STOP=1 -f clean_migrations/post_bootstrap_config.sql
+          psql postgresql://postgres:postgres@127.0.0.1:54322/postgres -v ON_ERROR_STOP=1 -f clean_migrations/verify_migration.sql
+      - run: supabase --workdir .clean-ci db lint --local --level warning
       - name: Test Edge Function units
         run: deno test --allow-env --allow-net supabase/functions/create_user/index_test.ts supabase/functions/bootstrap_admin/index_test.ts
       - name: Test Edge Functions against local Supabase
