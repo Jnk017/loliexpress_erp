@@ -1,5 +1,15 @@
 # Gate final LoliExpress ERP
 
+## Amendements G0
+
+### G0.8 — Pivot cloud strict (23 novembre 2026)
+
+- Validation humaine explicite. L’hôte disposait de 340 Mio libres, sans sudo, et l’opérateur utilise exclusivement Android.
+- Supabase cloud dédié pour SQL, Edge et backend E2E. Codemagic réservé à la compilation APK. Flutter, Playwright, psql et Deno restent exécutés sur l’hôte Codex. GitHub Actions reste exclu.
+- La purge a supprimé six images Supabase inutilisées. Docker annonce 1,066 Go récupérés. Espace libre observé après purge : 3,9 Gio. Journal local `audit/gate/cloud-pivot-prune.log`.
+- Inventaire de gestion Supabase : LoliExpress Management System et LoliExpress Staging Go-Live sont déjà `INACTIVE`. Le projet dédié `muzbwqxvamcbfiuehxro` est `ACTIVE_HEALTHY` à `eu-west-1`. Aucun doublon créé, aucun changement à `loliexpress_erp`.
+- Attente des paramètres du projet de test. Aucune connexion PostgreSQL, migration, assertion ni compilation lancée pendant cette étape. [Passation Android](CLOUD_HANDOFF.md)
+
 ## Bootstrap — Step −1.5, capacité Docker et remise mobile
 
 - **ATTENDRE HUMAIN** pour le stockage géré. Cas A sur le système observable : `/`, `/workspace`, `/home` et `/tmp` affichent 7,9 Gio au total et 340 Mio disponibles. Le daemon rootless utilise `vfs` et `/home/dockerd/.local/share/docker`. Le compte agent ne peut pas mesurer ce chemin directement et `sudo` est absent.

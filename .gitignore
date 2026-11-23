@@ -49,3 +49,6 @@ android/app/.cxx
 
 # Identifiants d’essais locaux du gate
 .env.test
+
+# Configuration privée du gate cloud
+cloud.env
