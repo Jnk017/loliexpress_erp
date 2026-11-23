@@ -1,5 +1,22 @@
 # Gate final — LoliExpress ERP
 
+## Gate cloud — résultat courant
+
+**ÉCHEC.** Les migrations 000–017 sont appliquées. Les quatre suites SQL ont retourné 57 assertions vraies. Les neuf contrôles de l’état exact après 000 restent à exécuter sur une baseline isolée autorisée. Aucun résultat déduit du schéma à 017. [Matrice](audit/gate/assertions.tsv)
+
+| Contrôle | Résultat |
+|---|---|
+| Comptes Auth et profils E2E | 7/7 |
+| Flutter pub get | PASS |
+| Tests Flutter | 16/16 après deux corrections ciblées |
+| Analyse et build web | Bloqués par le dossier personnel en lecture seule, même après une demande d’accès aux deux répertoires Dart |
+| Edge Functions | 7/7 tests unitaires Deno. Intégration déployée NOT_RUN |
+| Playwright API Auth et profils | 7/7 |
+| Playwright E2E interface web | 0/7 exécuté. Aucun build web ni capture |
+| Android | Déclenchement demandé via push. APK et captures à confirmer |
+
+[Résultats Flutter](gate_state/flutter-rerun-status.txt) · [Tests Edge](gate_state/edge-verify.log) · [Sonde Playwright](gate_state/playwright-auth-smoke.json) · [Passation Android](MOBILE_HANDOFF.md)
+
 État du dossier avant exécution : **prêt pour le gate final**.
 
 ## Traçabilité

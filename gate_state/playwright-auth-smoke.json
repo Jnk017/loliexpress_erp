@@ -1,0 +1,44 @@
+[
+  {
+    "slot": "COMMERCIAL",
+    "login": 200,
+    "profile": 200,
+    "passed": true
+  },
+  {
+    "slot": "COMPTABLE",
+    "login": 200,
+    "profile": 200,
+    "passed": true
+  },
+  {
+    "slot": "ACHETEUR",
+    "login": 200,
+    "profile": 200,
+    "passed": true
+  },
+  {
+    "slot": "ADMIN",
+    "login": 200,
+    "profile": 200,
+    "passed": true
+  },
+  {
+    "slot": "LIVREUR",
+    "login": 200,
+    "profile": 200,
+    "passed": true
+  },
+  {
+    "slot": "CLIENT_A",
+    "login": 200,
+    "profile": 200,
+    "passed": true
+  },
+  {
+    "slot": "CLIENT_B",
+    "login": 200,
+    "profile": 200,
+    "passed": true
+  }
+]
