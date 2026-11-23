@@ -44,3 +44,17 @@ python audit/gate/seed-local-e2e.py --repo /workspace/work/loli-verify --account
 ```
 
 Le script vérifie les profils puis écrit `.env.test` en mode 0600. Le fichier est ignoré dans le clone. Une adresse donnée pour Inbucket reste une adresse d'essai, sans envoi externe. La liaison des deux clients à leurs données d'essai fait partie des parcours de gate.
+
+## Stockage de l’environnement géré
+
+Le système de fichiers observable du workspace est limité à 7,9 Gio. Le daemon utilise `vfs` et son répertoire privé `/home/dockerd/.local/share/docker` est inaccessible depuis le compte agent. L’opérateur de l’hôte doit agrandir le volume du daemon ou fournir un environnement dont le data-root se trouve sur un volume offrant au moins 15 Gio libres. Conserver les données existantes du daemon pendant toute opération de déplacement.
+
+Sur l’hôte, avec le contexte Docker du gate, contrôler le résultat avec :
+
+```bash
+bash audit/gate/check-docker-capacity.sh
+# Si le data-root exige les droits du propriétaire rootless et sudo est disponible :
+DOCKER_DATA_OWNER=dockerd bash audit/gate/check-docker-capacity.sh
+```
+
+Attendre `DOCKER_CAPACITY_OK` avant de reprendre le démarrage de la pile PG17 isolée. Configurer ensuite la route Android depuis le téléphone et la [remise Codemagic](../../CODEMAGIC_HANDOFF.md). Le gate SQL et web peut reprendre dès validation de la pile.

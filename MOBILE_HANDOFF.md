@@ -36,3 +36,7 @@ Installer l'APK fourni par `adb install -r app-debug.apk` ou le transférer vers
 | `client_b` | Commandes propres et isolation vis-à-vis de A. |
 
 Déposer au moins deux preuves PNG par rôle dans `E2E_MOBILE_ARTIFACTS_DIR` ou `~/e2e_mobile_artifacts/`, avec le nom `e2e_<role>_<etape>.png`. Écarter les écrans affichant des mots de passe et des clés. Le gate associe les captures aux parcours et calcule leurs SHA-256 avant d'enregistrer un résultat.
+
+## Récupérer l’APK Codemagic
+
+Suivre la [checklist Codemagic](CODEMAGIC_HANDOFF.md). Une fois le build terminé, récupérer `app-debug.apk` depuis **Artifacts**, ou depuis le lien de notification si celle-ci est configurée. Déposer l’APK dans `~/mobile_artifacts/app-debug.apk` et l’installer sur le téléphone avec `adb install -r ~/mobile_artifacts/app-debug.apk` ou par transfert manuel. Relever le SHA du build et le SHA-256 de l’APK avant les parcours.

@@ -1,5 +1,14 @@
 # Gate final LoliExpress ERP
 
+## Bootstrap — Step −1.5, capacité Docker et remise mobile
+
+- **ATTENDRE HUMAIN** pour le stockage géré. Cas A sur le système observable : `/`, `/workspace`, `/home` et `/tmp` affichent 7,9 Gio au total et 340 Mio disponibles. Le daemon rootless utilise `vfs` et `/home/dockerd/.local/share/docker`. Le compte agent ne peut pas mesurer ce chemin directement et `sudo` est absent.
+- Docker affiche six images pour 1,066 Go récupérables et zéro conteneur, volume ou cache de build. Un prune du cache réutilisable ne permettrait pas d'atteindre les 15 Gio exigés. Aucune purge ou relocalisation effectuée. [Procédure opérateur](audit/gate/BOOTSTRAP_OPERATOR.md) · [Contrôle de capacité](audit/gate/check-docker-capacity.sh)
+- Journal local `audit/gate/bootstrap-step-minus-1-5-storage.log`, code 2 (data-root inaccessible), SHA-256 `0306daf2a63dfef35c1772deea724b8afef2c2ec3d37d026743bcbfc17f3eb45`.
+- Pile, quatre sondes, rejeu, 66 assertions et parcours web/mobile `NOT_RUN` à cette itération. Les options ADB/LAN/tunnel attendent la pile. Le gate web pourra reprendre indépendamment du téléphone dès que la pile sera validée.
+- Checklist webhook, groupe de variables et déclenchement humain documentés. Codemagic reste build-only. Webhook, variables et APK non confirmés. [Remise Codemagic](CODEMAGIC_HANDOFF.md)
+- GitHub Actions exclu. Aucune connexion à Supabase actif.
+
 ## Publication de l’assemblage — 23 novembre 2026
 
 - Étape 1 assemblée sur `gate/final-verification` au commit `4dedf468cd6c009e0d2c77b53661c0ab6945333c`. Push confirmé, `main` vérifiée à `5a68a999ca15bde01804185fa884e12d7ca09866`. [PR brouillon #13](https://github.com/Jnk017/loliexpress_erp/pull/13)
