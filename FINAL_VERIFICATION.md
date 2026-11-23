@@ -6,8 +6,8 @@
 
 - Branche de gate [gate/final-verification](https://github.com/Jnk017/loliexpress_erp/tree/gate/final-verification).
 - SHA de référence [`5a68a999ca15bde01804185fa884e12d7ca09866`](https://github.com/Jnk017/loliexpress_erp/commit/5a68a999ca15bde01804185fa884e12d7ca09866).
-- SHA du commit d’assemblage à consigner après sa création.
-- Draft PR en attente de publication.
+- SHA du commit d’assemblage [`4dedf468cd6c009e0d2c77b53661c0ab6945333c`](https://github.com/Jnk017/loliexpress_erp/commit/4dedf468cd6c009e0d2c77b53661c0ab6945333c).
+- Draft PR [#13](https://github.com/Jnk017/loliexpress_erp/pull/13).
 - Dernière tentative de gate le 23 novembre 2026. Verdict `ÉCHEC (prérequis)`. Les contrôles SQL, les parcours et les captures restent `NOT_RUN`.
 - APK Codemagic en attente. Consigner le lien et le SHA-256 de l’APK, le SHA complet du commit vérifié et le SHA-256 de chaque capture avec leurs résultats.
 

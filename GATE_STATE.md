@@ -1,5 +1,12 @@
 # Gate final LoliExpress ERP
 
+## Publication de l’assemblage — 23 novembre 2026
+
+- Étape 1 assemblée sur `gate/final-verification` au commit `4dedf468cd6c009e0d2c77b53661c0ab6945333c`. Push confirmé, `main` vérifiée à `5a68a999ca15bde01804185fa884e12d7ca09866`. [PR brouillon #13](https://github.com/Jnk017/loliexpress_erp/pull/13)
+- `.env.test` vérifié par `git check-ignore`. Le commit d’assemblage laisse les workflows GitHub existants inchangés et porte `skip-checks: true` pour la PR. Les logs bruts restent dans le workspace.
+- Le déclencheur Codemagic est limité aux pushes de la branche du gate. L’activation du webhook, les variables isolées et l’APK restent à confirmer. Les résultats SQL, web et mobile restent `NOT_RUN`. Les obstacles de stockage Docker et de joignabilité mobile persistent.
+- Les entrées « aucun push » ci-dessous décrivent les itérations antérieures à cette publication.
+
 ## Bootstrap — reprise B7/B8, téléphone physique
 
 **Décision de continuité — ATTENDRE HUMAIN.** Le gate v4.1 n'a pas repris. Prérequis de reprise : davantage de stockage pour la pile Docker locale, et une route privée vers le téléphone (ADB reverse sur un poste qui rejoint la pile, ou un LAN de test vérifié depuis le téléphone).
