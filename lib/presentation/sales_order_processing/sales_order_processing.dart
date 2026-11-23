@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
+import '../../services/company_settings_service.dart';
 import '../../services/customer_service.dart';
 import '../../services/order_service.dart';
 import '../../services/product_service.dart';
@@ -51,6 +52,7 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
         CustomerService.instance.getCustomers(),
         ProductService.instance.getProducts(),
       ]);
+      final settings = await const CompanySettingsService().load();
 
       if (!mounted) return;
 
@@ -60,6 +62,9 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
       setState(() {
         _customers = rawCustomers.map(_mapCustomerForUi).toList();
         _products = rawProducts.map(_mapProductForUi).toList();
+        if (_orderItems.isEmpty) {
+          _orderCurrency = settings['default_currency'] as String;
+        }
         if (_customers.isNotEmpty) {
           _selectedCustomer = _customers.first;
         }
@@ -106,18 +111,11 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
       'code': raw['sku'] ?? '',
       'name': raw['name'] ?? '',
       'price': unitPrice,
+      'currency': raw['currency'] ?? 'CDF',
       'stock': 999,
       'image': raw['image_url'] ??
           'https://images.unsplash.com/photo-1633288485223-84bafb2a1e2d',
       'semanticLabel': raw['name'] ?? 'Product image',
-      // Discounts must come from a server-side pricing rule. No client-only
-      // tier reduction is applied to the authoritative product price.
-      'tierDiscounts': <String, double>{
-        'Premium': 0.0,
-        'Gold': 0.0,
-        'Silver': 0.0,
-        'Standard': 0.0,
-      },
     };
   }
 
@@ -133,19 +131,33 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
     return buffer.toString();
   }
 
-  double _getCustomPrice(Map<String, dynamic> product) {
-    final basePrice = product['price'] as double;
-    final tier = _selectedCustomer?['tier'] as String? ?? 'Standard';
-    final discounts = product['tierDiscounts'] as Map<String, double>?;
-    final discount = discounts?[tier] ?? 0.0;
-    return basePrice * (1 - discount);
-  }
-
-  void _handleProductAdd(Map<String, dynamic> product) {
+  Future<void> _handleProductAdd(Map<String, dynamic> product) async {
+    final customerId = _selectedCustomer?['id'] as String?;
+    if (customerId == null || _isProcessing) return;
     final stock = product['stock'] as int;
 
     if (stock < 1) {
       _showStockAlert(product['name'] as String, 0);
+      return;
+    }
+
+    final double unitPrice;
+    final currency = _orderCurrency;
+    try {
+      unitPrice = await OrderService.instance.getOrderUnitPrice(
+        customerId: customerId,
+        productId: product['id'] as String,
+        currency: currency,
+      );
+    } catch (_) {
+      if (!mounted || _selectedCustomer?['id'] != customerId) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tarif client indisponible. Réessayez.')),
+      );
+      return;
+    }
+    if (!mounted || _selectedCustomer?['id'] != customerId ||
+        _orderCurrency != currency || _isProcessing) {
       return;
     }
 
@@ -161,12 +173,13 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
           return;
         }
         _orderItems[existingIndex]['quantity'] = currentQty + 1;
+        _orderItems[existingIndex]['unitPrice'] = unitPrice;
       } else {
         _orderItems.add({
           'productId': product['id'],
           'name': product['name'],
           'code': product['code'],
-          'unitPrice': _getCustomPrice(product),
+          'unitPrice': unitPrice,
           'quantity': 1,
           'image': product['image'],
           'semanticLabel': product['semanticLabel'],
@@ -282,6 +295,8 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
     Navigator.pushNamed(context, '/barcode-scanner');
   }
 
+  String _orderCurrency = 'CDF';
+
   double _calculateSubtotal() {
     return _orderItems.fold(0.0, (sum, item) {
       final quantity = item['quantity'] as int;
@@ -362,6 +377,9 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
                             : null,
                         onTap: () {
                           setState(() {
+                            if (_selectedCustomer?['id'] != customer['id']) {
+                              _orderItems.clear();
+                            }
                             _selectedCustomer = customer;
                             _orderItems.clear();
                           });
@@ -413,11 +431,10 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
               })
           .toList();
 
-      final discount = _calculateDiscount();
       final order = await OrderService.instance.createOrder(
         customerId: _selectedCustomer!['id'] as String,
         items: items,
-        discount: discount > 0 ? discount : null,
+        currency: _orderCurrency,
       );
 
       if (!mounted) return;
@@ -624,8 +641,26 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
                     },
                     isExpanded: _isCustomerInfoExpanded,
                   ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: DropdownButton<String>(
+                      value: _orderCurrency,
+                      items: const [
+                        DropdownMenuItem(value: 'CDF', child: Text('Commande en CDF')),
+                        DropdownMenuItem(value: 'USD', child: Text('Commande en USD')),
+                      ],
+                      onChanged: _isProcessing ? null : (currency) {
+                        if (currency == null || currency == _orderCurrency) return;
+                        setState(() {
+                          _orderCurrency = currency;
+                          _orderItems.clear();
+                        });
+                      },
+                    ),
+                  ),
                   OrderItemsList(
                     orderItems: _orderItems,
+                    currency: _orderCurrency,
                     onQuantityChange: _handleQuantityChange,
                     onRemove: _handleRemoveItem,
                     onEdit: _handleEditItem,
@@ -647,6 +682,7 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
               discount: discount,
               tax: tax,
               total: total,
+              currency: _orderCurrency,
               onCreateOrder: _handleCreateOrder,
               isProcessing: _isProcessing,
             ),

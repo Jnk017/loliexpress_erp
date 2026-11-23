@@ -1,0 +1,183 @@
+{
+  "extensions": [
+    {
+      "extname": "pg_cron",
+      "extversion": "1.6.4",
+      "nspname": "pg_catalog"
+    },
+    {
+      "extname": "pg_net",
+      "extversion": "0.20.0",
+      "nspname": "extensions"
+    },
+    {
+      "extname": "pg_stat_statements",
+      "extversion": "1.11",
+      "nspname": "extensions"
+    },
+    {
+      "extname": "pgcrypto",
+      "extversion": "1.3",
+      "nspname": "extensions"
+    },
+    {
+      "extname": "plpgsql",
+      "extversion": "1.0",
+      "nspname": "pg_catalog"
+    },
+    {
+      "extname": "supabase_vault",
+      "extversion": "0.3.1",
+      "nspname": "vault"
+    },
+    {
+      "extname": "uuid-ossp",
+      "extversion": "1.1",
+      "nspname": "extensions"
+    }
+  ],
+  "sequences": [
+    {
+      "schemaname": "public",
+      "sequencename": "invoice_number_seq",
+      "sequenceowner": "postgres",
+      "data_type": "bigint",
+      "start_value": 1,
+      "min_value": 1,
+      "max_value": "9223372036854775807",
+      "increment_by": 1,
+      "cycle": false,
+      "cache_size": 1,
+      "last_value": null,
+      "owning_table": null,
+      "owning_column": null
+    },
+    {
+      "schemaname": "public",
+      "sequencename": "order_number_seq",
+      "sequenceowner": "postgres",
+      "data_type": "bigint",
+      "start_value": 1,
+      "min_value": 1,
+      "max_value": "9223372036854775807",
+      "increment_by": 1,
+      "cycle": false,
+      "cache_size": 1,
+      "last_value": null,
+      "owning_table": null,
+      "owning_column": null
+    },
+    {
+      "schemaname": "public",
+      "sequencename": "purchase_number_seq",
+      "sequenceowner": "postgres",
+      "data_type": "bigint",
+      "start_value": 1,
+      "min_value": 1,
+      "max_value": "9223372036854775807",
+      "increment_by": 1,
+      "cycle": false,
+      "cache_size": 1,
+      "last_value": null,
+      "owning_table": null,
+      "owning_column": null
+    }
+  ],
+  "views": [
+    {
+      "relname": "receivables_aging",
+      "definition": " SELECT c.id AS customer_id,\n    c.company_name,\n    c.contact_person,\n    c.email,\n    c.phone,\n    so.id AS order_id,\n    so.order_number,\n    so.total_amount,\n    so.currency,\n    so.payment_type,\n    so.created_at AS order_date,\n    so.due_date,\n    so.payment_status,\n    EXTRACT(day FROM now() - so.created_at) AS days_outstanding,\n        CASE\n            WHEN EXTRACT(day FROM now() - so.created_at) <= 30::numeric THEN '0-30 jours'::text\n            WHEN EXTRACT(day FROM now() - so.created_at) <= 60::numeric THEN '31-60 jours'::text\n            WHEN EXTRACT(day FROM now() - so.created_at) <= 90::numeric THEN '61-90 jours'::text\n            ELSE '90+ jours'::text\n        END AS aging_bracket\n   FROM sales_orders so\n     JOIN customers c ON so.customer_id = c.id\n  WHERE so.payment_type = 'credit'::text AND so.payment_status <> 'paid'::payment_status;"
+    }
+  ],
+  "cron_metadata": [
+    {
+      "jobname": "ai-insights-hourly",
+      "schedule": "15 * * * *",
+      "active": true,
+      "username": "postgres",
+      "command_md5": "4c69d56e7db2e6e898f2d8376d617c83"
+    },
+    {
+      "jobname": "forensic-export-daily",
+      "schedule": "0 2 * * *",
+      "active": true,
+      "username": "postgres",
+      "command_md5": "d2764de8a0a0d40a1a4ceebbcae64044"
+    },
+    {
+      "jobname": "invoice-reminder-daily",
+      "schedule": "0 8 * * *",
+      "active": true,
+      "username": "postgres",
+      "command_md5": "736f1a05392b0df41feb31b2c5f0ad5d"
+    },
+    {
+      "jobname": "stock-alert-hourly",
+      "schedule": "0 * * * *",
+      "active": true,
+      "username": "postgres",
+      "command_md5": "3909d3c09fe438db688498d4b3de3f00"
+    }
+  ],
+  "bucket": [
+    {
+      "id": "erp-documents",
+      "name": "erp-documents",
+      "public": false,
+      "file_size_limit": 10485760,
+      "allowed_mime_types": [
+        "application/pdf",
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      ]
+    }
+  ],
+  "default_privileges": [
+    {
+      "owner": "postgres",
+      "defaclobjtype": "S",
+      "defaclacl": "{postgres=rwU/postgres,anon=rwU/postgres,authenticated=rwU/postgres,service_role=rwU/postgres}"
+    },
+    {
+      "owner": "postgres",
+      "defaclobjtype": "f",
+      "defaclacl": "{postgres=X/postgres,service_role=X/postgres}"
+    },
+    {
+      "owner": "postgres",
+      "defaclobjtype": "r",
+      "defaclacl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}"
+    },
+    {
+      "owner": "supabase_admin",
+      "defaclobjtype": "S",
+      "defaclacl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}"
+    },
+    {
+      "owner": "supabase_admin",
+      "defaclobjtype": "f",
+      "defaclacl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}"
+    },
+    {
+      "owner": "supabase_admin",
+      "defaclobjtype": "r",
+      "defaclacl": "{postgres=arwdDxtm/supabase_admin,anon=arwdDxtm/supabase_admin,authenticated=arwdDxtm/supabase_admin,service_role=arwdDxtm/supabase_admin}"
+    }
+  ],
+  "rpc_definitions": [
+    {
+      "proname": "adjust_stock",
+      "args": "p_product_id uuid, p_warehouse_id uuid, p_adjustment_quantity integer, p_reason text",
+      "owner": "postgres",
+      "definition": "CREATE OR REPLACE FUNCTION public.adjust_stock(p_product_id uuid, p_warehouse_id uuid, p_adjustment_quantity integer, p_reason text DEFAULT 'manual_adjustment'::text)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions'\nAS $function$\nDECLARE v_user uuid := auth.uid(); v_stock_id uuid;\nBEGIN\n  IF v_user IS NULL THEN RAISE EXCEPTION 'Forbidden'; END IF;\n  IF NOT (public.is_admin() OR public.is_warehouse_staff()) THEN RAISE EXCEPTION 'Forbidden'; END IF;\n  IF p_product_id IS NULL OR p_adjustment_quantity IS NULL THEN RAISE EXCEPTION 'Invalid arguments'; END IF;\n  IF NOT EXISTS (SELECT 1 FROM public.products WHERE id = p_product_id) THEN RAISE EXCEPTION 'Product not found'; END IF;\n  SELECT id INTO v_stock_id FROM public.inventory_stock WHERE product_id = p_product_id AND warehouse_id IS NOT DISTINCT FROM p_warehouse_id FOR UPDATE;\n  IF v_stock_id IS NULL THEN\n    INSERT INTO public.inventory_stock(product_id, warehouse_id, quantity, reorder_level, updated_at) VALUES (p_product_id, p_warehouse_id, 0, 10, now()) RETURNING id INTO v_stock_id;\n  END IF;\n  IF (SELECT quantity FROM public.inventory_stock WHERE id=v_stock_id) + p_adjustment_quantity < 0 THEN RAISE EXCEPTION 'Stock cannot be negative'; END IF;\n  INSERT INTO public.stock_movements(product_id, warehouse_id, movement_type, quantity, reference_type, notes, created_by) VALUES (p_product_id, p_warehouse_id, 'adjustment'::public.stock_movement_type, p_adjustment_quantity, 'manual_adjustment', p_reason, v_user);\n  UPDATE public.inventory_stock SET quantity = quantity + p_adjustment_quantity, updated_at = now() WHERE id = v_stock_id;\n  INSERT INTO public.audit_logs(table_name, record_id, action_type, new_values, user_id) VALUES ('inventory_stock', v_stock_id, 'update'::public.audit_action_type, jsonb_build_object('rpc','adjust_stock','quantity',p_adjustment_quantity,'reason',p_reason), v_user);\n  RETURN jsonb_build_object('success', true, 'stock_id', v_stock_id);\nEXCEPTION WHEN OTHERS THEN\n  RETURN jsonb_build_object('success', false, 'error', SQLERRM);\nEND;\n$function$\n"
+    },
+    {
+      "proname": "create_order_with_items",
+      "args": "p_customer_id uuid, p_items jsonb, p_notes text",
+      "owner": "postgres",
+      "definition": "CREATE OR REPLACE FUNCTION public.create_order_with_items(p_customer_id uuid, p_items jsonb, p_notes text DEFAULT NULL::text)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'extensions'\nAS $function$\nDECLARE u uuid := auth.uid(); oid uuid; sub numeric := 0; it jsonb; pid uuid; q int; price numeric; line numeric;\nBEGIN\n IF u IS NULL OR NOT (public.is_admin() OR public.is_sales_rep()) THEN RAISE EXCEPTION 'Forbidden'; END IF;\n IF NOT EXISTS (SELECT 1 FROM public.customers WHERE id=p_customer_id) THEN RAISE EXCEPTION 'Invalid customer'; END IF;\n INSERT INTO public.sales_orders(order_number,customer_id,sales_rep_id,subtotal,total_amount,order_status,payment_status,notes) VALUES(public.generate_order_number(now()),p_customer_id,u,0,0,'pending','pending',p_notes) RETURNING id INTO oid;\n FOR it IN SELECT * FROM jsonb_array_elements(p_items) LOOP\n   pid := (it->>'product_id')::uuid; q := (it->>'quantity')::int; price := (it->>'unit_price')::numeric;\n   IF q <= 0 OR price < 0 THEN RAISE EXCEPTION 'Invalid item'; END IF;\n   line := q * price; sub := sub + line;\n   INSERT INTO public.order_items(order_id,product_id,quantity,unit_price,line_total) VALUES(oid,pid,q,price,line);\n END LOOP;\n UPDATE public.sales_orders SET subtotal=sub,total_amount=sub WHERE id=oid;\n INSERT INTO public.audit_logs(table_name,record_id,action_type,new_values,user_id) VALUES('sales_orders',oid,'insert',jsonb_build_object('rpc','create_order_with_items'),u);\n RETURN jsonb_build_object('success',true,'order_id',oid);\nEXCEPTION WHEN OTHERS THEN RETURN jsonb_build_object('success',false,'error',SQLERRM);\nEND; $function$\n"
+    }
+  ]
+}

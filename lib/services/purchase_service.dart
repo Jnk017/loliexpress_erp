@@ -66,7 +66,7 @@ class PurchaseService {
       return await _client
           .from('purchases')
           .select(
-              '*, suppliers(company_name), purchase_items(*, products(name, sku))')
+              '*, suppliers(company_name), purchase_items(*, products(name, sku)), supplier_bills(id,bill_number,due_date,currency,amount,amount_paid)')
           .eq('id', id)
           .maybeSingle();
     } catch (e) {
@@ -78,62 +78,85 @@ class PurchaseService {
     required String supplierId,
     required List<Map<String, dynamic>> items,
     required String currency,
-    double exchangeRate = 1,
+    double? exchangeRate,
     String? notes,
   }) async {
     try {
-      double totalAmount = 0;
-      for (final item in items) {
-        totalAmount += (item['quantity'] as num) * (item['unit_cost'] as num);
+      final result = await _client.rpc('create_purchase_with_items', params: {
+        'p_supplier_id': supplierId,
+        'p_items': items,
+        'p_currency': currency,
+        'p_exchange_rate': exchangeRate,
+        'p_notes': notes,
+      });
+      if (result is! Map) {
+        throw const FormatException('Réponse de création achat invalide');
       }
-
-      final purchase = await _client
-          .from('purchases')
-          .insert({
-            'supplier_id': supplierId,
-            'total_amount': totalAmount,
-            'currency': currency,
-            'exchange_rate': exchangeRate,
-            'status': 'pending',
-            'payment_status': 'pending',
-            'created_by': _client.auth.currentUser?.id,
-            'received_by': _client.auth.currentUser?.id,
-            if (notes != null) 'notes': notes,
-          })
-          .select()
-          .single();
-
-      for (final item in items) {
-        await _client.from('purchase_items').insert({
-          'purchase_id': purchase['id'],
-          'product_id': item['product_id'],
-          'quantity': item['quantity'],
-          'unit_cost': item['unit_cost'],
-          'total_cost': (item['quantity'] as num) * (item['unit_cost'] as num),
-        });
-      }
-
-      return purchase;
+      return Map<String, dynamic>.from(result);
     } catch (e) {
       throw Exception('Erreur création achat: $e');
     }
   }
 
+  Future<Map<String, dynamic>> receivePurchaseItem({
+    required String purchaseItemId,
+    required String warehouseId,
+    required int quantity,
+    required String requestId,
+  }) async {
+    final result = await _client.rpc('receive_purchase_item', params: {
+      'p_purchase_item_id': purchaseItemId,
+      'p_warehouse_id': warehouseId,
+      'p_quantity': quantity,
+      'p_request_id': requestId,
+    });
+    if (result is! Map) {
+      throw const FormatException('Réponse de réception achat invalide');
+    }
+    return Map<String, dynamic>.from(result);
+  }
+
   Future<Map<String, dynamic>> updatePurchaseStatus(
       String id, String status) async {
+    if (status != 'cancelled') {
+      throw ArgumentError.value(status, 'status', 'Enregistrez une réception pour changer ce statut');
+    }
     try {
-      return await _client
-          .from('purchases')
-          .update({
-            'status': status,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', id)
-          .select()
-          .single();
+      final result = await _client.rpc('cancel_unreceived_purchase', params: {'p_purchase_id': id});
+      return Map<String, dynamic>.from(result as Map);
     } catch (e) {
       throw Exception('Erreur mise à jour statut: $e');
     }
+  }
+
+  Future<void> registerSupplierBill({
+    required String purchaseId,
+    required String billNumber,
+    required String dueDate,
+    required double amount,
+  }) async {
+    await _client.rpc('register_supplier_bill', params: {
+      'p_purchase_id': purchaseId,
+      'p_bill_number': billNumber,
+      'p_due_date': dueDate,
+      'p_amount': amount,
+    });
+  }
+
+  Future<void> recordSupplierBillPayment({
+    required String billId,
+    required double amount,
+    required String currency,
+    required String reference,
+    required String requestId,
+  }) async {
+    await _client.rpc('record_supplier_bill_payment', params: {
+      'p_bill_id': billId,
+      'p_amount': amount,
+      'p_currency': currency,
+      'p_reference': reference,
+      'p_request_id': requestId,
+    });
   }
 
   // Stats

@@ -1,0 +1,31 @@
+workflows:
+  build-android-apk:
+    name: Build Android APK (gate branch only)
+    instance_type: linux_x2
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'gate/final-verification'
+          include: true
+          source: true
+    environment:
+      flutter: 3.35.7
+      groups:
+        - loliexpress-gate-local
+    scripts:
+      - name: Resolve Flutter packages
+        script: |
+          test "${CM_BRANCH:-}" = gate/final-verification
+          flutter pub get
+      - name: Build debug APK
+        script: |
+          set -eu
+          : "${MOBILE_SUPABASE_URL:?Set the isolated Supabase URL for the phone}"
+          : "${SUPABASE_ANON_KEY:?Set the isolated Supabase public key}"
+          flutter build apk --debug \
+            --dart-define=SUPABASE_URL="$MOBILE_SUPABASE_URL" \
+            --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY" \
+            --dart-define=ENV=test
+    artifacts:
+      - build/app/outputs/flutter-apk/app-debug.apk

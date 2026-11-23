@@ -13,7 +13,7 @@ import '../../services/role_service.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_bottom_bar.dart';
 import './widgets/kpi_card_widget.dart';
-import './widgets/quick_action_button_widget.dart';
+import '../../widgets/role_workspace_panel.dart';
 import './widgets/revenue_chart_widget.dart';
 import './widgets/sync_status_widget.dart';
 
@@ -388,30 +388,6 @@ class _MainDashboardState extends State<MainDashboard>
         ],
       ),
       body: _buildBody(theme),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          QuickActionButtonWidget(
-            icon: 'add_shopping_cart',
-            label: 'Nouvelle Vente',
-            onPressed: () =>
-                Navigator.pushNamed(context, '/sales-order-processing'),
-          ),
-          SizedBox(height: 2.h),
-          QuickActionButtonWidget(
-            icon: 'qr_code_scanner',
-            label: 'Scanner Produit',
-            onPressed: () => Navigator.pushNamed(context, '/barcode-scanner'),
-          ),
-          SizedBox(height: 2.h),
-          QuickActionButtonWidget(
-            icon: 'person_add',
-            label: 'Ajouter Client',
-            onPressed: () =>
-                Navigator.pushNamed(context, '/customer-management'),
-          ),
-        ],
-      ),
       bottomNavigationBar: CustomBottomBar(
         currentIndex: 0,
         onTap: (index) {
@@ -429,12 +405,13 @@ class _MainDashboardState extends State<MainDashboard>
     }
 
     if (_error != null && _kpiData.isEmpty) {
-      return Center(
+      return SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(4.w),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const RoleWorkspacePanel(),
               CustomIconWidget(
                 iconName: 'error_outline',
                 color: theme.colorScheme.error,
@@ -469,6 +446,7 @@ class _MainDashboardState extends State<MainDashboard>
         controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
+          const SliverToBoxAdapter(child: RoleWorkspacePanel()),
           SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

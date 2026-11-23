@@ -233,7 +233,7 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
                     children: [
                       if (hasDiscount) ...[
                         Text(
-                          '${product["price"]} FC',
+                          '${product["price"]} ${product["currency"] ?? 'CDF'}',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                             decoration: TextDecoration.lineThrough,
@@ -242,7 +242,7 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
                         SizedBox(width: 2.w),
                       ],
                       Text(
-                        '${customPrice.toStringAsFixed(0)} FC',
+                        'Catalogue ${customPrice.toStringAsFixed(2)} ${product["currency"] ?? 'CDF'}',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: hasDiscount
                               ? theme.colorScheme.tertiary

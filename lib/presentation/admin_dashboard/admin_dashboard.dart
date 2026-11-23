@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../services/admin_report_service.dart';
+import '../../widgets/role_workspace_panel.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -84,12 +85,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
     if (_error != null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Dashboard admin')),
-        body: Center(
+        body: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.all(4.w),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const RoleWorkspacePanel(),
                 Text(_error!, textAlign: TextAlign.center),
                 SizedBox(height: 2.h),
                 ElevatedButton(
@@ -128,6 +130,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         child: ListView(
           padding: EdgeInsets.all(4.w),
           children: [
+            const RoleWorkspacePanel(),
             Wrap(
               spacing: 2.w,
               children: [

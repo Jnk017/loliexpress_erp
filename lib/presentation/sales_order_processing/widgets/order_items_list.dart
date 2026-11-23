@@ -8,6 +8,7 @@ import '../../../core/app_export.dart';
 /// Displays selected products with quantity controls and swipe actions
 class OrderItemsList extends StatelessWidget {
   final List<Map<String, dynamic>> orderItems;
+  final String currency;
   final Function(int, int) onQuantityChange;
   final Function(int) onRemove;
   final Function(int) onEdit;
@@ -15,6 +16,7 @@ class OrderItemsList extends StatelessWidget {
   const OrderItemsList({
     super.key,
     required this.orderItems,
+    this.currency = 'CDF',
     required this.onQuantityChange,
     required this.onRemove,
     required this.onEdit,
@@ -162,14 +164,14 @@ class OrderItemsList extends StatelessWidget {
                   ),
                   SizedBox(height: 0.5.h),
                   Text(
-                    '${unitPrice.toStringAsFixed(0)} FC × $quantity',
+                    '${unitPrice.toStringAsFixed(2)} $currency × $quantity',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                   SizedBox(height: 0.5.h),
                   Text(
-                    '${total.toStringAsFixed(0)} FC',
+                    '${total.toStringAsFixed(2)} $currency',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.w600,

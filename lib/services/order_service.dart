@@ -42,13 +42,47 @@ class OrderService {
     }
   }
 
+  Future<double> getOrderUnitPrice({
+    required String customerId,
+    required String productId,
+    String currency = 'CDF',
+  }) async {
+    final result = await _client.rpc('order_unit_price', params: {
+      'p_customer_id': customerId,
+      'p_product_id': productId,
+      'p_currency': currency,
+    });
+    if (result is! num) {
+      throw const FormatException('Tarif client invalide');
+    }
+    return result.toDouble();
+  }
+
+  Future<Map<String, dynamic>> issueInvoice({
+    required String orderId,
+    required DateTime dueDate,
+    required bool homeDelivery,
+    required double deliveryFee,
+  }) async {
+    final result = await _client.rpc('issue_order_invoice', params: {
+      'p_order_id': orderId,
+      'p_due_date': dueDate.toUtc().toIso8601String(),
+      'p_home_delivery': homeDelivery,
+      'p_delivery_fee': deliveryFee,
+    });
+    if (result is! Map) {
+      throw const FormatException('Réponse de facturation invalide');
+    }
+    return Map<String, dynamic>.from(result);
+  }
+
   Future<Map<String, dynamic>> createOrder({
     required String customerId,
     required List<Map<String, dynamic>> items,
     String? notes,
     double? discount,
     String currency = 'CDF',
-    double exchangeRate = 1,
+    double? exchangeRate,
     String paymentType = 'cash',
   }) async {
     if (items.isEmpty) {
