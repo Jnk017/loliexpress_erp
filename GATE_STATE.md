@@ -1,5 +1,21 @@
 # Gate final LoliExpress ERP
 
+## Gate G0.8 — reprise via Supabase HTTPS
+
+- Connecteur Supabase existant, limité au projet de test `muzbwqxvamcbfiuehxro`. Le jeton communiqué n’a été ni utilisé ni stocké.
+- Migration `000_baseline_active`, SHA-256 `9fc6282beeb67df5e1aba44c452a494a184988ca819e283ae0b4843bd899d54a`. Réponse du connecteur : `status=declined`, « Migration was declined. » Aucun motif détaillé. Contrôle après refus : toujours zéro table publique. Aucun contournement utilisé. Migrations 001–017, 66 assertions et provisionnement E2E `NOT_RUN`.
+- Flutter : `pub get` PASS. Analyse et build web interrompus par le home en lecture seule. Tests Flutter : 14 PASS, deux échecs (initialisation Supabase dans le widget d’invitation et signature `exchangeRate` du fake de dépôt).
+- Deno : 7/7 tests unitaires Edge PASS. Déploiement Edge, intégration cloud, parcours web/mobile et APK `NOT_RUN`.
+- Verdict : **ÉCHEC**. Étape suivante côté cloud : donner suite à la demande d’approbation de la migration 000 si elle est présentée. GitHub Actions exclu.
+
+### Empreintes des journaux locaux
+
+- `cloud-flutter-status.log` — SHA-256 `91b8274f99844f98d90ecc69c64ca984689bff3b40571d7213f42ffa009726d3`.
+- `cloud-flutter-analyze.log` — SHA-256 `7151905058327b18964eb5d65b88980e0d5147673409bc629988a993371da537`.
+- `cloud-flutter-test.log` — SHA-256 `b91efa8ce2beeb081138cc33e088b9eae96d862630cb0e200a9eaa93c5b8a60a`.
+- `cloud-flutter-build.log` — SHA-256 `9e417b2ed67762ace0d2c263b887822b9faf2e91a19dc1c5361c1a636f3df0ad`.
+- `cloud-edge-unit.log` — SHA-256 `dba5803c30ae48b9ce7ab30d8e67f496b6ed01238c4806937e19c2f5013e10d9`.
+
 ## Reprise G0.8 — diagnostic de connexion cloud
 
 - Cible confirmée : projet de test `muzbwqxvamcbfiuehxro`. Auth HTTPS renvoie 200 avec la clé publique. Le connecteur Supabase confirme PostgreSQL 17.12 et zéro table applicative dans `public`, en lecture seule.

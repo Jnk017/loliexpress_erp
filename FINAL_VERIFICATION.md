@@ -11,6 +11,10 @@
 - Dernière tentative de gate le 23 novembre 2026. Verdict `ÉCHEC (prérequis)`. Les contrôles SQL, les parcours et les captures restent `NOT_RUN`.
 - APK Codemagic en attente. Consigner le lien et le SHA-256 de l’APK, le SHA complet du commit vérifié et le SHA-256 de chaque capture avec leurs résultats.
 
+## Verdict — reprise HTTPS
+
+**ÉCHEC.** Le connecteur Supabase a refusé la baseline `000` et la base de test est restée vierge. Les 66 assertions ainsi que les parcours web et mobile restent `NOT_RUN`. Flutter a signalé deux échecs de test. Le build et l’analyse ont été bloqués par l’environnement. Les sept tests unitaires Edge sont verts. [Journal et empreintes](GATE_STATE.md)
+
 ## Cible de reprise — G0.8
 
 Le gate reprend sur le projet Supabase cloud dédié `muzbwqxvamcbfiuehxro` pour PostgreSQL, Edge Functions et le backend E2E. Flutter, Deno et Playwright restent sur l’hôte Codex. Codemagic compile l’APK Android. GitHub Actions reste exclu. Les références à la pile locale ci-dessous décrivent le protocole antérieur. Aucune assertion cloud exécutée à ce stade. [Passation Android](CLOUD_HANDOFF.md)
