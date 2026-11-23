@@ -1,5 +1,9 @@
 # Gate final LoliExpress ERP
 
+## Assertions cloud — 57/66 PASS
+
+Les quatre groupes ont été exécutés via l’API Management officielle avec PAT et garde de référence. P0.a : 5/5 après déplacement de l’identifiant JWT de l’administrateur avant l’insertion de la fixture auditée. P0.b : 13/13. P1.a : 34/34. P1.b : 5/5. Les scripts conservent le rollback. HTTP 201 avec résultats booléens explicites. Les neuf assertions sur l’état exact après `000` restent `NOT_RUN`, car la cible autorisée est déjà à `017`. Le rapport ne déduit aucun résultat de ces neuf assertions depuis le schéma final.
+
 ## Rejeu 000–017 — API Supabase officielle et PAT
 
 Le projet `loliexpress-gate-test` (`muzbwqxvamcbfiuehxro`) a été vérifié par son nom et son identifiant, avec zéro table publique avant rejeu. La CLI en mode `--include-all --dry-run` a rencontré un refus TCP du pooler. Les 18 migrations ont ensuite reçu HTTP 200 sur l’API officielle, avec PAT et vérification de la référence avant chaque requête. Les quatre RPC clés sont présentes après rejeu. [Empreintes et statuts](audit/gate/cloud-pat-migrations.tsv)

@@ -32,6 +32,7 @@ BEGIN
         (sales_id, sales_id::text || '@example.invalid');
     UPDATE public.user_profiles SET role = 'admin', is_active = true WHERE id = admin_id;
     UPDATE public.user_profiles SET role = 'sales_rep', is_active = true WHERE id = sales_id;
+    PERFORM set_config('request.jwt.claim.sub', admin_id::text, true);
     INSERT INTO public.customers(id, company_name, contact_person, email, phone, commercial_id, is_active)
     VALUES
         (customer_a, 'A', 'Test', customer_a::text || '@example.invalid', '000000000', sales_id, true),
@@ -42,7 +43,6 @@ BEGIN
     INSERT INTO public.warehouse_locations(id, name, is_active)
     VALUES (warehouse_id, warehouse_id::text, true);
 
-    PERFORM set_config('request.jwt.claim.sub', admin_id::text, true);
     PERFORM public.set_customer_product_price(customer_a, product_id, 3850, 'CDF');
     PERFORM public.set_customer_product_price(customer_b, product_id, 3565, 'CDF');
 
