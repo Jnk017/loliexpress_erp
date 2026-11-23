@@ -1,0 +1,4 @@
+flutter-pub-get 0
+flutter-analyze 1
+flutter-test 1
+flutter-build-web 1

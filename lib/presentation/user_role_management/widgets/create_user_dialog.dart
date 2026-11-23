@@ -12,7 +12,7 @@ class CreateUserDialog extends StatefulWidget {
 
 class _CreateUserDialogState extends State<CreateUserDialog> {
   final _formKey = GlobalKey<FormState>();
-  final UserManagementService _userService = UserManagementService();
+  late final UserManagementService _userService = UserManagementService();
 
   final _emailController = TextEditingController();
   final _fullNameController = TextEditingController();
