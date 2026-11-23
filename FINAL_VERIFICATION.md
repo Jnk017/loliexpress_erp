@@ -11,6 +11,10 @@
 - Dernière tentative de gate le 23 novembre 2026. Verdict `ÉCHEC (prérequis)`. Les contrôles SQL, les parcours et les captures restent `NOT_RUN`.
 - APK Codemagic en attente. Consigner le lien et le SHA-256 de l’APK, le SHA complet du commit vérifié et le SHA-256 de chaque capture avec leurs résultats.
 
+## Cible de reprise — G0.8
+
+Le gate reprend sur le projet Supabase cloud dédié `muzbwqxvamcbfiuehxro` pour PostgreSQL, Edge Functions et le backend E2E. Flutter, Deno et Playwright restent sur l’hôte Codex. Codemagic compile l’APK Android. GitHub Actions reste exclu. Les références à la pile locale ci-dessous décrivent le protocole antérieur. Aucune assertion cloud exécutée à ce stade. [Passation Android](CLOUD_HANDOFF.md)
+
 ## Résultat d'exécution — Step 0, 23 novembre 2026 UTC
 
 **Verdict : ÉCHEC (prérequis).** Le checkout et plusieurs outils requis manquent. Le client Docker ne peut pas joindre le daemon. La sonde Chromium échoue au lancement. Aucun test ni assemblage n'a été exécuté. Le détail et les preuves sont consignés dans le [journal du gate](GATE_STATE.md).
