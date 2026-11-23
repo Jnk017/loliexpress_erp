@@ -11,6 +11,12 @@
 - Dernière tentative de gate le 23 novembre 2026. Verdict `ÉCHEC (prérequis)`. Les contrôles SQL, les parcours et les captures restent `NOT_RUN`.
 - APK Codemagic en attente. Consigner le lien et le SHA-256 de l’APK, le SHA complet du commit vérifié et le SHA-256 de chaque capture avec leurs résultats.
 
+## Rejeu 000–017 — API Supabase officielle et PAT
+
+Le projet `loliexpress-gate-test` (`muzbwqxvamcbfiuehxro`) a été vérifié par son nom et son identifiant, avec zéro table publique avant rejeu. La CLI en mode `--include-all --dry-run` a rencontré un refus TCP du pooler. Les 18 migrations ont ensuite reçu HTTP 200 sur l’API officielle, avec PAT et vérification de la référence avant chaque requête. Les quatre RPC clés sont présentes après rejeu. [Empreintes et statuts](audit/gate/cloud-pat-migrations.tsv)
+
+L’essai antérieur via le connecteur avait été refusé. La baseline contient notamment des instructions conditionnelles de remplacement de politiques et triggers. Aucune commande autonome de suppression de données n’a été lancée. Les assertions SQL et les parcours restent `NOT_RUN`. Aucun appel à la production ni à GitHub Actions.
+
 ## Verdict — reprise HTTPS
 
 **ÉCHEC.** Le connecteur Supabase a refusé la baseline `000` et la base de test est restée vierge. Les 66 assertions ainsi que les parcours web et mobile restent `NOT_RUN`. Flutter a signalé deux échecs de test. Le build et l’analyse ont été bloqués par l’environnement. Les sept tests unitaires Edge sont verts. [Journal et empreintes](GATE_STATE.md)

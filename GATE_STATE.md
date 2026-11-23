@@ -1,5 +1,11 @@
 # Gate final LoliExpress ERP
 
+## Rejeu 000–017 — API Supabase officielle et PAT
+
+Le projet `loliexpress-gate-test` (`muzbwqxvamcbfiuehxro`) a été vérifié par son nom et son identifiant, avec zéro table publique avant rejeu. La CLI en mode `--include-all --dry-run` a rencontré un refus TCP du pooler. Les 18 migrations ont ensuite reçu HTTP 200 sur l’API officielle, avec PAT et vérification de la référence avant chaque requête. Les quatre RPC clés sont présentes après rejeu. [Empreintes et statuts](audit/gate/cloud-pat-migrations.tsv)
+
+L’essai antérieur via le connecteur avait été refusé. La baseline contient notamment des instructions conditionnelles de remplacement de politiques et triggers. Aucune commande autonome de suppression de données n’a été lancée. Les assertions SQL et les parcours restent `NOT_RUN`. Aucun appel à la production ni à GitHub Actions.
+
 ## Gate G0.8 — reprise via Supabase HTTPS
 
 - Connecteur Supabase existant, limité au projet de test `muzbwqxvamcbfiuehxro`. Le jeton communiqué n’a été ni utilisé ni stocké.
