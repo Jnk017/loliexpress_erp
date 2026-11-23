@@ -1,5 +1,9 @@
 # Gate final LoliExpress ERP
 
+## Comptes E2E cloud
+
+Sept comptes Auth de test créés et sept profils applicatifs vérifiés via la cible gardée. Deux fiches B2B liées aux comptes correspondants. Le fichier local `.env.test` est en mode 0600 et ignoré. Ce commit contient uniquement la preuve de provisionnement.
+
 ## Assertions cloud — 57/66 PASS
 
 Les quatre groupes ont été exécutés via l’API Management officielle avec PAT et garde de référence. P0.a : 5/5 après déplacement de l’identifiant JWT de l’administrateur avant l’insertion de la fixture auditée. P0.b : 13/13. P1.a : 34/34. P1.b : 5/5. Les scripts conservent le rollback. HTTP 201 avec résultats booléens explicites. Les neuf assertions sur l’état exact après `000` restent `NOT_RUN`, car la cible autorisée est déjà à `017`. Le rapport ne déduit aucun résultat de ces neuf assertions depuis le schéma final.
