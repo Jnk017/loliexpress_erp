@@ -1,5 +1,11 @@
 # Gate final LoliExpress ERP
 
+## Reprise G0.8 — diagnostic de connexion cloud
+
+- Cible confirmée : projet de test `muzbwqxvamcbfiuehxro`. Auth HTTPS renvoie 200 avec la clé publique. Le connecteur Supabase confirme PostgreSQL 17.12 et zéro table applicative dans `public`, en lecture seule.
+- La connexion `psql` par le pooler Session échoue avant authentification avec `Connection refused`. Le mot de passe et la clé serveur restent à valider. Les quatre paramètres sont stockés dans `cloud.env`, mode 0600, dans le checkout puisque le home est en lecture seule. Le fichier est ignoré par Git.
+- Arrêt à la vérification de connexion demandée. Aucun SQL de migration ni assertion exécuté, aucun compte créé. Prochaine décision : rétablir l’accès TCP au pooler depuis l’hôte, ou autoriser le connecteur HTTPS Supabase comme transport du gate SQL.
+
 ## Amendements G0
 
 ### G0.8 — Pivot cloud strict (23 novembre 2026)
