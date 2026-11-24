@@ -1,11 +1,9 @@
 # LoliExpress ERP — tests sur Android
 
-## Build demandé
+## Compiler dans Appcircle
 
-Le workflow `build-android-apk` est limité à `gate/final-verification`. Le push de déclenchement est demandé par Codex. Dans [Codemagic](https://codemagic.io/), vérifier le groupe `loliexpress-gate-local` avec `MOBILE_SUPABASE_URL` sur le projet de test et `SUPABASE_ANON_KEY` avec sa clé publique. Si aucun build n’apparaît, vérifier le webhook dans la [checklist](CODEMAGIC_HANDOFF.md). L’état du build et la disponibilité de l’APK doivent être confirmés dans Codemagic.
-
-1. Préparer le projet cloud et le build depuis les guides [Supabase](CLOUD_HANDOFF.md) et [Codemagic](CODEMAGIC_HANDOFF.md). Codex déclenche le build après confirmation des variables.
-2. Dans Codemagic, ouvrir le build de `gate/final-verification`, relever son SHA et télécharger `app-debug.apk` dans **Artifacts** ou depuis la notification si elle est configurée.
+1. Dans **Workflows → New**, importe [appcircle.yml](appcircle.yml) et enregistre-le sous un nom distinct, par exemple **LoliExpress Gate Debug**. Le workflow importé doit contenir **Build Flutter Debug APK**.
+2. Dans la configuration du build, associe le groupe de variables `SUPABASE_URL` et `SUPABASE_ANON_KEY` du [projet de test](CLOUD_HANDOFF.md). Ouvre **Start Build**, choisis la branche `gate/final-verification`, son dernier commit, puis le workflow **LoliExpress Gate Debug**. Le journal doit afficher `Gate SDK verified: Flutter 3.35.7`. Les étapes **Flutter Install** et **Flutter Build for Android** du workflow par défaut indiquent que le workflow importé n’a pas été sélectionné. Récupère `app-debug.apk` dans **Artifacts** après réussite.
 3. Ouvrir l’APK sur le téléphone. Si Android le demande, autoriser temporairement l’installation depuis le navigateur, puis désactiver cette autorisation après installation.
 4. Exécuter les parcours suivants avec les comptes de test transmis par Codex.
 

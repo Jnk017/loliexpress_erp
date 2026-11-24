@@ -68,6 +68,7 @@ steps:
         exit 1
       fi
 
+      echo "Gate SDK verified: Flutter $installed_version"
       "$flutter" pub get
       "$flutter" build apk --debug --no-pub \
         --dart-define="SUPABASE_URL=$SUPABASE_URL" \
