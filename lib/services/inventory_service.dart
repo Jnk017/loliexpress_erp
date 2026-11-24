@@ -95,6 +95,38 @@ class InventoryService {
     }
   }
 
+  Future<void> transferStock({
+    required String productId,
+    required String sourceId,
+    required String destinationId,
+    required int quantity,
+    required String reason,
+  }) async {
+    await _client.rpc('transfer_stock', params: {
+      'p_product_id': productId,
+      'p_source_id': sourceId,
+      'p_destination_id': destinationId,
+      'p_quantity': quantity,
+      'p_reason': reason,
+    });
+  }
+
+  Future<void> recordPhysicalCount({
+    required String productId,
+    required String warehouseId,
+    required int expectedQuantity,
+    required int countedQuantity,
+    required String reason,
+  }) async {
+    await _client.rpc('record_physical_stock_count', params: {
+      'p_product_id': productId,
+      'p_warehouse_id': warehouseId,
+      'p_expected_quantity': expectedQuantity,
+      'p_counted_quantity': countedQuantity,
+      'p_reason': reason,
+    });
+  }
+
   Future<Map<String, dynamic>> updateStock({
     required String productId,
     required String warehouseId,

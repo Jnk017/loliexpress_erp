@@ -1,5 +1,11 @@
 # Gate final LoliExpress ERP
 
+## Retour Android — opérations de stock
+
+- Migration 019 appliquée au projet de test gardé. Transfert atomique et inventaire physique par article et entrepôt, avec motif, contrôle serveur du rôle et journalisation. Les options sont disponibles dans Actions rapides pour admin et magasinier.
+- Le [test SQL](audit/verify_stock_transfer_and_count.sql) a retourné `stock_workflows_pass=true`. Il couvre conservation des quantités, dépassement du disponible, quantité périmée, comptage sans écart et refus B2B. Les données créées par le test ont été annulées.
+- Tests Flutter : 18 PASS. Vérification des deux parcours sur le nouvel APK et le téléphone encore ouverte.
+
 ## Retour Android — rapport admin, paramètres et stock
 
 - Sur le projet de test uniquement, la migration 018 accorde EXECUTE sur le rapport agrégé à la session authentifiée. Le contrôle de rôle interne reste actif. Le contrôle HTTPS, sous le rôle PostgreSQL authentifié avec les identités de test, a confirmé `admin_report_ok=true` et `b2b_read_denied=true`. Aucun appel au projet de production.
