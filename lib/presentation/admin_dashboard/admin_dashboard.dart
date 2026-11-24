@@ -43,10 +43,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
         _insights = insights;
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = 'Impossible de charger le rapport administrateur.';
         _isLoading = false;
       });
     }

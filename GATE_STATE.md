@@ -1,5 +1,12 @@
 # Gate final LoliExpress ERP
 
+## Retour Android — rapport admin, paramètres et stock
+
+- Sur le projet de test uniquement, la migration 018 accorde EXECUTE sur le rapport agrégé à la session authentifiée. Le contrôle de rôle interne reste actif. Le contrôle HTTPS, sous le rôle PostgreSQL authentifié avec les identités de test, a confirmé `admin_report_ok=true` et `b2b_read_denied=true`. Aucun appel au projet de production.
+- Les paramètres réutilisent les couleurs du thème pour les textes, icônes et surfaces. Les commandes fictives de sauvegarde, intégrations et sécurité ont été retirées de cet écran. Les entrepôts et l’accès à la gestion des utilisateurs utilisent les services existants.
+- Les trois onglets du stock utilisent les données Supabase. Filtre par identifiant d’entrepôt, réception via Achats, ajustements via `adjust_stock`. Transfert et inventaire physique restent indisponibles en l’absence de parcours transactionnel dédié.
+- La vérification du nouvel APK sur téléphone demeure ouverte. Le gate global reste en échec.
+
 ## Gate cloud — résultat courant
 
 **ÉCHEC.** Les migrations 000–017 sont appliquées. Les quatre suites SQL ont retourné 57 assertions vraies. Les neuf contrôles de l’état exact après 000 restent à exécuter sur une baseline isolée autorisée. Aucun résultat déduit du schéma à 017. [Matrice](audit/gate/assertions.tsv)

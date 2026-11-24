@@ -23,7 +23,7 @@ class SettingsSectionWidget extends StatelessWidget {
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.bold,
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),

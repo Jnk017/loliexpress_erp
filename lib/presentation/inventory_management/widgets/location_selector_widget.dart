@@ -6,7 +6,7 @@ import '../../../widgets/custom_icon_widget.dart';
 
 class LocationSelectorWidget extends StatelessWidget {
   final String selectedLocation;
-  final List<String> locations;
+  final Map<String, String> locations;
   final ValueChanged<String> onLocationChanged;
 
   const LocationSelectorWidget({
@@ -52,10 +52,10 @@ class LocationSelectorWidget extends StatelessWidget {
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w500,
                 ),
-                items: locations.map((location) {
+                items: locations.entries.map((location) {
                   return DropdownMenuItem<String>(
-                    value: location,
-                    child: Text(location),
+                    value: location.key,
+                    child: Text(location.value),
                   );
                 }).toList(),
                 onChanged: (value) {

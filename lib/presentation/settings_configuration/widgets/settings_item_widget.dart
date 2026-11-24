@@ -19,14 +19,15 @@ class SettingsItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return ListTile(
       leading: Container(
         padding: EdgeInsets.all(2.w),
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor.withAlpha(26),
+          color: colors.primaryContainer,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, color: Theme.of(context).primaryColor, size: 20.sp),
+        child: Icon(icon, color: colors.onPrimaryContainer, size: 20.sp),
       ),
       title: Text(
         title,
@@ -34,8 +35,8 @@ class SettingsItemWidget extends StatelessWidget {
       ),
       subtitle: Text(
         subtitle,
-        style: TextStyle(fontSize: 11.sp, color: Colors.grey[600]),
-        maxLines: 1,
+        style: TextStyle(fontSize: 11.sp, color: colors.onSurfaceVariant),
+        maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
       trailing: trailing,
