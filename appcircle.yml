@@ -33,18 +33,6 @@ steps:
   commit: 0c841de
   inputs:
   - AC_SELECTED_JAVA_VERSION: '17'
-- componentType: appcircle_flutter_install
-  componentVersion: 1.0.*
-  stepName: Flutter Install
-  enabled: true
-  onError: $exit
-  webUrl: https://github.com/appcircleio/appcircle-flutter-install-component
-  repoUrl: https://github.com/appcircleio/appcircle-flutter-install-component.git
-  commit: 37852d6
-  inputs:
-  - AC_SELECTED_FLUTTER_VERSION: '3.35.7'
-  outputs:
-  - PATH: PATH
 - componentType: appcircle_custom_script
   componentVersion: 1.0.*
   stepName: Build Flutter Debug APK
@@ -69,8 +57,19 @@ steps:
       fi
 
       cd "${AC_REPOSITORY_DIR:?Missing Appcircle checkout directory}"
-      flutter pub get
-      flutter build apk --debug --no-pub \
+      flutter_version=3.35.7
+      flutter_dir=$(mktemp -d)
+      trap 'rm -rf "$flutter_dir"' EXIT
+      git clone --depth 1 --branch "$flutter_version" https://github.com/flutter/flutter.git "$flutter_dir/sdk"
+      flutter="$flutter_dir/sdk/bin/flutter"
+      installed_version=$("$flutter" --version --machine | python3 -c 'import json, sys; print(json.load(sys.stdin)["frameworkVersion"])')
+      if [[ "$installed_version" != "$flutter_version" ]]; then
+        echo "Expected Flutter $flutter_version, got $installed_version." >&2
+        exit 1
+      fi
+
+      "$flutter" pub get
+      "$flutter" build apk --debug --no-pub \
         --dart-define="SUPABASE_URL=$SUPABASE_URL" \
         --dart-define="SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" \
         --dart-define=ENV=test
