@@ -21,7 +21,6 @@ dependencies:
   cached_network_image: ^3.4.1
   connectivity_plus: ^6.1.4
   dio: ^5.4.0
-  fluttertoast: ^8.2.4
   fl_chart: ^0.70.1
   flutter_slidable: ^3.1.1
   url_launcher: ^6.3.1
