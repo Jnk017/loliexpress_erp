@@ -228,3 +228,11 @@ Rendre disponible un checkout exploitable du dépôt privé à `5a68a99` avec so
 - Le déclencheur e-mail lit l’URL de son projet dans Vault. En l’absence de configuration valide, les notifications restent en attente.
 - SQL via API Management : lecture sans altération de l’envoi, isolation des préférences, droits sur la configuration opérationnelle, rapprochement achats/ventes/dépenses et trésorerie, transferts et inventaire PASS. Les contrôles utilisent des transactions annulées.
 - Flutter : 18 tests PASS, analyse sans erreur ni avertissement avec quatre remarques de style existantes. Tests depuis l’APK et livraison externe en attente.
+
+## Reprise de validation de bout en bout — 25 novembre 2026
+
+- Frontend vérifié à `ad59a4de9462b4074da59b6efc3a0c0ac15571ae`. Compilation Flutter Web release réussie avec l’environnement CI. Chromium a utilisé CanvasKit local et ignoré l’erreur de certificat du proxy dans son seul contexte de test. Sept authentifications par formulaire et routes d’accueil conformes.
+- API Management test : 56 assertions PASS, 1 écart attendu sur la base déjà provisionnée, 9 assertions historiques NOT_RUN. Cinq suites SQL opérationnelles complémentaires PASS.
+- `create_user` et `ai_assistant` déployées via API Management sur le projet de test avec JWT activé. Correctif CORS confirmé par deux prévols et quatre requêtes réelles depuis Chromium. Aucun e-mail déclenché par les requêtes de validation.
+- Appcircle reste le chemin Android après l’interruption de Gradle pendant l’installation du NDK sur l’hôte. Aucun APK récent ni capture Android vérifiés.
+- Voir [le rapport courant](FINAL_VERIFICATION.md) pour les liens vers les preuves et les contrôles encore ouverts.

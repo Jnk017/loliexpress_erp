@@ -1,23 +1,21 @@
 # Gate final — LoliExpress ERP
 
-## Gate cloud — résultat courant
+## Gate cloud — 25 novembre 2026
 
-**ÉCHEC.** Les migrations 000–017 sont appliquées. Les quatre suites SQL ont retourné 57 assertions vraies. Les neuf contrôles de l’état exact après 000 restent à exécuter sur une baseline isolée autorisée. Aucun résultat déduit du schéma à 017. [Matrice](audit/gate/assertions.tsv)
+**Validation partielle.** Le projet testé est `loliexpress-gate-test`. Le frontend compilé correspond à `ad59a4de9462b4074da59b6efc3a0c0ac15571ae`. Les fonctions Edge ont ensuite été redéployées avec le correctif CORS de cette branche.
 
 | Contrôle | Résultat |
 |---|---|
-| Comptes Auth et profils E2E | 7/7 |
-| Flutter pub get | PASS |
-| Tests Flutter | 16/16 après deux corrections ciblées |
-| Analyse et build web | Bloqués par le dossier personnel en lecture seule, même après une demande d’accès aux deux répertoires Dart |
-| Edge Functions | 7/7 tests unitaires Deno. Intégration déployée NOT_RUN |
-| Playwright API Auth et profils | 7/7 |
-| Playwright E2E interface web | 0/7 exécuté. Aucun build web ni capture |
-| Android | Déclenchement demandé via push. APK et captures à confirmer |
+| Assertions SQL du gate | 56 PASS, 1 contrôle de base vierge faux sur cette base provisionnée, 9 contrôles intermédiaires après 000 à exécuter sur un projet neuf autorisé |
+| SQL des parcours opérationnels | Rapprochement stock et trésorerie, achats, ventes, dépenses, transferts et inventaire PASS. Préférences et lecture des notifications PASS. |
+| Flutter | Build web release PASS. Dernière analyse sans erreur ni avertissement et 18/18 tests Flutter à `ad59a4d`. |
+| Chromium | 7/7 connexions réelles avec formulaire Flutter, HTTP Auth 200 et écran attendu. Les opérations métier complètes depuis l’interface restent à exécuter. |
+| Edge | 7/7 tests unitaires, deux fonctions déployées sur le test, 2/2 prévols CORS 204, 4/4 réponses attendues depuis Chromium. Invitation réelle et réception d’e-mail en attente. |
+| Android | Aucune preuve du SHA actuel. Compilation locale interrompue pendant l’installation du NDK 27.0.12077973. Appcircle peut produire l’APK de test. |
+| Livraison des notifications | La cible et la clé de dispatch sont absentes de Vault. Aucun envoi e-mail, push ou SMS validé. |
 
-[Résultats Flutter](gate_state/flutter-rerun-status.txt) · [Tests Edge](gate_state/edge-verify.log) · [Sonde Playwright](gate_state/playwright-auth-smoke.json) · [Passation Android](MOBILE_HANDOFF.md)
-
-État du dossier avant exécution : **prêt pour le gate final**.
+- [Résultats SQL du rejeu](gate_state/current/sql-assertions.json) · [Connexion et captures par rôle](gate_state/current/web-login-routes.json)
+- [Prévols CORS](gate_state/current/edge-cors.json) · [Réponses Edge depuis Chromium](gate_state/current/edge-browser.json) · [Passation Android](MOBILE_HANDOFF.md)
 
 ## Traçabilité
 

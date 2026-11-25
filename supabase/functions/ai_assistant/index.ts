@@ -1,16 +1,20 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+import { corsHeaders } from "../_shared/cors.ts";
+
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: corsHeaders });
+  if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
   const authHeader = req.headers.get("Authorization") ?? "";
   const client = createClient(supabaseUrl, anonKey, {
     global: { headers: { Authorization: authHeader } },
   });
   const { data: authUser, error } = await client.auth.getUser();
-  if (error || !authUser.user) return new Response("Unauthorized", { status: 401 });
+  if (error || !authUser.user) return new Response("Unauthorized", { status: 401, headers: corsHeaders });
 
   const body = await req.json().catch(() => ({}));
   const question = String(body.question ?? "").toLowerCase();
@@ -30,7 +34,7 @@ Deno.serve(async (req) => {
     p_start: start.toISOString(),
     p_end: end.toISOString(),
   });
-  if (rpcError) return new Response(rpcError.message, { status: 403 });
+  if (rpcError) return new Response(rpcError.message, { status: 403, headers: corsHeaders });
 
   const llmKey = Deno.env.get("OPENAI_API_KEY");
   if (llmKey) {
@@ -52,7 +56,7 @@ Deno.serve(async (req) => {
       const json = await completion.json();
       const answer = json.choices?.[0]?.message?.content;
       if (answer) {
-        return Response.json({ answer, data });
+        return Response.json({ answer, data }, { headers: corsHeaders });
       }
     }
   }
@@ -60,5 +64,5 @@ Deno.serve(async (req) => {
   return Response.json({
     answer: `Voici les données disponibles pour votre question: ${JSON.stringify(data)}`,
     data,
-  });
+  }, { headers: corsHeaders });
 });
