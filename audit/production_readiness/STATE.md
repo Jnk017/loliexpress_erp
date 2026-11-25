@@ -45,3 +45,9 @@ Les autres scénarios de concurrence sont ouverts. Le test de transfert est racc
 | PERF-003-C | P0 | DONE | Confirmation simultanée sur deux sessions distinctes. Le second appel confirme la remise existante sans nouvelle sortie du stock. | [Preuve et nettoyage](concurrent_handover.json), cible Gate et code à `608d751`. |
 
 La reprise de la concurrence porte sur les ventes, encaissements, réceptions fournisseur et avoirs. Le parcours Web transversal reste à exécuter depuis Flutter.
+
+## Lot 028
+
+| ID | Priorité | État | Correction et preuve |
+|---|---|---|---|
+| WEB-001-A | P0 | TEST_PASSED | La route de réception est autorisée au magasinier et utilise une file RPC sans données financières. [Tests SQL](warehouse_receipt_results.json), analyse et 18 tests Flutter réussis. Test navigateur de réception à confirmer. |

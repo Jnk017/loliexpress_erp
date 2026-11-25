@@ -31,3 +31,7 @@ Le verdict du lot couvre les permissions et la régression séquentielle sur Gat
 | `record_physical_stock_count(uuid,uuid,integer,integer,text)` | Admin ou magasinier. Vérifie la quantité attendue sous verrou et audite le comptage, même sans mouvement. | Tests positif, quantité périmée et refus B2B. |
 
 Ces six fonctions sont privilégiées avec un `search_path` vide. L’audit direct des rôles et privilèges n’est pas terminé pour chaque signature. La migration 027 retire la politique de mise à jour directe du livreur. Sa lecture sur les tournées affectées et la confirmation via RPC sont conservées. [Résultats Gate](delivery_boundary_results.json)
+
+## Réception du magasinier, lot 028
+
+`public.list_warehouse_purchase_receipts()` est une nouvelle RPC `SECURITY DEFINER` en lecture, à `search_path` vide. Flutter appelle cette fonction depuis le raccourci de réception. La RPC vérifie le profil actif et le rôle magasinier via `current_user_role`, refuse les comptes sans profil et ne renvoie que le numéro d’achat, la ligne, le nom du produit et le restant à réceptionner. Elle n’écrit aucune donnée. La réception utilise la RPC existante `receive_purchase_item`, verrouillée et idempotente sur l’identifiant de requête. Le test Gate confirme une réception répétée sans double mouvement ni lecture directe des données d’achat. [Preuves](warehouse_receipt_results.json)

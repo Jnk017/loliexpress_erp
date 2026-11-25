@@ -1,0 +1,41 @@
+{
+  "verify_warehouse_receipt_queue": [
+    {
+      "warehouse_receipt_queue_pass": true
+    }
+  ],
+  "verify_p1a_drafts_and_purchases": [
+    {
+      "scenario": "atomic_purchase",
+      "passed": true
+    },
+    {
+      "scenario": "draft_persisted_and_updated",
+      "passed": true
+    },
+    {
+      "scenario": "draft_without_receivable",
+      "passed": true
+    },
+    {
+      "scenario": "invalid_line_rolls_back_header",
+      "passed": true
+    },
+    {
+      "scenario": "partial_receipt_and_idempotency",
+      "passed": true
+    },
+    {
+      "scenario": "supplier_balance_settled_without_stock_change",
+      "passed": true
+    },
+    {
+      "scenario": "supplier_bill_is_separate_from_receipt",
+      "passed": true
+    },
+    {
+      "scenario": "supplier_partial_payment_and_idempotency",
+      "passed": true
+    }
+  ]
+}

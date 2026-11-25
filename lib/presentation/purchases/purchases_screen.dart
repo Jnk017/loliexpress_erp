@@ -34,6 +34,9 @@ class _PurchasesScreenState extends State<PurchasesScreen>
   bool get _canCreatePurchase => const [UserRole.admin, UserRole.acheteur]
       .contains(RoleService.instance.currentRole);
 
+  bool get _isWarehouseStaff =>
+      RoleService.instance.currentRole == UserRole.warehouseStaff;
+
   final List<String> _statusTabs = ['Tous', 'En attente', 'Reçus'];
 
   @override
@@ -75,9 +78,10 @@ class _PurchasesScreenState extends State<PurchasesScreen>
     });
 
     try {
-      final purchases = await PurchaseService.instance.getPurchases(
-        status: _getStatusFilter(),
-      );
+      final service = PurchaseService.instance;
+      final purchases = _isWarehouseStaff
+          ? await service.getWarehouseReceiptQueue()
+          : await service.getPurchases(status: _getStatusFilter());
       if (!mounted) return;
       setState(() {
         _purchases = purchases;
@@ -86,7 +90,7 @@ class _PurchasesScreenState extends State<PurchasesScreen>
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = e.toString();
+        _errorMessage = 'Impossible de charger les achats.';
         _isLoading = false;
       });
     }
@@ -352,8 +356,83 @@ class _PurchasesScreenState extends State<PurchasesScreen>
     );
   }
 
+  Future<void> _receiveWarehouseLine(Map<String, dynamic> line) async {
+    try {
+      final warehouses = await DeliveryService.instance.getActiveWarehouses();
+      if (!mounted) return;
+      final warehouse = await _choosePurchaseRow(
+        'Entrepôt de réception',
+        warehouses,
+        (row) => row['name'] as String,
+      );
+      if (!mounted || warehouse == null) return;
+      final requestId = newRequestId();
+      await _submitPurchaseOperation(
+        'Réception physique',
+        const ['Quantité reçue'],
+        (values) async {
+          final quantity = int.tryParse(values.single);
+          final remaining = line['remaining_quantity'] as int;
+          if (quantity == null || quantity < 1 || quantity > remaining) {
+            throw FormatException('Saisissez une quantité de 1 à $remaining.');
+          }
+          await PurchaseService.instance.receivePurchaseItem(
+            purchaseItemId: line['purchase_item_id'] as String,
+            warehouseId: warehouse['id'] as String,
+            quantity: quantity,
+            requestId: requestId,
+          );
+        },
+      );
+      if (mounted) await _loadPurchases();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Impossible de préparer la réception.')),
+      );
+    }
+  }
+
+  Widget _buildWarehouseReceiptQueue() {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Réception des marchandises'),
+        actions: [
+          IconButton(
+            tooltip: 'Actualiser',
+            onPressed: _isLoading ? null : _loadPurchases,
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _errorMessage != null
+                ? Center(child: Text(_errorMessage!))
+                : _purchases.isEmpty
+                    ? const Center(child: Text('Aucun article à réceptionner.'))
+                    : ListView(
+                        children: [
+                          for (final line in _purchases)
+                            ListTile(
+                              title: Text(line['product_name'] as String),
+                              subtitle: Text(
+                                '${line['purchase_number']} · '
+                                '${line['remaining_quantity']} restant(s)',
+                              ),
+                              trailing: const Icon(Icons.chevron_right),
+                              onTap: () => _receiveWarehouseLine(line),
+                            ),
+                        ],
+                      ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isWarehouseStaff) return _buildWarehouseReceiptQueue();
     final theme = Theme.of(context);
 
     return Scaffold(

@@ -127,6 +127,7 @@ class RoleService {
   };
 
   static const _warehouseRoutes = {
+    '/purchases',
     '/inventory-management',
     '/barcode-scanner',
     '/notifications-screen',
