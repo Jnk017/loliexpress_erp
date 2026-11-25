@@ -21,3 +21,4 @@
 - [Rejeu du gate après 028](release_gate_028_results.json) sur `f7d70c3` avec les scénarios multisessions. 22 contrôles PASS, 7 NOT_RUN. Les 18 tests Flutter, les 7 tests Deno, les 11 suites SQL ciblées et les cinq scénarios multisessions sont inclus.
 - [Régression HTTP Edge après 028](edge_http_post028.json), 4 réponses attendues sur Gate. [Empreintes du build Web](web_artifact_post028.json) pour le candidat `f7d70c3`.
 - Migration 029 appliquée à Gate. [Choix du produit et régression de réception](procurement_choices_results.json), [contrôle SQL reproductible](verify_procurement_product_choices.sql). La preuve navigateur de création d’achat reste à recueillir sur le build corrigé.
+- [Prédicats RLS](role_predicates_results.json), [réglages et reporting](admin_reporting_results.json) et [grants et refus supplémentaires](remaining_rpc_grants_results.json), exécutés sur Gate après 029.

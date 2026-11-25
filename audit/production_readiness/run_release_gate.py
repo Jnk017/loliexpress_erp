@@ -13,6 +13,9 @@ from collect_drift import PROJECTS, request
 
 ROOT = Path(__file__).resolve().parents[2]
 SQL_TESTS = {
+    "verify_role_predicates.sql": ("role_predicates_pass",),
+    "verify_admin_reporting_boundary.sql": ("admin_reporting_boundary_pass",),
+    "verify_remaining_rpc_grants.sql": ("remaining_rpc_grants_pass",),
     "verify_procurement_product_choices.sql": ("procurement_product_choices_pass",),
     "verify_order_invoice_scope.sql": ("order_invoice_scope_pass",),
     "verify_warehouse_receipt_queue.sql": ("warehouse_receipt_queue_pass",),

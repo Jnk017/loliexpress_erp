@@ -34,3 +34,6 @@
 | PERF-003-F | P0 | Remise concurrente de deux commandes sur stock limité | Une remise, une commande reste expédiée, aucun stock négatif |
 | SEC-001-C | P0 | Prix, commandes et émission selon l’identité | Tests positifs par acteur, refus hors affectation et accès B2B croisé |
 | WEB-001-B | P0 | Création d’achat depuis Flutter Web | Choix fournisseur et produit autorisés, achat persisté, puis réception vérifiée |
+| SEC-001-D | P0 | Onze prédicats de rôle | Matrice de dix états de profil et grants vérifiés |
+| SEC-001-E | P0 | Réglages, progression et rapport administrateur | Refus, accès légitime et régressions métier |
+| SEC-001-F | P0 | Dix signatures du dernier groupe | Privilèges effectifs, refus et tests positifs individuels |

@@ -70,3 +70,9 @@ Gate local `f7d70c3` : [22 contrôles réussis et 7 non lancés](release_gate_02
 | ID | Priorité | État | Correction et preuve |
 |---|---|---|---|
 | WEB-001-B | P0 | TEST_PASSED | L’acheteur voyait un menu produit vide dans le formulaire. La migration 029 et le service achats utilisent une liste limitée aux références actives, sans coût. SQL et analyse passent. Le test acheteur → magasinier reste ouvert jusqu’à vérification sur le nouveau build. |
+
+| ID | Priorité | État | Correction et preuve |
+|---|---|---|---|
+| SEC-001-D | P0 | DONE | Onze prédicats de rôle, 110 évaluations et contrôles d’exécution. [Preuve](role_predicates_results.json). |
+| SEC-001-E | P0 | DONE | Quatre signatures de configuration et reporting, droits client, refus et régression. [Preuve](admin_reporting_results.json). |
+| SEC-001-F | P0 | TEST_PASSED | Dix signatures historiques supplémentaires passent les contrôles de grants et de refus. Validation individuelle à terminer. [Preuve](remaining_rpc_grants_results.json). |

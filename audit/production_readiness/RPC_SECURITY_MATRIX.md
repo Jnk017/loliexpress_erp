@@ -1,6 +1,6 @@
 # Matrice de sécurité des RPC
 
-Le [catalogue live de référence](gate_catalog_summary.json) recense 41 signatures publiques `SECURITY DEFINER` exécutables par `authenticated`. Les signatures surchargées sont comptées séparément. Sur les 41 signatures de référence, 10 sont validées et 6 autres ont été examinées avec des contrôles individuels encore ouverts. La nouvelle signature de réception magasinier est validée séparément. Les 25 autres signatures restent à examiner.
+Le [catalogue live de référence](gate_catalog_summary.json) recense 41 signatures publiques `SECURITY DEFINER` exécutables par `authenticated`. Les signatures surchargées sont comptées séparément. Sur les 41 signatures de référence, 25 sont validées, 6 ont été examinées avec des contrôles individuels encore ouverts et 10 ont passé les contrôles de grants et de refus ciblés. Les deux nouvelles signatures de réception et de choix produit sont validées séparément.
 
 | Signature dans public | Appelant | Autorisation et périmètre | Validation et écritures | Verdict du lot |
 |---|---|---|---|---|
@@ -48,3 +48,15 @@ Ces six fonctions sont privilégiées avec un `search_path` vide. L’audit dire
 Propriétaire `postgres`, `search_path` vide et exécution client réservée à `authenticated` selon le catalogue de référence. Les quatre signatures sont appelées depuis les services Flutter. [Preuve de périmètre](order_invoice_scope_results.json)
 
 La nouvelle RPC `public.list_procurement_product_choices()` est réservée à l’administration et à l’acheteur actifs. Elle lit le catalogue actif et retourne deux champs, l’identifiant et le nom. Elle ne modifie aucune table. Le test vérifie le rôle acheteur, la dissimulation des coûts et des produits inactifs, et le refus d’un magasinier. [Tests](procurement_choices_results.json)
+
+## Prédicats RLS et configuration
+
+- `is_admin`, `is_admin_from_auth`, `is_system_admin`, `is_acheteur`, `is_comptable`, `is_sales_rep`, `is_warehouse_staff`, `is_delivery_agent`, `is_b2b_customer` sont les prédicats des politiques PostgreSQL. Ils ne révèlent que le résultat du test de rôle pour l’appelant. Les profils inactifs, sans mot de passe configuré ou absents sont refusés via `current_user_role`.
+- `can_read_finance` et `can_read_procurement` composent les prédicats précédents. Le premier couvre admin et comptable. Le second ajoute acheteur. Aucune écriture et aucun paramètre pour ces onze fonctions. [110 évaluations](role_predicates_results.json)
+- `get_company_settings()` lit la configuration interne pour les rôles internes actifs. `update_company_settings(jsonb)` valide les clés et valeurs modifiables et audite l’écriture par un administrateur. `get_workspace_setup_progress()` renvoie uniquement la progression liée à l’appelant et à son rôle. `get_admin_total_report(timestamptz,timestamptz)` agrège les données à la demande d’un administrateur. Les écrans Flutter et l’assistant appellent ces fonctions selon leur rôle. [Accès et régressions](admin_reporting_results.json)
+
+Les propriétaires et configurations de chemins sont inventoriés dans le catalogue de référence. Les droits exécutables sont retestés en base. [Référence](gate_catalog_summary.json)
+
+## Refus et grants supplémentaires
+
+`cancel_unreceived_purchase`, `complete_password_setup`, `create_purchase_with_items`, `get_customer_return_lines`, `inspect_customer_return`, `receive_purchase_item`, `record_delivery_fee_credit`, `record_return_item_credit`, `register_supplier_bill` et `save_invoice_draft` passent le contrôle d’exécution anonyme/authentifiée et les refus B2B ou sans identité, selon le contrat. La clôture individuelle de ce groupe exige encore de lier les tests positifs et tous les cas d’isolement à chaque signature. [Preuve](remaining_rpc_grants_results.json)
