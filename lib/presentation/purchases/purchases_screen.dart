@@ -13,7 +13,6 @@ import '../../services/company_settings_service.dart';
 import '../../services/delivery_service.dart';
 import '../../services/purchase_service.dart';
 import '../../services/role_service.dart';
-import '../../services/product_service.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_bottom_bar.dart';
 import '../../widgets/role_workspace_panel.dart';
@@ -658,7 +657,7 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
     try {
       final results = await Future.wait([
         PurchaseService.instance.getSuppliers(),
-        ProductService.instance.getProducts(),
+        PurchaseService.instance.getProcurementProductChoices(),
       ]);
       final settings = await const CompanySettingsService().load();
       if (!mounted) return;

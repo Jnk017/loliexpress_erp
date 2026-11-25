@@ -46,3 +46,5 @@ Ces six fonctions sont privilégiées avec un `search_path` vide. L’audit dire
 | `issue_order_invoice(uuid,timestamptz,boolean,numeric)` | Administrateur ou comptable. Commande confirmée, paramètres de livraison vérifiés, verrou et unicité des conditions. Écrit la facture et fige les lignes. | Refus B2B et émission comptable de 12 CDF conformément au tarif affecté. |
 
 Propriétaire `postgres`, `search_path` vide et exécution client réservée à `authenticated` selon le catalogue de référence. Les quatre signatures sont appelées depuis les services Flutter. [Preuve de périmètre](order_invoice_scope_results.json)
+
+La nouvelle RPC `public.list_procurement_product_choices()` est réservée à l’administration et à l’acheteur actifs. Elle lit le catalogue actif et retourne deux champs, l’identifiant et le nom. Elle ne modifie aucune table. Le test vérifie le rôle acheteur, la dissimulation des coûts et des produits inactifs, et le refus d’un magasinier. [Tests](procurement_choices_results.json)

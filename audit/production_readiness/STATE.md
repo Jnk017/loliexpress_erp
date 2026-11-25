@@ -66,3 +66,7 @@ La prochaine vérification côté Web prolonge la réception magasinier vers la 
 | SEC-001-C | P0 | DONE | Quatre RPC supplémentaires validées par une fixture à deux clients et rôles distincts. [SQL reproductible](verify_order_invoice_scope.sql) et [résultat Gate](order_invoice_scope_results.json). |
 
 Gate local `f7d70c3` : [22 contrôles réussis et 7 non lancés](release_gate_028_results.json). Prochaine étape exécutable : finir la création d’achat depuis l’interface acheteur. Le formulaire est atteint dans Chromium. Le test doit distinguer la sélection de rôle du menu fournisseur et vérifier la réponse de `create_purchase_with_items` avant de changer de session.
+
+| ID | Priorité | État | Correction et preuve |
+|---|---|---|---|
+| WEB-001-B | P0 | TEST_PASSED | L’acheteur voyait un menu produit vide dans le formulaire. La migration 029 et le service achats utilisent une liste limitée aux références actives, sans coût. SQL et analyse passent. Le test acheteur → magasinier reste ouvert jusqu’à vérification sur le nouveau build. |

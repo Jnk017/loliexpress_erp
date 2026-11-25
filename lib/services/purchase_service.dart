@@ -98,6 +98,11 @@ class PurchaseService {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getProcurementProductChoices() async {
+    final rows = await _client.rpc('list_procurement_product_choices');
+    return List<Map<String, dynamic>>.from(rows as List);
+  }
+
   Future<List<Map<String, dynamic>>> getWarehouseReceiptQueue() async {
     final rows = await _client.rpc('list_warehouse_purchase_receipts');
     return List<Map<String, dynamic>>.from(rows as List);
