@@ -239,3 +239,7 @@ Rendre disponible un checkout exploitable du dépôt privé à `5a68a99` avec so
 - `create_user` et `ai_assistant` déployées via API Management sur le projet de test avec JWT activé. Correctif CORS confirmé par deux prévols et quatre requêtes réelles depuis Chromium. Aucun e-mail déclenché par les requêtes de validation.
 - Appcircle reste le chemin Android après l’interruption de Gradle pendant l’installation du NDK sur l’hôte. Aucun APK récent ni capture Android vérifiés.
 - Voir [le rapport courant](FINAL_VERIFICATION.md) pour les liens vers les preuves et les contrôles encore ouverts.
+
+## Reprise production readiness — lot 025
+
+La [machine d’état](audit/production_readiness/STATE.md) porte les exigences de sortie. Le catalogue Gate et les Advisors sont relevés après durcissement de la file de notifications. Production refuse la lecture par l’API Management avec le PAT disponible. La PR #13 reste Draft. Les tests SQL ciblés et Flutter sont passés sur le lot 025.

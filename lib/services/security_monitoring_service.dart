@@ -500,6 +500,12 @@ class SecurityMonitoringService {
 
       final config = escalationConfigs.first;
 
+      final primaryAdmin = config['primary_admin'] as Map<String, dynamic>?;
+      final recipientEmail = (primaryAdmin?['email'] as String?)?.trim();
+      if (recipientEmail == null || recipientEmail.isEmpty) {
+        throw StateError('Adresse e-mail d’escalade indisponible');
+      }
+
       // Create escalation record
       await _supabase.from('escalation_history').insert({
         'anomaly_id': incidentId,
@@ -512,6 +518,7 @@ class SecurityMonitoringService {
       // Send notification
       await _supabase.from('notification_queue').insert({
         'recipient_id': config['primary_admin_id'],
+        'recipient_email': recipientEmail,
         'notification_type': 'new_order',
         'subject': 'Incident Escalated: ${incident['title']}',
         'message': escalationReason,

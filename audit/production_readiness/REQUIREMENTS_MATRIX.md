@@ -1,0 +1,19 @@
+# Matrice des exigences
+
+| ID | Priorité | Exigence | Preuve de clôture |
+|---|---|---|---|
+| DB-001 | P0 | Drift catalogue Gate–Production | Collecte live reproductible et limites documentées |
+| DB-002 | P0 | Baseline et suites supplémentaires | 66/66 et rejeu depuis zéro |
+| DB-003 | P0 | Réconciliation forward-only | Copie de production migrée, réconciliée et restaurée |
+| SEC-001–005 | P0 | RPC, RLS, RBAC, secrets et Advisors | Tests négatifs et zéro risque élevé ou critique ouvert |
+| AUTH-001 | P0 | Cycle Auth | Invitation et OTP reçus, restrictions, sessions et deep links validés |
+| ERP-001–011 | P0 | Commercial, facturation, achats, stocks, livraison, retours, trésorerie, comptabilité, dépenses, B2B, paramètres | Chaînes interface–base vérifiées, opérations rapprochées et règles approuvées |
+| EDGE-001–002 | P0 | Fonctions et notifications | Tests HTTP et livraison effective sur les canaux retenus |
+| AI-001 | P1 | IA et rapports | Vérification des accès, des agrégats et du repli |
+| OPS-001 | P0 | Observabilité, alertes, sauvegarde et restauration | Exercices exécutés et RPO/RTO mesurés |
+| PERF-001–003 | P1 | SQL, Flutter et concurrence | Mesures avant/après et vérification sous concurrence |
+| UX-001 | P1 | UI et accessibilité | Revue et preuves sur les tailles et thèmes pris en charge |
+| WEB-001 | P0 | Parcours Playwright | Sept rôles et deux identités B2B avec données distinctes |
+| MOB-001–003 | P0 | Compilation, artefacts et Android | APK identifié, preuves sur appareil et signature de diffusion |
+| DOC-001 | P1 | Documentation actuelle | Guide d’installation, d’exploitation et d’usage vérifiés |
+| REL-001 | P0 | Candidat de release | Preuves liées au SHA et certificat interne validé |

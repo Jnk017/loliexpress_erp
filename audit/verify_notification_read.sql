@@ -1,7 +1,6 @@
 BEGIN;
 SELECT set_config('request.jwt.claim.sub', id::text, true)
   FROM public.user_profiles WHERE role = 'comptable' AND is_active LIMIT 1;
-SET LOCAL ROLE authenticated;
 DO $$
 DECLARE
   notification_id uuid;
@@ -13,6 +12,7 @@ BEGIN
   VALUES ('low_stock', auth.uid(), 'test@loliexpress.test', 'push', 'Test', 'Test', 'pending')
   RETURNING * INTO original;
   notification_id := original.id;
+  SET LOCAL ROLE authenticated;
   UPDATE public.notification_queue SET read_at = now()
     WHERE id = notification_id AND recipient_id = auth.uid() AND read_at IS NULL;
   IF NOT EXISTS (

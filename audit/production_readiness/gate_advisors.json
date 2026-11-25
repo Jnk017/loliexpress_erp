@@ -1,0 +1,14 @@
+{
+  "security": {
+    "INFO:rls_enabled_no_policy": 4,
+    "WARN:authenticated_security_definer_function_executable": 41,
+    "WARN:auth_leaked_password_protection": 1
+  },
+  "performance": {
+    "INFO:unindexed_foreign_keys": 45,
+    "WARN:auth_rls_initplan": 38,
+    "INFO:unused_index": 128,
+    "WARN:multiple_permissive_policies": 82,
+    "WARN:duplicate_index": 8
+  }
+}
