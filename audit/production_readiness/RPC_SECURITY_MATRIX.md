@@ -1,6 +1,6 @@
 # Matrice de sécurité des RPC
 
-Le [catalogue live de référence](gate_catalog_summary.json) recense 41 signatures publiques `SECURITY DEFINER` exécutables par `authenticated`. Les signatures surchargées sont comptées séparément. Sur les 41 signatures de référence, 25 sont validées, 6 ont été examinées avec des contrôles individuels encore ouverts et 10 ont passé les contrôles de grants et de refus ciblés. Les deux nouvelles signatures de réception et de choix produit sont validées séparément.
+Le [catalogue live de référence](gate_catalog_summary.json) recense 41 signatures publiques `SECURITY DEFINER` exécutables par `authenticated`. Les signatures surchargées sont comptées séparément. Sur les 41 signatures de référence, 26 sont validées, 6 ont été examinées avec des contrôles individuels encore ouverts et 9 ont passé les contrôles de grants et de refus ciblés. Les deux nouvelles signatures de réception et de choix produit sont validées séparément.
 
 | Signature dans public | Appelant | Autorisation et périmètre | Validation et écritures | Verdict du lot |
 |---|---|---|---|---|
@@ -66,3 +66,17 @@ Les propriétaires et configurations de chemins sont inventoriés dans le catalo
 Les cinq refus du livreur couvrent l’affectation d’entrepôt, la transition de commande, l’ajustement, le transfert et le comptage. La lecture affectée, l’entrée dans le contrôle de confirmation pour le livreur affecté et le refus du profil absent restent testés. Les suites positives de stock et de remise ont été rejouées. [Résultats](rpc_boundary_followup.json)
 
 `cancel_unreceived_purchase(uuid)` est une fonction transactionnelle du schéma `public`, propriétaire `postgres`, `SECURITY DEFINER` et `search_path` vide. Le service achats Flutter l’appelle avec une session authentifiée. Elle exige un acheteur ou administrateur actif. Sous verrou de l’achat, elle refuse les achats avec réception ou facture, écrit le statut annulé et accepte la répétition d’une annulation valide. Le contrôle précédent couvre le refus B2B et les grants. Le nouveau test couvre l’acheteur, l’annulation, sa répétition et les deux interdictions. [Test](verify_purchase_cancellation.sql)
+
+| Fonction | Contrôle serveur et preuve positive associée |
+|---|---|
+| `complete_password_setup` | Écrit uniquement le profil actif de l’appelant avec un mot de passe Auth. Les assertions `password_setup` et `password_flag_cleared` repassent dans le suivi P0.a. |
+| `create_purchase_with_items` | Admin ou acheteur. Écrit en une transaction l’achat et les lignes. Les cas d’achat valide et d’annulation de la transaction à la ligne invalide repassent. |
+| `get_customer_return_lines` | Admin ou magasinier. Retourne les lignes ayant fait l’objet d’une remise et dont le reliquat est non nul. Le test sur un retour épuisé repasse. La liste positive par magasinier reste à documenter séparément. |
+| `inspect_customer_return` | Admin ou magasinier. Borne la quantité à celle remise, enregistre le retour et ne réintègre que les unités revendables. Retours mixtes, plafond et répétition repassent. |
+| `receive_purchase_item` | Admin, acheteur ou magasinier. Verrouille achat et ligne, exige un entrepôt actif, trace une réception idempotente et met à jour le stock. La réception partielle et le test Web magasinier couvrent les cas positifs. |
+| `record_delivery_fee_credit` | Admin. Plafonne l’avoir aux frais facturés, sous verrou. Refus du comptable, répétition et plafond repassent. |
+| `record_return_item_credit` | Admin. Contrôle la revendabilité, le montant net et les avoirs déjà émis. Les cinq cas RA repassent. Le double avoir en sessions simultanées reste ouvert. |
+| `register_supplier_bill` | Admin, acheteur ou comptable. Vérifie le numéro et le plafond d’achat sous verrou. L’enregistrement distinct de la réception repasse. |
+| `save_invoice_draft` | Admin, comptable ou commercial affecté. Restreint le client et l’écriture au brouillon autorisé. Création et mise à jour sans créance repassent. |
+
+Les contrôles de rôle, les cas P0.a et les retours/remises se trouvent dans le [suivi des frontières](rpc_boundary_followup.json). Les [régressions achats et avoirs](purchase_return_rpc_regression.json) identifient les résultats détaillés.

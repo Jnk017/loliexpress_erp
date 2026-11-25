@@ -23,3 +23,4 @@
 - Migration 029 appliquée à Gate. [Choix du produit et régression de réception](procurement_choices_results.json), [contrôle SQL reproductible](verify_procurement_product_choices.sql). [Création et réception Chromium](purchase-web.json) sur le build corrigé à `308435a`. [Scénario reproductible](test_purchase_receipt_web.py).
 - [Prédicats RLS](role_predicates_results.json), [réglages et reporting](admin_reporting_results.json) et [grants et refus supplémentaires](remaining_rpc_grants_results.json), exécutés sur Gate après 029.
 - [Suivi RPC stock et annulation](rpc_boundary_followup.json). 21 assertions sur cinq suites Gate, incluant les refus supplémentaires du livreur et les trois états d’annulation fournisseur. Fixtures annulées.
+- [Régressions achats et retours](purchase_return_rpc_regression.json), 19 résultats réussis. La [matrice RPC](RPC_SECURITY_MATRIX.md) relie les signatures à leurs cas positifs, refus et contrôles restant ouverts.

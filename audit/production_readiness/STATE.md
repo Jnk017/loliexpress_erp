@@ -84,3 +84,5 @@ La [preuve acheteur → magasinier](purchase-web.json) est rattachée au code `3
 |---|---|---|---|
 | SEC-001-F1 | P0 | DONE | Annulation d’achat par l’acheteur, répétition et refus après réception ou facturation. Grants et refus B2B répertoriés dans le lot F. [Preuve](rpc_boundary_followup.json) |
 | SEC-001-B1 | P0 | TEST_PASSED | Cinq refus supplémentaires du livreur sur les RPC de stock et de transition. Contrôles positifs de remise, stock et commande rejoués. [Preuve](rpc_boundary_followup.json) |
+
+Le groupe SEC-001-F dispose maintenant de la [correspondance des signatures aux preuves](RPC_SECURITY_MATRIX.md). Les régressions achats, retours et avoirs ajoutent 19 résultats positifs. Ne pas confondre cette couverture ciblée avec la validation de tous les cas d’isolement et de concurrence.
