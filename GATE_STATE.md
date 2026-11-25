@@ -221,3 +221,10 @@ Rendre disponible un checkout exploitable du dépôt privé à `5a68a99` avec so
 - Chaque compte choisit les types affichés dans son centre. Les préférences sont relues depuis Supabase et le filtre est appliqué avant la limite de résultats.
 - `audit/verify_notification_center_preferences.sql` : persistance et isolation entre deux comptes PASS, transaction annulée. Analyse Flutter sans erreur ni avertissement, quatre remarques de style préexistantes. Tests Flutter 18/18.
 - La livraison externe par e-mail, push et SMS est hors de ce réglage. Parcours Android à vérifier.
+
+## Lecture des notifications et rejeu ciblé des parcours
+
+- Migration 024 appliquée sur `loliexpress-gate-test`. Les deux écrans de notifications utilisent `read_at`. Les anciens statuts d’envoi ne déterminent pas l’état de lecture.
+- Le déclencheur e-mail lit l’URL de son projet dans Vault. En l’absence de configuration valide, les notifications restent en attente.
+- SQL via API Management : lecture sans altération de l’envoi, isolation des préférences, droits sur la configuration opérationnelle, rapprochement achats/ventes/dépenses et trésorerie, transferts et inventaire PASS. Les contrôles utilisent des transactions annulées.
+- Flutter : 18 tests PASS, analyse sans erreur ni avertissement avec quatre remarques de style existantes. Tests depuis l’APK et livraison externe en attente.

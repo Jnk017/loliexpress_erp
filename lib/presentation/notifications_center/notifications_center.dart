@@ -241,7 +241,7 @@ class _NotificationsCenterState extends State<NotificationsCenter> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     child: Text(
-                      '${_filteredNotifications.where((n) => n['status'] == 'pending').length} non lues',
+                      '${_filteredNotifications.where((n) => n['read_at'] == null).length} non lues',
                       style: TextStyle(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w600,
