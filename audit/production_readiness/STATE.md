@@ -86,3 +86,8 @@ La [preuve acheteur → magasinier](purchase-web.json) est rattachée au code `3
 | SEC-001-B1 | P0 | TEST_PASSED | Cinq refus supplémentaires du livreur sur les RPC de stock et de transition. Contrôles positifs de remise, stock et commande rejoués. [Preuve](rpc_boundary_followup.json) |
 
 Le groupe SEC-001-F dispose maintenant de la [correspondance des signatures aux preuves](RPC_SECURITY_MATRIX.md). Les régressions achats, retours et avoirs ajoutent 19 résultats positifs. Ne pas confondre cette couverture ciblée avec la validation de tous les cas d’isolement et de concurrence.
+
+| ID | Priorité | État | Correction et preuve |
+|---|---|---|---|
+| SEC-004-A | P0 | DONE | Migration 030. Limite la lecture REST des produits aux colonnes publiques du catalogue. Six requêtes réelles, trois suites SQL et 18 tests Flutter. [REST](product_catalog_rest_results.json) · [SQL](product_catalog_boundary_results.json). |
+| WEB-001-C | P0 | TEST_PASSED | Le formulaire de vente lit le stock visible par le rôle commercial au lieu d’afficher 999. Client B2B : stock non communiqué. Analyse, tests et build Web réussis. Test navigateur de la commande à confirmer. |

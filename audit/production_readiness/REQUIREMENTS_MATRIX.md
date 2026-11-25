@@ -39,3 +39,5 @@
 | SEC-001-F | P0 | Dix signatures du dernier groupe | Privilèges effectifs, refus et tests positifs individuels |
 | SEC-001-F1 | P0 | Annulation d’achat | Annulation autorisée et idempotente, refus après réception ou facturation |
 | SEC-001-B1 | P0 | Limiter les opérations de stock et de transition du livreur | Cinq refus et régression du parcours de remise |
+| SEC-004-A | P0 | Exclure le coût du catalogue REST | Projections publiques acceptées et coût refusé sous les rôles clients |
+| WEB-001-C | P0 | Commande commerciale avec tarif et stock réels | Stock lu et tarif appliqué depuis Flutter, commande persistée sans sortie avant remise |

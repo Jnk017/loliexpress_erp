@@ -9,6 +9,7 @@ import '../../services/company_settings_service.dart';
 import '../../services/customer_service.dart';
 import '../../services/order_service.dart';
 import '../../services/product_service.dart';
+import '../../services/role_service.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_icon_widget.dart';
 import './widgets/customer_info_section.dart';
@@ -52,7 +53,9 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
     try {
       final results = await Future.wait([
         CustomerService.instance.getCustomers(),
-        ProductService.instance.getProducts(),
+        ProductService.instance.getProducts(
+          includeStock: RoleService.instance.canViewAllOrders,
+        ),
       ]);
       final settings = await const CompanySettingsService().load();
 
@@ -108,13 +111,18 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
 
   Map<String, dynamic> _mapProductForUi(Map<String, dynamic> raw) {
     final unitPrice = (raw['unit_price'] as num?)?.toDouble() ?? 0;
+    final stockRows = raw['inventory_stock'] as List?;
+    final stock = stockRows?.fold<int>(
+      0,
+      (sum, row) => sum + ((row['quantity'] as num?)?.toInt() ?? 0),
+    );
     return {
       'id': raw['id'] as String,
       'code': raw['sku'] ?? '',
       'name': raw['name'] ?? '',
       'price': unitPrice,
       'currency': raw['currency'] ?? 'CDF',
-      'stock': 999,
+      'stock': stock,
       'image': raw['image_url'] ??
           'https://images.unsplash.com/photo-1633288485223-84bafb2a1e2d',
       'semanticLabel': raw['name'] ?? 'Product image',
@@ -136,9 +144,9 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
   Future<void> _handleProductAdd(Map<String, dynamic> product) async {
     final customerId = _selectedCustomer?['id'] as String?;
     if (customerId == null || _isProcessing) return;
-    final stock = product['stock'] as int;
+    final stock = product['stock'] as int?;
 
-    if (stock < 1) {
+    if (stock != null && stock < 1) {
       _showStockAlert(product['name'] as String, 0);
       return;
     }
@@ -170,7 +178,7 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
     setState(() {
       if (existingIndex >= 0) {
         final currentQty = _orderItems[existingIndex]['quantity'] as int;
-        if (currentQty + 1 > stock) {
+        if (stock != null && currentQty + 1 > stock) {
           _showStockAlert(product['name'] as String, stock);
           return;
         }
@@ -194,9 +202,9 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
   }
 
   void _handleQuantityChange(int index, int newQuantity) {
-    final maxStock = _orderItems[index]['maxStock'] as int;
+    final maxStock = _orderItems[index]['maxStock'] as int?;
 
-    if (newQuantity > maxStock) {
+    if (maxStock != null && newQuantity > maxStock) {
       _showStockAlert(_orderItems[index]['name'] as String, maxStock);
       return;
     }
@@ -216,10 +224,10 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
   void _handleEditItem(int index) {
     final item = _orderItems[index];
     _showQuantityDialog(
-        index, item['quantity'] as int, item['maxStock'] as int);
+        index, item['quantity'] as int, item['maxStock'] as int?);
   }
 
-  void _showQuantityDialog(int index, int currentQty, int maxStock) {
+  void _showQuantityDialog(int index, int currentQty, int? maxStock) {
     final theme = Theme.of(context);
     final controller = TextEditingController(text: currentQty.toString());
 
@@ -235,7 +243,7 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
             labelText: 'Quantité',
-            hintText: 'Max: $maxStock',
+            hintText: maxStock == null ? null : 'Max: $maxStock',
             border: const OutlineInputBorder(),
           ),
           inputFormatters: [
@@ -253,10 +261,10 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
           ElevatedButton(
             onPressed: () {
               final newQty = int.tryParse(controller.text) ?? currentQty;
-              if (newQty > 0 && newQty <= maxStock) {
+              if (newQty > 0 && (maxStock == null || newQty <= maxStock)) {
                 _handleQuantityChange(index, newQty);
                 Navigator.pop(context);
-              } else {
+              } else if (maxStock != null) {
                 _showStockAlert(_orderItems[index]['name'] as String, maxStock);
               }
             },

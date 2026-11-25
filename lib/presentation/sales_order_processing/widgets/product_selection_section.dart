@@ -178,8 +178,8 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
     final theme = Theme.of(context);
     final customPrice = _getCustomPrice(product);
     final hasDiscount = _hasDiscount(product);
-    final stock = product["stock"] as int;
-    final isLowStock = stock < 10;
+    final stock = product["stock"] as int?;
+    final isLowStock = stock != null && stock < 10;
 
     return InkWell(
       onTap: () => widget.onProductAdd(product),
@@ -266,7 +266,7 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
                       ),
                       SizedBox(width: 1.w),
                       Text(
-                        '$stock en stock',
+                        stock == null ? 'Stock non communiqué' : '$stock en stock',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: isLowStock
                               ? theme.colorScheme.error

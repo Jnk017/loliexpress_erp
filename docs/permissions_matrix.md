@@ -44,3 +44,5 @@ Cette matrice décrit les autorisations **serveur**. Les contrôles Flutter serv
 - `products.cost_price` n’est pas accordé au rôle PostgreSQL `authenticated`; les fonctions serveur de reporting conservent leur accès via `SECURITY DEFINER`.
 - Les lignes d’achat et fournisseurs ne sont jamais lisibles par `b2b_customer`, `sales_rep` ou `delivery_agent`.
 - Les helpers `can_read_customer`, `can_read_order`, `can_read_delivery` et `can_access_document_entity` centralisent l’isolation sans sous-requêtes RLS récursives.
+
+Le catalogue REST permet les lectures nommées des colonnes publiques sous les politiques de rôle. La colonne `cost_price` reste réservée aux opérations serveur. Les lectures clientes de produits doivent expliciter leurs colonnes.

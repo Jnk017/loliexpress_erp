@@ -1,0 +1,44 @@
+[
+  {
+    "role": "COMMERCIAL",
+    "projection": "catalogue",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "COMMERCIAL",
+    "projection": "coût",
+    "status": 403,
+    "expected": 403,
+    "passed": true
+  },
+  {
+    "role": "CLIENT_A",
+    "projection": "catalogue",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "CLIENT_A",
+    "projection": "coût",
+    "status": 403,
+    "expected": 403,
+    "passed": true
+  },
+  {
+    "role": "ADMIN",
+    "projection": "catalogue",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "role": "ADMIN",
+    "projection": "coût",
+    "status": 403,
+    "expected": 403,
+    "passed": true
+  }
+]
