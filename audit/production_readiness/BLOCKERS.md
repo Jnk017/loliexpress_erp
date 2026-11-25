@@ -9,3 +9,4 @@
 | REL-001 | Autorisation de promotion et déploiement | Décision humaine seulement après gate complet. |
 
 Aucune dépense, intervention destructive ni écriture en production n’est autorisée par ces constats.
+| PERF-003 — double avoir | La préparation du scénario requiert des lignes de facture immuables. Leur suppression de nettoyage échoue volontairement sur Gate. | Exécuter ce scénario sur un projet jetable autorisé, sans désactiver le trigger global du Gate. |

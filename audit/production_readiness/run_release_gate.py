@@ -132,7 +132,7 @@ def main():
         else:
             record(test_id, reason="PAT absent de l’environnement", environment=PROJECTS["gate"][1])
 
-    for scenario in ("transfer", "handover", "receipt"):
+    for scenario in ("transfer", "handover", "receipt", "payment", "sales"):
         check = f"DB-CONCURRENT-{scenario.upper()}"
         if args.with_gate_fixtures and env.get("SUPABASE_PAT"):
             record(check, [

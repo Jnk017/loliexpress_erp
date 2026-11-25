@@ -30,3 +30,5 @@
 | PERF-003-C | P0 | Confirmations concurrentes de la même remise | Deux sessions chevauchantes, une remise et une sortie, nettoyage confirmé |
 | WEB-001-A | P0 | Réception magasinier depuis le raccourci Stock | Connexion magasinier, liste opérationnelle en lecture limitée, réception et réconciliation PostgreSQL |
 | PERF-003-D | P0 | Réceptions concurrentes avec la même clé de requête | Deux sessions chevauchantes, un reçu, un mouvement et stock rapproché |
+| PERF-003-E | P0 | Encaissements concurrents sur une même créance | Un paiement accepté, un refus, un seul mouvement, solde rapproché |
+| PERF-003-F | P0 | Remise concurrente de deux commandes sur stock limité | Une remise, une commande reste expédiée, aucun stock négatif |

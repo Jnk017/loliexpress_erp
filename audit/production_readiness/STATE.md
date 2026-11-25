@@ -52,3 +52,11 @@ La reprise de la concurrence porte sur les ventes, encaissements, réceptions fo
 |---|---|---|---|
 | WEB-001-A | P0 | DONE | Réception magasinier sur Flutter Web, HTTP 200, stock 2 et un mouvement. Analyse, 18 tests Flutter, build Web et [preuve Chromium](warehouse-web.json) au code `7350ad2`. |
 | PERF-003-D | P0 | DONE | Deux réceptions du même achat et de la même requête sur deux connexions en parallèle. Une réception, un mouvement et stock final de deux. | [Preuve](concurrent_receipt.json). Fixtures retirées. |
+| PERF-003-E | P0 | DONE | Deux encaissements de 7 CDF sur une facture de 10 CDF. Sept seulement comptabilisés. | [Preuve multisession](concurrent_payment.json), nettoyage confirmé. |
+| PERF-003-F | P0 | DONE | Deux commandes expédiées de six unités se disputent dix unités. Une seule sortie, stock final de quatre. | [Preuve multisession](concurrent_sales.json), nettoyage confirmé. |
+
+## Reprise de concurrence et parcours
+
+Cinq scénarios multisessions sont démontrés. La répétition séquentielle et le rollback partiel ont des preuves séparées dans `delivery_boundary_results.json`. Le cas restant de double avoir doit utiliser des factures de test rattachées à un environnement jetable. Leurs lignes sont immuables, ce qui empêche le nettoyage normal par suppression sur le Gate partagé. Les autres audits et parcours restent indépendants.
+
+La prochaine vérification côté Web prolonge la réception magasinier vers la commande commerciale. Le harnais `test_warehouse_receipt_web.py` fournit la préparation ciblée et la connexion Flutter. La prochaine revue RPC couvre `create_order_with_items`, `issue_order_invoice` et les fonctions de prix qui les alimentent.
