@@ -1,7 +1,7 @@
 # LoliExpress ERP
 ## Current release status (25 November 2026)
 
-**NO GO — partially verified.** See [current release audit](docs/gate_audit_2026-11-25.md) and [final verification](FINAL_VERIFICATION.md). The gate branch has 25 consolidated migrations (000–024), deployed only to the isolated Gate project. Production has a different migration history. Never blindly push the baseline to production. Flutter 3.35.7 is pinned in the Android Gate workflows; the older SDK note below is historical. Recorded web build and 18 tests refer to ad59a4d, not the final candidate. Android APK, full business UI journeys, fresh baseline, real email/notification dispatch and production reconciliation remain open. [Android handoff](MOBILE_HANDOFF.md) · [Go-live checklist](docs/pre_go_live_checklist.md) · [Runbook](docs/production_runbook.md) · [Permissions](docs/permissions_matrix.md) · [Monitoring](docs/monitoring_and_alerting.md).
+**NO GO — partially verified.** See [current release audit](docs/gate_audit_2026-11-25.md) and [final verification](FINAL_VERIFICATION.md). The gate branch has 27 consolidated migrations (000–026), deployed only to the isolated Gate project. Production has a different migration history. Never blindly push the baseline to production. Flutter 3.35.7 is pinned in the Android Gate workflows; the older SDK note below is historical. Recorded web build and 18 tests refer to ad59a4d, not the final candidate. Android APK, full business UI journeys, fresh baseline, real email/notification dispatch and production reconciliation remain open. [Android handoff](MOBILE_HANDOFF.md) · [Go-live checklist](docs/pre_go_live_checklist.md) · [Runbook](docs/production_runbook.md) · [Permissions](docs/permissions_matrix.md) · [Monitoring](docs/monitoring_and_alerting.md).
 
 
 Flutter mobile/web ERP for LoliExpress with a Supabase backend. The app covers sales, customers, stock, purchases, expenses, documents, reporting, notifications, audit, security monitoring and a B2B customer portal.
@@ -51,6 +51,8 @@ supabase db reset
 Migrations live in `supabase/migrations/`, seed data lives in `supabase/seed.sql`, and Edge Functions live in `supabase/functions/`.
 
 ## Documentation
+
+[Current readiness state](audit/production_readiness/STATE.md) · [RPC security audit](audit/production_readiness/RPC_SECURITY_MATRIX.md) · [Local release gate](audit/production_readiness/run_release_gate.py)
 
 - `docs/env.md`
 - `docs/supabase_local.md`

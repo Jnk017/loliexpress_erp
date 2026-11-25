@@ -243,3 +243,7 @@ Rendre disponible un checkout exploitable du dépôt privé à `5a68a99` avec so
 ## Reprise production readiness — lot 025
 
 La [machine d’état](audit/production_readiness/STATE.md) porte les exigences de sortie. Le catalogue Gate et les Advisors sont relevés après durcissement de la file de notifications. Production refuse la lecture par l’API Management avec le PAT disponible. La PR #13 reste Draft. Les tests SQL ciblés et Flutter sont passés sur le lot 025.
+
+## Reprise — lot 026
+
+Le [lot trésorerie](audit/production_readiness/RPC_SECURITY_MATRIX.md) ferme l’écriture directe dans les journaux et les comptes, tout en conservant les opérations via les six signatures financières. Le [suivi de reprise](audit/production_readiness/STATE.md) distingue ce lot des contrôles de concurrence, des parcours UI et des autres RPC.

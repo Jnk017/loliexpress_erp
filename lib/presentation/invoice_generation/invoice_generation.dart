@@ -206,10 +206,12 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
                       });
                       if (dialogContext.mounted) Navigator.pop(dialogContext, true);
                     } catch (_) {
-                      if (dialogContext.mounted) updateDialog(() {
-                        busy = false;
-                        error = 'Paiement non confirmé. Vérifiez le solde ou réessayez avec la même référence.';
-                      });
+                      if (dialogContext.mounted) {
+                        updateDialog(() {
+                          busy = false;
+                          error = 'Paiement non confirmé. Vérifiez le solde ou réessayez avec la même référence.';
+                        });
+                      }
                     }
                   },
                   child: const Text('Enregistrer le paiement'),

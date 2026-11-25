@@ -73,7 +73,7 @@ BEGIN
     PERFORM public.pay_supplier_bill_from_account(bill.id,25,'CDF','QA supplier bank',request_id,'bank',bank_id,'bank_transfer');
     PERFORM public.pay_supplier_bill_from_account(bill.id,25,'CDF','QA supplier bank',request_id,'bank',bank_id,'bank_transfer');
     PERFORM public.pay_supplier_bill_from_account(bill.id,10,'CDF','QA supplier wallet',gen_random_uuid(),'bank',wallet_id,'mobile_money');
-    PERFORM public.pay_supplier_bill_from_account(bill.id,5,'CDF','QA supplier cash',gen_random_uuid(),'cash',cash_id,'cash');
+    PERFORM public.pay_supplier_bill_from_account(bill.id,5,'CDF','QA supplier cash',gen_random_uuid(),'cash',cash_id);
 
     sale := public.create_order_with_items(customer,
       jsonb_build_array(jsonb_build_object('product_id',product,'quantity',3)));

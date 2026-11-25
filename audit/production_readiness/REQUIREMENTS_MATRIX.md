@@ -17,3 +17,9 @@
 | MOB-001–003 | P0 | Compilation, artefacts et Android | APK identifié, preuves sur appareil et signature de diffusion |
 | DOC-001 | P1 | Documentation actuelle | Guide d’installation, d’exploitation et d’usage vérifiés |
 | REL-001 | P0 | Candidat de release | Preuves liées au SHA et certificat interne validé |
+
+| ID | Priorité | Exigence atomique | Preuve de clôture |
+|---|---|---|---|
+| SEC-001-A | P0 | Six signatures financières et frontière d’écriture des journaux | Matrice RPC, refus par rôle et rapprochement en CDF et USD |
+| SEC-001-B | P0 | Autres signatures privilégiées | Revue et tests des 35 signatures restantes |
+| REL-001-A | P0 | Orchestrateur local indépendant | Rapport machine-readable qui distingue les tests réussis, en échec et non lancés |

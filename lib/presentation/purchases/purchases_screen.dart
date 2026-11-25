@@ -163,7 +163,9 @@ class _PurchasesScreenState extends State<PurchasesScreen>
           .eq('id', userId)
           .maybeSingle();
       if (!mounted || profile == null || profile['is_active'] != true ||
-          profile['must_change_password'] != false) return;
+          profile['must_change_password'] != false) {
+        return;
+      }
       final role = profile['role'];
       final purchaseId = purchase['id'] as String;
       final detail = await service.getPurchaseById(purchaseId);
@@ -332,11 +334,13 @@ class _PurchasesScreenState extends State<PurchasesScreen>
                   } on FormatException catch (e) {
                     if (dialogContext.mounted) update(() { busy = false; error = e.message; });
                   } catch (_) {
-                    if (dialogContext.mounted) update(() {
-                      busy = false;
-                      submitted = true;
-                      error = 'Opération non confirmée. Réessayez ou vérifiez les données.';
-                    });
+                    if (dialogContext.mounted) {
+                      update(() {
+                        busy = false;
+                        submitted = true;
+                        error = 'Opération non confirmée. Réessayez ou vérifiez les données.';
+                      });
+                    }
                   }
                 },
                 child: Text(submitted ? 'Réessayer' : 'Enregistrer'),

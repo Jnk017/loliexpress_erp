@@ -62,7 +62,9 @@ class DeliveryService {
         .eq('id', id)
         .maybeSingle();
     if (profile == null || profile['is_active'] != true ||
-        profile['must_change_password'] != false) return null;
+        profile['must_change_password'] != false) {
+      return null;
+    }
     return profile['role'] as String?;
   }
 

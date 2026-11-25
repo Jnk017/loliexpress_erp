@@ -20,3 +20,11 @@ Gate initial `6a98532ebf5217c802cdab953c2af9201f5afe72`. Main `5a68a99`. PR #13 
 | WEB-001 | P0 | TODO | Suite métier à construire | Preuves de connexion conservées | 7 connexions, magasinier et actions métier à couvrir | `9ff342b` |
 | MOB-001–003 | P0 | TODO | NDK local interrompu, artefact et téléphone nécessaires | Workflows Appcircle et Codemagic | Voir passation Android | — |
 | AI-001, OPS-001, PERF-001–003, UX-001, DOC-001, REL-001 | P0/P1 | TODO | Couverture à compléter selon la matrice | Voir plan maître | Aucune clôture déduite des archives | — |
+
+## Lot de clôture 026
+
+| ID | Priorité | État | Cause, correction et fichiers | Tests et preuves | Commit |
+|---|---|---|---|---|---|
+| SEC-001-A | P0 | DONE | Privilèges d’écriture directe hérités sur les comptes et journaux. Migration 026. | Six signatures examinées et validées, 49 refus par rôle, deux suites de régression financière. [Matrice](RPC_SECURITY_MATRIX.md) | Commit qui introduit 026 |
+| SEC-001-B | P0 | TODO | Revue des 35 signatures restantes, en commençant par commandes et factures. | Tests par RPC à compléter. | — |
+| REL-001-A | P0 | IMPLEMENTED | [Orchestrateur](run_release_gate.py) et statuts explicites. | Rapport à enregistrer après exécution sur commit figé. | Lot 026 |
