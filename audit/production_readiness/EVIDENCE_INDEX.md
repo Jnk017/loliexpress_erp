@@ -19,3 +19,4 @@
 - [Encaissements concurrents](concurrent_payment.json) et [ventes concurrentes](concurrent_sales.json) sur Gate. Sessions distinctes, chevauchement, un succès et un refus par scénario, journaux rapprochés et données jetables retirées.
 - [Périmètre commandes et facturation](order_invoice_scope_results.json). Quatre refus attendus et émission par le comptable au tarif du client. La transaction de test est annulée.
 - [Rejeu du gate après 028](release_gate_028_results.json) sur `f7d70c3` avec les scénarios multisessions. 22 contrôles PASS, 7 NOT_RUN. Les 18 tests Flutter, les 7 tests Deno, les 11 suites SQL ciblées et les cinq scénarios multisessions sont inclus.
+- [Régression HTTP Edge après 028](edge_http_post028.json), 4 réponses attendues sur Gate. [Empreintes du build Web](web_artifact_post028.json) pour le candidat `f7d70c3`.

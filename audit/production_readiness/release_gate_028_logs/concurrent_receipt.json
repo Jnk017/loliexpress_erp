@@ -1,0 +1,28 @@
+{
+  "environment": "loliexpress-gate-test",
+  "fixture": "qa-receipt-b402adbc-ac14-4d9b-8902-a06c85ae1829",
+  "passed": true,
+  "sha": "f7d70c3177efee56df7fe6ad96332a9b5dded87a",
+  "workers": [
+    {
+      "backend": 189970,
+      "started": "2026-11-25 13:23:21.059735+00",
+      "finished": "2026-11-25 13:23:24.073642+00",
+      "confirmed": true
+    },
+    {
+      "backend": 189969,
+      "started": "2026-11-25 13:23:21.083379+00",
+      "finished": "2026-11-25 13:23:27.080832+00",
+      "confirmed": true
+    }
+  ],
+  "ledger": {
+    "receipts": 1,
+    "entries": 1,
+    "final_stock": 2,
+    "purchase_status": "received"
+  },
+  "overlap": true,
+  "cleanup": true
+}

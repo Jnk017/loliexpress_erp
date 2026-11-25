@@ -199,7 +199,7 @@
     "date": "2026-11-25T13:22:54.826982+00:00",
     "exit_code": 0,
     "result": "PASS",
-    "evidence": "release_gate_028_logs/DB-CONCURRENT-TRANSFER.log",
+    "evidence": "release_gate_028_logs/concurrent_transfer.json",
     "duration_seconds": 10.118,
     "blocker": null
   },
@@ -211,7 +211,7 @@
     "date": "2026-11-25T13:23:04.947011+00:00",
     "exit_code": 0,
     "result": "PASS",
-    "evidence": "release_gate_028_logs/DB-CONCURRENT-HANDOVER.log",
+    "evidence": "release_gate_028_logs/concurrent_handover.json",
     "duration_seconds": 12.823,
     "blocker": null
   },
@@ -223,7 +223,7 @@
     "date": "2026-11-25T13:23:17.770625+00:00",
     "exit_code": 0,
     "result": "PASS",
-    "evidence": "release_gate_028_logs/DB-CONCURRENT-RECEIPT.log",
+    "evidence": "release_gate_028_logs/concurrent_receipt.json",
     "duration_seconds": 15.447,
     "blocker": null
   },
@@ -235,7 +235,7 @@
     "date": "2026-11-25T13:23:33.219198+00:00",
     "exit_code": 0,
     "result": "PASS",
-    "evidence": "release_gate_028_logs/DB-CONCURRENT-PAYMENT.log",
+    "evidence": "release_gate_028_logs/concurrent_payment.json",
     "duration_seconds": 10.287,
     "blocker": null
   },
@@ -247,7 +247,7 @@
     "date": "2026-11-25T13:23:43.507055+00:00",
     "exit_code": 0,
     "result": "PASS",
-    "evidence": "release_gate_028_logs/DB-CONCURRENT-SALES.log",
+    "evidence": "release_gate_028_logs/concurrent_sales.json",
     "duration_seconds": 10.365,
     "blocker": null
   },

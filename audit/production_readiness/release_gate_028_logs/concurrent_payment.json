@@ -1,0 +1,28 @@
+{
+  "environment": "loliexpress-gate-test",
+  "fixture": "qa-payment-106bdf01-3441-4655-9730-cb895a885387",
+  "passed": true,
+  "sha": "f7d70c3177efee56df7fe6ad96332a9b5dded87a",
+  "workers": [
+    {
+      "backend": 189987,
+      "started": "2026-11-25 13:23:36.808006+00",
+      "finished": "2026-11-25 13:23:39.845379+00",
+      "confirmed": true
+    },
+    {
+      "backend": 189988,
+      "started": "2026-11-25 13:23:36.808183+00",
+      "finished": "2026-11-25 13:23:39.8607+00",
+      "confirmed": false
+    }
+  ],
+  "ledger": {
+    "paid": "7.00",
+    "payments": 1,
+    "postings": 1,
+    "balance": "7.00"
+  },
+  "overlap": true,
+  "cleanup": true
+}
