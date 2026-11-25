@@ -131,13 +131,15 @@ def main():
         else:
             record(test_id, reason="PAT absent de l’environnement", environment=PROJECTS["gate"][1])
 
-    if args.with_gate_fixtures and env.get("SUPABASE_PAT"):
-        record("DB-CONCURRENT-TRANSFER", [
-            "python3", str(Path(__file__).with_name("test_concurrent_transfer.py")),
-            "--evidence", str(args.output / "concurrent_transfer.json"),
-        ], environment=PROJECTS["gate"][1])
-    else:
-        record("DB-CONCURRENT-TRANSFER", reason="Fixtures Gate non activées ou PAT absent")
+    for scenario in ("transfer", "handover"):
+        check = f"DB-CONCURRENT-{scenario.upper()}"
+        if args.with_gate_fixtures and env.get("SUPABASE_PAT"):
+            record(check, [
+                "python3", str(Path(__file__).with_name(f"test_concurrent_{scenario}.py")),
+                "--evidence", str(args.output / f"concurrent_{scenario}.json"),
+            ], environment=PROJECTS["gate"][1])
+        else:
+            record(check, reason="Fixtures Gate non activées ou PAT absent")
 
     tests = sorted(str(path.relative_to(ROOT)) for path in (ROOT / "supabase/functions").rglob("*_test.ts"))
     record("EDGE-DENO", [args.deno, "test", "--cached-only", *tests] if tests else None,

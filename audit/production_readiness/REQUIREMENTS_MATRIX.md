@@ -27,3 +27,4 @@
 | SEC-002-A | P0 | Quatre tables à accès indirect | Contrôles REST, vues et fonctions indirectes |
 | PERF-003-A | P0 | Transferts concurrents sur un stock limité | Sessions distinctes, chevauchement, quantité et journal rapprochés, fixtures retirées |
 | SEC-003-B | P0 | Livraison affectée accessible en lecture avec confirmation par RPC | Mise à jour directe refusée et régression de remise réussie |
+| PERF-003-C | P0 | Confirmations concurrentes de la même remise | Deux sessions chevauchantes, une remise et une sortie, nettoyage confirmé |

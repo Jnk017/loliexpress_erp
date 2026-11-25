@@ -12,3 +12,4 @@
 - [Rejeu de baseline](replay_baseline.py). Garde testée contre la référence du Gate existant, qui est refusée avant toute connexion. Rejeu réel en attente d’un projet vierge autorisé.
 - [Test multisession du transfert](test_concurrent_transfer.py) et [preuve](concurrent_transfer.json) sur le même code applicatif que `ed4b52d`. Deux sessions distinctes et chevauchantes, un refus faute de stock et stock total conservé. Les fixtures du premier essai et du rejeu ont été retirées.
 - Migration 027 appliquée au projet Gate. [Frontière livreur](verify_delivery_client_boundary.sql) et [20 assertions ciblées, remise, commande et stock](delivery_boundary_results.json).
+- [Double confirmation concurrente](concurrent_handover.json) sur Gate. Deux sessions PostgreSQL distinctes et chevauchantes, deux réponses positives, une seule remise, une sortie de stock, fixturation retirée.

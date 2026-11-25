@@ -106,3 +106,7 @@ La CI historique et les contrôles Flutter, Supabase, Edge Functions et build we
 ## Reprise — candidat ed4b52d
 
 La migration 026 est appliquée sur Gate. Le lot de sécurité de la trésorerie vérifie six signatures et 49 refus. Le [gate local](audit/production_readiness/release_gate_results.json) confirme l’analyse Flutter sans remarque, les 18 tests Flutter, le build Web, les huit suites SQL ciblées et les sept tests Deno. Les sept étapes marquées `NOT_RUN` ne constituent pas des preuves de validation. Verdict **NOT_READY — REMAINING_BLOCKERS**.
+
+## Lots livraison et concurrence — Gate
+
+Migration 027 appliquée. La lecture d’une livraison affectée reste disponible pour le livreur, et la modification directe est refusée. Les suites remise, commandes et stock passent. La confirmation concurrente d’une même livraison conserve une seule remise et une seule sortie de stock. [Frontière du livreur](audit/production_readiness/delivery_boundary_results.json) · [Concurrence de remise](audit/production_readiness/concurrent_handover.json)

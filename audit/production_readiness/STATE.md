@@ -42,4 +42,6 @@ Les autres scénarios de concurrence sont ouverts. Le test de transfert est racc
 | SEC-001-B | P0 | IN_PROGRESS | Six signatures supplémentaires examinées sur les commandes, la livraison et le stock. Les tests d’autorisation individuels restent à compléter. |
 | PERF-003-B | P0 | TEST_PASSED | Rejeu séquentiel après une remise réussie et rollback après une tentative avec stock insuffisant. Deux assertions de la [suite de remise](delivery_boundary_results.json). La confirmation multisession reste ouverte. |
 
-Reprise exécutable : ajouter un deuxième scénario à sessions réelles sur la confirmation de livraison. Utiliser les fixtures de `audit/verify_p1a_handover.sql` et le harnais `test_concurrent_transfer.py`. Vérifier les références des écritures et supprimer exclusivement les fixtures créées pour l’essai.
+| PERF-003-C | P0 | DONE | Confirmation simultanée sur deux sessions distinctes. Le second appel confirme la remise existante sans nouvelle sortie du stock. | [Preuve et nettoyage](concurrent_handover.json), cible Gate et code à `608d751`. |
+
+La reprise de la concurrence porte sur les ventes, encaissements, réceptions fournisseur et avoirs. Le parcours Web transversal reste à exécuter depuis Flutter.
