@@ -1,0 +1,10 @@
+[
+  {
+    "reconciled": true,
+    "closing_stock": 15,
+    "cash_cdf": 105,
+    "bank_cdf": 200,
+    "wallet_cdf": 30,
+    "cash_usd": 8
+  }
+]

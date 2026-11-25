@@ -1,0 +1,11 @@
+running 3 tests from ./supabase/functions/bootstrap_admin/index_test.ts
+bootstrap_admin refuses passwords ... ok (1ms)
+bootstrap_admin requires an explicit valid email ... ok (137µs)
+bootstrap_admin accepts an invitation-only payload ... ok (180µs)
+running 4 tests from ./supabase/functions/create_user/index_test.ts
+create_user refuses administrator-supplied passwords ... ok (742µs)
+create_user refuses unknown and admin roles ... ok (160µs)
+create_user rejects malformed email addresses ... ok (70µs)
+create_user accepts every delegated application role ... ok (142µs)
+
+ok | 7 passed | 0 failed (103ms)
