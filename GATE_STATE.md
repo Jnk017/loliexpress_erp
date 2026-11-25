@@ -1,5 +1,8 @@
 # Gate final LoliExpress ERP
 
+> **Current status — 2026-11-25:** Current snapshot supersedes older FAIL/NOT_RUN entries: SQL 56 PASS, 1 FAIL, 9 baseline checks pending; web login 7/7; Android and notifications delivery open. [Current audit](docs/gate_audit_2026-11-25.md).
+
+
 ## Moyens de paiement clients et fournisseurs
 
 - Migration 021 appliquée au projet de test. Cash, Mobile Money et virement bancaire sont enregistrés comme moyens distincts. Un portefeuille Mobile Money est un compte de trésorerie catégorisé, avec solde séparé du compte bancaire dans le tableau financier. Aucun compte ni solde initial ajouté.

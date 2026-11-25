@@ -1,5 +1,8 @@
 # Gate final — LoliExpress ERP
 
+> **Current status — 2026-11-25:** Current authoritative snapshot: 56/66 SQL PASS, 1 FAIL after fixture provisioning, 9 NOT_RUN. Full Web/Android business flows, real invitations and dispatch, production parity and final SHA evidence remain open. Older entries below are historical. [Current audit](docs/gate_audit_2026-11-25.md).
+
+
 ## Gate cloud — 25 novembre 2026
 
 **Validation partielle.** Le projet testé est `loliexpress-gate-test`. Le frontend compilé correspond à `ad59a4de9462b4074da59b6efc3a0c0ac15571ae`. Les fonctions Edge ont ensuite été redéployées avec le correctif CORS de cette branche.

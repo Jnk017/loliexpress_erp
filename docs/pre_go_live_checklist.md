@@ -1,5 +1,8 @@
 # Checklist avant mise en production
 
+> **Current status — 2026-11-25:** All unchecked items remain open unless independently evidenced. GitHub Actions requirement below is historical for current Gate: use equivalent recorded external checks on same SHA. Replace commercial discount ceiling check with no-discount server rule unless business policy changes. Add fresh baseline 9 checks, Android artifact and all role E2E, notifications delivery, migration reconciliation and advisors. [Current audit](gate_audit_2026-11-25.md).
+
+
 > Cette checklist doit être signée par le responsable technique et le responsable métier. Une case non cochée dans une section **bloquante** interdit le go-live.
 
 ## Validation de release — bloquant

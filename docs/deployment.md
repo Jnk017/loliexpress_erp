@@ -1,5 +1,8 @@
 # Deployment
 
+> **Current status — 2026-11-25:** Do not execute the generic db push below against existing production. Gate 000–024 already applied under timestamped versions; reconcile production catalog and history, rehearse on isolated copy, obtain approval and backup. Only ai_assistant/create_user are deployed on Gate; other functions require inventory and validation. Flutter 3.35.7 for Gate. [Current audit](gate_audit_2026-11-25.md).
+
+
 ## Frontend
 
 ```bash

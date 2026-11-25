@@ -1,5 +1,8 @@
 # Rapport de readiness production — Phase 2
 
+> **Current status — 2026-11-25:** Historical June report retained below. Current verdict NO GO / partial validation: see November audit for evidence, live differences and remaining priorities. [Current audit](gate_audit_2026-11-25.md).
+
+
 **Date de l’évaluation :** 5 juin 2026  
 **Commit de départ audité :** `a346dc5` — *Harden transactional ERP operations and production controls*  
 **Conclusion :** **NOT READY FOR PRODUCTION**

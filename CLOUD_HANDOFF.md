@@ -1,5 +1,8 @@
 # Gate cloud — depuis Android
 
+> **Current status — 2026-11-25:** Gate already contains migrations 000–024. Do not reset it for baseline testing; use a separate authorized environment. Never transmit service-role keys or DB passwords in chat or GitHub; use a private secret store. No new credentials are required for this read-only audit. [Current audit](docs/gate_audit_2026-11-25.md).
+
+
 Le projet de test existe déjà, dans l’organisation Nexa Inc. Ouvrir [loliexpress-gate-test](https://supabase.com/dashboard/project/muzbwqxvamcbfiuehxro). LoliExpress Management System et LoliExpress Staging Go-Live sont déjà en pause.
 
 1. Dans **Settings → Database**, réinitialiser le mot de passe du projet de test. Choisir un mot de passe unique, car celui proposé initialement figure dans la conversation.

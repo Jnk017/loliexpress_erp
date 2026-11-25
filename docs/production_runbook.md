@@ -1,5 +1,8 @@
 # Runbook de production LoliExpress ERP
 
+> **Current status — 2026-11-25:** Before any production action: reconcile existing schema and migration history with 000–024, test forward-only migration on restored isolated copy, verify backup/rollback, obtain approval. Do not run db reset against production. Validate dispatch secrets and Edge inventory; bootstrap only if needed. [Current audit](gate_audit_2026-11-25.md).
+
+
 ## 1. Pré-déploiement
 
 1. Exécuter `flutter analyze`, `flutter test`, `supabase db reset` puis `supabase test db`.

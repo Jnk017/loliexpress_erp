@@ -1,5 +1,8 @@
 # Monitoring et alerting de production
 
+> **Current status — 2026-11-25:** Monitoring remains a deployment requirement, not verified active. Gate dispatch target/key absent according to evidence. Verify cron and actual receipt, queues, RPC errors, treasury reconciliation and advisor findings; validate historical queries against current schema before use. [Current audit](gate_audit_2026-11-25.md).
+
+
 ## Objectifs
 
 La supervision doit détecter rapidement une perte d’intégrité financière, une tentative d’accès répétée, une panne d’invitation ou une indisponibilité des opérations transactionnelles. Les données sensibles ne doivent jamais être copiées dans les logs.

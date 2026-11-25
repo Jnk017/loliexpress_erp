@@ -1,5 +1,8 @@
 # Environment configuration
 
+> **Current status — 2026-11-25:** Use only project-specific public URL/key in Flutter, never service-role, DB credentials, LLM secrets or dispatch keys. Verify OTP and invitation with real email; configuration alone is not evidence. [Current audit](gate_audit_2026-11-25.md).
+
+
 Copy `env.json.example` to `env.json` and fill the Supabase values:
 
 - `SUPABASE_URL`: Supabase project API URL.

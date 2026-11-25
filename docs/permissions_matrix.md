@@ -1,5 +1,8 @@
 # Matrice de permissions ERP
 
+> **Current status — 2026-11-25:** Gate rules supersede historical matrix where different: commercial discount refused by tested RPC; admin controls preferential prices and delivery fee credits; transfers/count admin or warehouse staff. Validate all role/tenant combinations, including 41 authenticated SECURITY DEFINER RPCs; 4 RLS tables without policies may be deliberately RPC-only. [Current audit](gate_audit_2026-11-25.md).
+
+
 Cette matrice décrit les autorisations **serveur**. Les contrôles Flutter servent uniquement à l’ergonomie : PostgreSQL/RLS et les RPC restent l’autorité.
 
 | Module / opération | admin | sales_rep | warehouse_staff | comptable | acheteur | delivery_agent | b2b_customer |

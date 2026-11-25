@@ -1,5 +1,8 @@
 # Journal de bord LoliExpress ERP
 
+> **Current status — 2026-11-25:** P0.a 5/5 SQL; P0.b 12/13 on provisioned Gate; P1.a 34/34; P1.b 5/5. Nine baseline checks pending. P2/P3 remain unvalidated. See the current release audit; historical iteration labels below are retained. [Current audit](docs/gate_audit_2026-11-25.md).
+
+
 ## État courant — itération 15 · P1.b.2
 
 | Lot | Statut | Preuves |

@@ -1,5 +1,8 @@
 # LoliExpress ERP — tests sur Android
 
+> **Current status — 2026-11-25:** Add warehouse_staff login and stock transfer/count, scanner, treasury opening and payments, notification preferences, PDF share, B2B cross-tenant negative checks. Record full SHA and APK SHA-256. A debug APK is for Gate only; release signing remains separate. [Current audit](docs/gate_audit_2026-11-25.md).
+
+
 ## Compiler dans Appcircle
 
 1. Dans **Workflows → New**, importe [appcircle.yml](appcircle.yml) et enregistre-le sous un nom distinct, par exemple **LoliExpress Gate Debug**. Le workflow importé doit contenir **Build Flutter Debug APK**.

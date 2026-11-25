@@ -1,5 +1,8 @@
 # Remise Codemagic — LoliExpress ERP
 
+> **Current status — 2026-11-25:** Flutter 3.35.7; verify the exact SHA and ensure MOBILE_SUPABASE_URL is the isolated Gate URL before build. Appcircle is an alternative. No APK on the audited SHA has been verified; retain artifact hash and logs. No production key in builds. [Current audit](docs/gate_audit_2026-11-25.md).
+
+
 ## Checklist opérateur
 
 - [ ] Connecter `Jnk017/loliexpress_erp` dans Codemagic et créer ou sélectionner son application.

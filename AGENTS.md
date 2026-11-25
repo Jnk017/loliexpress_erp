@@ -1,5 +1,8 @@
 # AGENTS.md
 
+> **Current status — 2026-11-25:** Use Flutter 3.35.7 for Gate builds (Appcircle/Codemagic); 25 migrations 000–024, seven canonical database roles, not the historical six. GitHub Actions is excluded from the current Gate protocol; preserve that decision. Do not alter production, secrets or merge without approval. [Current audit](docs/gate_audit_2026-11-25.md).
+
+
 ## Cursor Cloud specific instructions
 
 ### Project Overview
