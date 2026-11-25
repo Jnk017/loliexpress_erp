@@ -59,7 +59,7 @@ La reprise de la concurrence porte sur les ventes, encaissements, réceptions fo
 
 Cinq scénarios multisessions sont démontrés. La répétition séquentielle et le rollback partiel ont des preuves séparées dans `delivery_boundary_results.json`. Le cas restant de double avoir doit utiliser des factures de test rattachées à un environnement jetable. Leurs lignes sont immuables, ce qui empêche le nettoyage normal par suppression sur le Gate partagé. Les autres audits et parcours restent indépendants.
 
-La prochaine vérification côté Web prolonge la réception magasinier vers la commande commerciale. Le harnais `test_warehouse_receipt_web.py` fournit la préparation ciblée et la connexion Flutter. La prochaine revue RPC couvre `create_order_with_items`, `issue_order_invoice` et les fonctions de prix qui les alimentent.
+La prochaine vérification côté Web prolonge l’achat et la réception vers la commande commerciale. Le harnais `test_warehouse_receipt_web.py` fournit la préparation ciblée et la connexion Flutter. La prochaine revue RPC couvre `create_order_with_items`, `issue_order_invoice` et les fonctions de prix qui les alimentent.
 
 | ID | Priorité | État | Correction et preuve |
 |---|---|---|---|
@@ -69,10 +69,13 @@ Gate local `f7d70c3` : [22 contrôles réussis et 7 non lancés](release_gate_02
 
 | ID | Priorité | État | Correction et preuve |
 |---|---|---|---|
-| WEB-001-B | P0 | TEST_PASSED | L’acheteur voyait un menu produit vide dans le formulaire. La migration 029 et le service achats utilisent une liste limitée aux références actives, sans coût. SQL et analyse passent. Le test acheteur → magasinier reste ouvert jusqu’à vérification sur le nouveau build. |
+| WEB-001-B | P0 | DONE | L’acheteur voyait un menu produit vide dans le formulaire. La migration 029 et le service achats utilisent une liste limitée aux références actives, sans coût. SQL et analyse passent. Le test de régression est répertorié ci-dessous. |
 
 | ID | Priorité | État | Correction et preuve |
 |---|---|---|---|
 | SEC-001-D | P0 | DONE | Onze prédicats de rôle, 110 évaluations et contrôles d’exécution. [Preuve](role_predicates_results.json). |
 | SEC-001-E | P0 | DONE | Quatre signatures de configuration et reporting, droits client, refus et régression. [Preuve](admin_reporting_results.json). |
 | SEC-001-F | P0 | TEST_PASSED | Dix signatures historiques supplémentaires passent les contrôles de grants et de refus. Validation individuelle à terminer. [Preuve](remaining_rpc_grants_results.json). |
+
+
+La [preuve acheteur → magasinier](purchase-web.json) est rattachée au code `308435a` et vérifiée sur Gate. Les deux écritures ont été demandées depuis Flutter Web, avec deux sessions séparées et réconciliation PostgreSQL. Les références de préparation ont été insérées par le harnais. Le cycle transversal entier ne peut donc pas encore être validé.

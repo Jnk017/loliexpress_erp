@@ -116,3 +116,5 @@ Sur Flutter Web à `7350ad2`, le magasinier a exécuté la réception depuis le 
 Le [contrôle des encaissements](audit/production_readiness/concurrent_payment.json) et le [contrôle des ventes](audit/production_readiness/concurrent_sales.json) ont réussi sur deux sessions simultanées chacun. Les écritures et quantités ont été rapprochées, puis les données jetables retirées.
 
 Le [rejeu local du gate après 028](audit/production_readiness/release_gate_028_results.json) compte 22 contrôles réussis et 7 non lancés. La validation intégrale et la promotion restent ouvertes.
+
+Le sous-parcours Web acheteur → magasinier est vérifié sur le code `308435a` et Gate après 029. La création de l’achat et la réception ont répondu HTTP 200, avec une seule entrée de deux unités au journal. Les références de départ ont été créées par le harnais de test. Le cycle ERP transversal reste en cours. [Preuves](audit/production_readiness/purchase-web.json)
