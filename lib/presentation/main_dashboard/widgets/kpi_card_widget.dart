@@ -116,42 +116,23 @@ class KpiCardWidget extends StatelessWidget {
                   ),
                 ),
               ],
-              SizedBox(height: 1.h),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),
-                decoration: BoxDecoration(
-                  color: isPositive
-                      ? const Color(0xFF27AE60).withValues(alpha: 0.1)
-                      : const Color(0xFFE74C3C).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CustomIconWidget(
-                      iconName: isPositive ? 'arrow_upward' : 'arrow_downward',
-                      color: isPositive
-                          ? const Color(0xFF27AE60)
-                          : const Color(0xFFE74C3C),
-                      size: 14,
+              if (change.trim().isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    change,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w600,
                     ),
-                    SizedBox(width: 1.w),
-                    Flexible(
-                      child: Text(
-                        change,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: isPositive
-                              ? const Color(0xFF27AE60)
-                              : const Color(0xFFE74C3C),
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),

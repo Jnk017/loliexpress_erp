@@ -69,7 +69,7 @@ class _UploadEvidenceDialogWidgetState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to add evidence: $e')),
+          SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
         );
       }
     } finally {
@@ -159,7 +159,7 @@ class _UploadEvidenceDialogWidgetState
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: const Text('Annuler'),
         ),
         ElevatedButton(
           onPressed: _isLoading ? null : _submitEvidence,

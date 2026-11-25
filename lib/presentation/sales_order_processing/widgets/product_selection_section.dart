@@ -79,7 +79,7 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
         children: [
           // Header
           Padding(
-            padding: EdgeInsets.all(4.w),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             child: Row(
               children: [
                 Expanded(
@@ -109,7 +109,7 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
               controller: _searchController,
               onChanged: _filterProducts,
               decoration: InputDecoration(
-                hintText: 'Rechercher un produit...',
+                hintText: 'Rechercher un produit…',
                 prefixIcon: CustomIconWidget(
                   iconName: 'search',
                   color: theme.colorScheme.onSurfaceVariant,
@@ -138,10 +138,10 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
               ),
             ),
           ),
-          SizedBox(height: 2.h),
+          const SizedBox(height: 6),
           // Product list
           Container(
-            constraints: BoxConstraints(maxHeight: 40.h),
+            constraints: const BoxConstraints(maxHeight: 260),
             child: _filteredProducts.isEmpty
                 ? Center(
                     child: Padding(
@@ -155,7 +155,9 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
                     ),
                   )
                 : ListView.separated(
+                    primary: false,
                     shrinkWrap: true,
+                    padding: const EdgeInsets.only(bottom: 4),
                     itemCount: _filteredProducts.length,
                     separatorBuilder: (context, index) => Divider(
                       height: 1,

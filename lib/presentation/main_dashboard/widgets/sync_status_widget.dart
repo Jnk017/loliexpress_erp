@@ -19,13 +19,13 @@ class SyncStatusWidget extends StatelessWidget {
     final difference = now.difference(lastSyncTime);
 
     if (difference.inMinutes < 1) {
-      return 'À l\'instant';
+      return 'à l’instant';
     } else if (difference.inMinutes < 60) {
-      return 'Il y a ${difference.inMinutes} min';
+      return 'il y a ${difference.inMinutes} min';
     } else if (difference.inHours < 24) {
-      return 'Il y a ${difference.inHours}h';
+      return 'il y a ${difference.inHours} h';
     } else {
-      return 'Il y a ${difference.inDays}j';
+      return 'il y a ${difference.inDays} j';
     }
   }
 
@@ -71,7 +71,7 @@ class SyncStatusWidget extends StatelessWidget {
           Flexible(
             child: Text(
               isSyncing
-                  ? 'Synchronisation en cours...'
+                  ? 'Synchronisation en cours…'
                   : 'Synchronisé ${_getTimeAgo()}',
               style: theme.textTheme.labelMedium?.copyWith(
                 color: isSyncing

@@ -62,7 +62,7 @@ class FilterPanelWidget extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.clear_all),
-                label: const Text('Reset'),
+                label: const Text('Réinitialiser'),
               ),
             ],
           ),

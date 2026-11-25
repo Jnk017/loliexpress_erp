@@ -83,7 +83,7 @@ class _AddProductDialogWidgetState extends State<AddProductDialogWidget> {
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erreur lors du chargement des catégories: $e'),
+          content: Text('Impossible de terminer l’opération. Réessayez.'),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );

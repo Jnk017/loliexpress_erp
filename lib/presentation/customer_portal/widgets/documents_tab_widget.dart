@@ -104,7 +104,6 @@ class _DocumentsTabWidgetState extends State<DocumentsTabWidget> {
               Text('Erreur de chargement des documents',
                   style: theme.textTheme.titleMedium),
               SizedBox(height: 1.h),
-              Text(_error!, textAlign: TextAlign.center),
               SizedBox(height: 2.h),
               ElevatedButton(
                 onPressed: _loadDocuments,

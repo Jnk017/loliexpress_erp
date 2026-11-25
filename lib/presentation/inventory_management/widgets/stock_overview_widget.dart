@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../widgets/screen_state_view.dart';
+
 import '../../../services/inventory_service.dart';
 import '../../../services/role_service.dart';
 
@@ -125,11 +127,9 @@ class _StockOverviewWidgetState extends State<StockOverviewWidget> {
               return const Center(child: CircularProgressIndicator());
             }
             if (snapshot.hasError) {
-              return Center(
-                child: TextButton(
-                  onPressed: _refresh,
-                  child: const Text('Stock indisponible. Réessayer'),
-                ),
+              return ScreenStateView.error(
+                message: 'Impossible de charger le stock.',
+                onAction: _refresh,
               );
             }
             final rows = (snapshot.data ?? []).where((row) {
@@ -145,11 +145,15 @@ class _StockOverviewWidgetState extends State<StockOverviewWidget> {
               onRefresh: _refresh,
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.only(bottom: 88 + MediaQuery.paddingOf(context).bottom),
                 children: [
                   if (rows.isEmpty)
-                    ListTile(title: Text(widget.alertsOnly
-                        ? 'Aucune alerte de stock'
-                        : 'Aucun produit trouvé')),
+                    ScreenStateView(
+                      icon: widget.alertsOnly ? Icons.notifications_none : Icons.inventory_2_outlined,
+                      message: widget.alertsOnly ? 'Aucune alerte de stock.' : 'Aucun produit trouvé.',
+                      actionLabel: 'Actualiser',
+                      onAction: _refresh,
+                    ),
                   for (final row in rows)
                     ListTile(
                       leading: Icon(widget.alertsOnly ? Icons.warning_amber : Icons.inventory_2_outlined),

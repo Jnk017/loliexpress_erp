@@ -42,6 +42,10 @@ class CustomerInfoSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final name = (customerData['name'] as String).trim();
+    final displayName = name.isEmpty ? 'Client sans nom' : name;
+    final phone = (customerData['phone'] as String).trim();
+    final hasPhone = phone.isNotEmpty && !RegExp(r'^0+$').hasMatch(phone);
 
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
@@ -64,8 +68,7 @@ class CustomerInfoSection extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        (customerData["name"] as String)
-                            .substring(0, 1)
+                        displayName.characters.first
                             .toUpperCase(),
                         style: theme.textTheme.titleLarge?.copyWith(
                           color: theme.colorScheme.primary,
@@ -81,7 +84,7 @@ class CustomerInfoSection extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          customerData["name"] as String,
+                          displayName,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -117,8 +120,7 @@ class CustomerInfoSection extends StatelessWidget {
                       color: theme.colorScheme.primary,
                       size: 20,
                     ),
-                    onPressed: () =>
-                        _makePhoneCall(customerData["phone"] as String),
+                    onPressed: hasPhone ? () => _makePhoneCall(phone) : null,
                     tooltip: 'Appeler',
                   ),
                   IconButton(
@@ -127,7 +129,7 @@ class CustomerInfoSection extends StatelessWidget {
                       color: theme.colorScheme.primary,
                       size: 20,
                     ),
-                    onPressed: () => _sendSMS(customerData["phone"] as String),
+                    onPressed: hasPhone ? () => _sendSMS(phone) : null,
                     tooltip: 'Message',
                   ),
                   CustomIconWidget(
@@ -157,12 +159,12 @@ class CustomerInfoSection extends StatelessWidget {
                   _buildInfoRow(
                     context,
                     'Téléphone',
-                    customerData["phone"] as String,
+                    hasPhone ? phone : 'Non renseigné',
                   ),
                   SizedBox(height: 1.h),
                   _buildInfoRow(
                     context,
-                    'Email',
+                    'E-mail',
                     customerData["email"] as String,
                   ),
                   SizedBox(height: 1.h),
@@ -207,7 +209,7 @@ class CustomerInfoSection extends StatelessWidget {
         ),
         Expanded(
           child: Text(
-            value,
+            value.trim().isEmpty ? 'Non renseigné' : value,
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w500,
             ),

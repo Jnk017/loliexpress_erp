@@ -20,6 +20,9 @@ class ExpenseCardWidget extends StatelessWidget {
     final currency = data["currency"] as String;
     final change = data["change"] as num;
     final trend = data["trend"] as String;
+    final isNeutral = change == 0 || trend == 'neutral';
+    final variationColor = isNeutral ? theme.colorScheme.onSurfaceVariant
+        : trend == 'up' ? theme.colorScheme.primary : theme.colorScheme.error;
 
     return GestureDetector(
       onTap: onTap,
@@ -59,29 +62,21 @@ class ExpenseCardWidget extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: trend == 'up'
-                        ? AppTheme.successLight.withValues(alpha: 0.1)
-                        : AppTheme.errorLight.withValues(alpha: 0.1),
+                    color: theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      CustomIconWidget(
-                        iconName:
-                            trend == 'up' ? 'arrow_upward' : 'arrow_downward',
-                        color: trend == 'up'
-                            ? AppTheme.successLight
-                            : AppTheme.errorLight,
-                        size: 12,
-                      ),
-                      const SizedBox(width: 2),
+                      if (!isNeutral) ...[
+                        Icon(trend == 'up' ? Icons.arrow_upward : Icons.arrow_downward,
+                            color: variationColor, size: 12),
+                        const SizedBox(width: 2),
+                      ],
                       Text(
-                        '${change.abs()}%',
+                        '${change.abs().toStringAsFixed(1).replaceAll('.', ',')} %',
                         style: theme.textTheme.labelSmall?.copyWith(
-                          color: trend == 'up'
-                              ? AppTheme.successLight
-                              : AppTheme.errorLight,
+                          color: variationColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

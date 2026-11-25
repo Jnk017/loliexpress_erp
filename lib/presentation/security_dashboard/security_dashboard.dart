@@ -125,7 +125,7 @@ class _SecurityDashboardState extends State<SecurityDashboard>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to run security checks: $e'),
+            content: Text('Impossible de terminer l’opération. Réessayez.'),
             backgroundColor: Colors.red,
           ),
         );
@@ -142,7 +142,7 @@ class _SecurityDashboardState extends State<SecurityDashboard>
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadSecurityData,
-            tooltip: 'Refresh',
+            tooltip: 'Actualiser',
           ),
           IconButton(
             icon: const Icon(Icons.security),
@@ -161,7 +161,7 @@ class _SecurityDashboardState extends State<SecurityDashboard>
                       const Icon(Icons.error_outline,
                           size: 48, color: Colors.red),
                       SizedBox(height: 2.h),
-                      Text(_errorMessage!, textAlign: TextAlign.center),
+                      const Text('Le tableau de sécurité est indisponible.', textAlign: TextAlign.center),
                       SizedBox(height: 2.h),
                       ElevatedButton(
                         onPressed: _loadSecurityData,

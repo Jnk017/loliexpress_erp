@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../widgets/screen_state_view.dart';
 import 'package:intl/intl.dart';
 
 import '../../../services/inventory_service.dart';
@@ -36,11 +38,9 @@ class _MovementsViewWidgetState extends State<MovementsViewWidget> {
         return const Center(child: CircularProgressIndicator());
       }
       if (snapshot.hasError) {
-        return Center(
-          child: TextButton(
-            onPressed: _refresh,
-            child: const Text('Mouvements indisponibles. Réessayer'),
-          ),
+        return ScreenStateView.error(
+          message: 'Impossible de charger les mouvements.',
+          onAction: _refresh,
         );
       }
       final rows = snapshot.data ?? [];
@@ -48,8 +48,14 @@ class _MovementsViewWidgetState extends State<MovementsViewWidget> {
         onRefresh: _refresh,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.only(bottom: 88 + MediaQuery.paddingOf(context).bottom),
           children: [
-            if (rows.isEmpty) const ListTile(title: Text('Aucun mouvement enregistré')),
+            if (rows.isEmpty) ScreenStateView(
+              icon: Icons.swap_horiz,
+              message: 'Aucun mouvement enregistré.',
+              actionLabel: 'Actualiser',
+              onAction: _refresh,
+            ),
             for (final row in rows) _movementTile(row),
           ],
         ),

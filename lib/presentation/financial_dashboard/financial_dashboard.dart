@@ -21,7 +21,6 @@ class FinancialDashboard extends StatefulWidget {
 }
 
 class _FinancialDashboardState extends State<FinancialDashboard> {
-  int _currentBottomNavIndex = 4; // Finance tab active
   DateTime _selectedStartDate =
       DateTime.now().subtract(const Duration(days: 30));
   DateTime _selectedEndDate = DateTime.now();
@@ -142,27 +141,6 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
     }
   }
 
-  void _handleBottomNavTap(int index) {
-    if (index == _currentBottomNavIndex) return;
-
-    setState(() {
-      _currentBottomNavIndex = index;
-    });
-
-    // Navigate to respective screens
-    final routes = [
-      '/main-dashboard',
-      '/inventory-management',
-      '/sales-order-processing',
-      '/customer-management',
-      '/financial-dashboard',
-    ];
-
-    if (index < routes.length) {
-      Navigator.pushNamed(context, routes[index]);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -193,7 +171,7 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
                     children: [
                       Expanded(
                         child: Text(
-                          'Tableau de Bord Financier',
+                          'Tableau financier',
                           style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -308,6 +286,7 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
       body: RefreshIndicator(
         onRefresh: _handleRefresh,
         child: SingleChildScrollView(
+          padding: EdgeInsets.only(bottom: 88 + MediaQuery.paddingOf(context).bottom),
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -417,42 +396,7 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
         onCreateReceipt: _handleCreateReceipt,
         onGenerateReport: _handleGenerateReport,
       ),
-      bottomNavigationBar: CustomBottomBar(
-        currentIndex: _currentBottomNavIndex,
-        onTap: _handleBottomNavTap,
-        customItems: const [
-          CustomBottomBarItem(
-            icon: Icons.dashboard_outlined,
-            activeIcon: Icons.dashboard,
-            label: 'Tableau',
-            route: '/main-dashboard',
-          ),
-          CustomBottomBarItem(
-            icon: Icons.inventory_2_outlined,
-            activeIcon: Icons.inventory_2,
-            label: 'Stock',
-            route: '/inventory-management',
-          ),
-          CustomBottomBarItem(
-            icon: Icons.shopping_cart_outlined,
-            activeIcon: Icons.shopping_cart,
-            label: 'Commandes',
-            route: '/sales-order-processing',
-          ),
-          CustomBottomBarItem(
-            icon: Icons.people_outline,
-            activeIcon: Icons.people,
-            label: 'Clients',
-            route: '/customer-management',
-          ),
-          CustomBottomBarItem(
-            icon: Icons.account_balance_wallet_outlined,
-            activeIcon: Icons.account_balance_wallet,
-            label: 'Finance',
-            route: '/financial-dashboard',
-          ),
-        ],
-      ),
+      bottomNavigationBar: const CustomBottomBar(currentIndex: -1),
     );
   }
 

@@ -36,7 +36,7 @@ class CustomBottomBar extends StatelessWidget {
     return roleItems
         .map((item) => CustomBottomBarItem(
               icon: item.icon,
-              label: item.label,
+              label: item.label == 'Dashboard' ? 'Accueil' : item.label,
               route: item.route,
             ))
         .toList();
@@ -51,6 +51,12 @@ class CustomBottomBar extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final route = ModalRoute.of(context)?.settings.name;
+    final indexForRoute = route == null
+        ? currentIndex
+        : items.indexWhere((item) => item.route == route ||
+            (route == '/product-catalog' && item.route == '/inventory-management'));
+
     return Container(
       decoration: BoxDecoration(
         color: theme.bottomNavigationBarTheme.backgroundColor,
@@ -63,8 +69,9 @@ class CustomBottomBar extends StatelessWidget {
         ],
       ),
       child: SafeArea(
+        top: false,
         child: Container(
-          height: 64,
+          constraints: const BoxConstraints(minHeight: 64),
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -74,7 +81,7 @@ class CustomBottomBar extends StatelessWidget {
                 context: context,
                 item: items[index],
                 index: index,
-                isSelected: currentIndex == index,
+                isSelected: indexForRoute == index,
               ),
             ),
           ),
@@ -103,7 +110,7 @@ class CustomBottomBar extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {
+          onTap: isSelected ? null : () {
             if (onTap != null) {
               onTap!(index);
             } else {

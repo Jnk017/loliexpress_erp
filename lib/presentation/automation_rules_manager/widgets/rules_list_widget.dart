@@ -46,7 +46,7 @@ class _RulesListWidgetState extends State<RulesListWidget> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to toggle rule: $e')),
+          SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
         );
       }
     }
@@ -62,12 +62,12 @@ class _RulesListWidgetState extends State<RulesListWidget> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('Annuler'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: const Text('Supprimer'),
           ),
         ],
       ),
@@ -80,7 +80,7 @@ class _RulesListWidgetState extends State<RulesListWidget> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to delete rule: $e')),
+            SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
           );
         }
       }
@@ -226,13 +226,13 @@ class _RulesListWidgetState extends State<RulesListWidget> {
                     TextButton.icon(
                       onPressed: () => widget.onEditRule(rule),
                       icon: const Icon(Icons.edit, size: 18),
-                      label: const Text('Edit'),
+                      label: const Text('Modifier'),
                     ),
                     TextButton.icon(
                       onPressed: () => _deleteRule(rule['id']),
                       icon:
                           const Icon(Icons.delete, size: 18, color: Colors.red),
-                      label: const Text('Delete',
+                      label: const Text('Supprimer',
                           style: TextStyle(color: Colors.red)),
                     ),
                   ],

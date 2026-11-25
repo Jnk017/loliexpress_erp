@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../widgets/screen_state_view.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
@@ -353,9 +355,10 @@ class _MainDashboardState extends State<MainDashboard>
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: CustomAppBar(
-        title: 'Tableau de Bord',
+        title: 'Tableau de bord',
+        root: true,
         variant: CustomAppBarVariant.sync,
-        showSyncStatus: true,
+        showSyncStatus: false,
         isSyncing: _isSyncing,
         lastSyncTime: _lastSyncTime,
         actions: [
@@ -388,14 +391,7 @@ class _MainDashboardState extends State<MainDashboard>
         ],
       ),
       body: _buildBody(theme),
-      bottomNavigationBar: CustomBottomBar(
-        currentIndex: 0,
-        onTap: (index) {
-          if (index != 0) {
-            _tabController.animateTo(index);
-          }
-        },
-      ),
+      bottomNavigationBar: const CustomBottomBar(currentIndex: 0),
     );
   }
 
@@ -412,27 +408,9 @@ class _MainDashboardState extends State<MainDashboard>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const RoleWorkspacePanel(),
-              CustomIconWidget(
-                iconName: 'error_outline',
-                color: theme.colorScheme.error,
-                size: 48,
-              ),
-              SizedBox(height: 2.h),
-              Text(
-                'Erreur de chargement',
-                style: theme.textTheme.titleMedium,
-              ),
-              SizedBox(height: 1.h),
-              Text(
-                _error!,
-                style: theme.textTheme.bodyMedium,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 3.h),
-              ElevatedButton.icon(
-                onPressed: _refreshData,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Réessayer'),
+              ScreenStateView.error(
+                message: 'Le tableau de bord n’a pas pu être chargé.',
+                onAction: _refreshData,
               ),
             ],
           ),
@@ -509,7 +487,9 @@ class _MainDashboardState extends State<MainDashboard>
                 child: RevenueChartWidget(weeklyData: _weeklyRevenue),
               ),
             ),
-          SliverToBoxAdapter(child: SizedBox(height: 10.h)),
+          SliverToBoxAdapter(
+            child: SizedBox(height: 24 + MediaQuery.paddingOf(context).bottom),
+          ),
         ],
       ),
     );
@@ -517,12 +497,12 @@ class _MainDashboardState extends State<MainDashboard>
 
   Widget _buildAdministrationSection(ThemeData theme) {
     final items = [
-      _AdminItem('Dashboard admin', 'dashboard', '/admin-dashboard'),
+      _AdminItem('Rapports administrateur', 'dashboard', '/admin-dashboard'),
       _AdminItem('Assistant IA', 'auto_awesome', '/ai-assistant'),
       _AdminItem('Audit', 'history', '/audit-log'),
       _AdminItem('Sécurité', 'security', '/security-dashboard'),
       _AdminItem('Alertes', 'warning', '/security-alert-center'),
-      _AdminItem('Automations', 'rule', '/automation-rules-manager'),
+      _AdminItem('Automatisations', 'rule', '/automation-rules-manager'),
       _AdminItem('Incidents', 'report_problem', '/incident-management-center'),
       _AdminItem('Utilisateurs', 'manage_accounts', '/user-role-management'),
     ];

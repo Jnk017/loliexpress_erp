@@ -45,7 +45,7 @@ class _UserListWidgetState extends State<UserListWidget> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading users: $e')),
+          SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
         );
       }
     }
@@ -119,7 +119,7 @@ class _UserListWidgetState extends State<UserListWidget> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error updating user: $e')),
+          SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
         );
       }
     }
@@ -136,7 +136,7 @@ class _UserListWidgetState extends State<UserListWidget> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('Annuler'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -162,7 +162,7 @@ class _UserListWidgetState extends State<UserListWidget> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error sending email: $e')),
+            SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
           );
         }
       }

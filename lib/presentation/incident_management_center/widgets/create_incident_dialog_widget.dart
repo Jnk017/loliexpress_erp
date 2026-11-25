@@ -61,7 +61,7 @@ class _CreateIncidentDialogWidgetState
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to create incident: $e')),
+        SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
       );
     } finally {
       if (mounted) {
@@ -270,7 +270,7 @@ class _CreateIncidentDialogWidgetState
                     child: OutlinedButton(
                       onPressed:
                           _isSubmitting ? null : () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      child: const Text('Annuler'),
                     ),
                   ),
                   SizedBox(width: 3.w),

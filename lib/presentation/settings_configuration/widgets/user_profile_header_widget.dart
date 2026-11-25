@@ -46,6 +46,8 @@ class UserProfileHeaderWidget extends StatelessWidget {
                   SizedBox(height: 0.5.h),
                   Text(
                     email,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 12.sp, color: colors.onSurfaceVariant),
                   ),
                   SizedBox(height: 0.5.h),

@@ -212,7 +212,8 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Rapports & Analyses',
+        title: 'Rapports et analyses',
+        root: true,
         actions: [
           // Live updates indicator
           Container(

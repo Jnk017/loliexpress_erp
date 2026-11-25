@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../widgets/screen_state_view.dart';
 import 'package:flutter/services.dart';
 import 'package:sizer/sizer.dart';
 
@@ -540,45 +542,9 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
           variant: CustomAppBarVariant.detail,
           showBackButton: true,
         ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CustomIconWidget(
-                  iconName: 'error_outline',
-                  size: 64,
-                  color: theme.colorScheme.error,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Erreur de chargement',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  _loadError!,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton.icon(
-                  onPressed: _loadInitialData,
-                  icon: CustomIconWidget(
-                    iconName: 'refresh',
-                    size: 20,
-                    color: theme.colorScheme.onPrimary,
-                  ),
-                  label: const Text('Réessayer'),
-                ),
-              ],
-            ),
-          ),
+        body: ScreenStateView.error(
+          message: 'Impossible de charger les données de la commande.',
+          onAction: _loadInitialData,
         ),
       );
     }
@@ -613,16 +579,7 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
               size: 24,
             ),
             onPressed: _customers.length > 1 ? _showCustomerSelector : null,
-            tooltip: 'Changer client',
-          ),
-          IconButton(
-            icon: CustomIconWidget(
-              iconName: 'history',
-              color: theme.colorScheme.primary,
-              size: 24,
-            ),
-            onPressed: () {},
-            tooltip: 'Historique',
+            tooltip: 'Changer de client',
           ),
         ],
       ),
@@ -671,7 +628,7 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
                     onBarcodeScan: _handleBarcodeScan,
                     customerTier: customerData['tier'] as String,
                   ),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 16 + MediaQuery.paddingOf(context).bottom),
                 ],
               ),
             ),

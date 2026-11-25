@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../widgets/treasury_account_picker.dart';
+import '../../widgets/custom_bottom_bar.dart';
 import 'package:sizer/sizer.dart';
 import '../../services/expense_service.dart';
 import '../../services/role_service.dart';
@@ -68,7 +69,7 @@ class _ExpensesScreenState extends State<ExpensesScreen>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
+          SnackBar(content: const Text('Impossible de terminer l’opération. Réessayez.'), backgroundColor: Colors.red),
         );
       }
     }
@@ -85,7 +86,8 @@ class _ExpensesScreenState extends State<ExpensesScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gestion des Dépenses'),
+        title: const Text('Dépenses'),
+        automaticallyImplyLeading: false,
         bottom: TabBar(
           controller: _tabController,
           tabs: _getTabs(),
@@ -98,10 +100,11 @@ class _ExpensesScreenState extends State<ExpensesScreen>
               controller: _tabController,
               children: _getTabViews(),
             ),
+      bottomNavigationBar: const CustomBottomBar(currentIndex: -1),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showCreateExpenseDialog,
         icon: const Icon(Icons.add),
-        label: const Text('Nouvelle Dépense'),
+        label: const Text('Nouvelle dépense'),
       ),
     );
   }
@@ -138,7 +141,8 @@ class _ExpensesScreenState extends State<ExpensesScreen>
     return RefreshIndicator(
       onRefresh: _loadData,
       child: ListView.builder(
-        padding: EdgeInsets.all(2.w),
+        padding: EdgeInsets.fromLTRB(2.w, 2.w, 2.w,
+            88 + MediaQuery.paddingOf(context).bottom),
         itemCount: expenses.length,
         itemBuilder: (context, index) =>
             _buildExpenseCard(expenses[index], type),
@@ -336,7 +340,7 @@ class _ExpensesScreenState extends State<ExpensesScreen>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
+          SnackBar(content: const Text('Impossible de terminer l’opération. Réessayez.'), backgroundColor: Colors.red),
         );
       }
     }
@@ -358,7 +362,7 @@ class _ExpensesScreenState extends State<ExpensesScreen>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur: $e'), backgroundColor: Colors.red),
+          SnackBar(content: const Text('Impossible de terminer l’opération. Réessayez.'), backgroundColor: Colors.red),
         );
       }
     }
@@ -402,7 +406,7 @@ class _ExpensesScreenState extends State<ExpensesScreen>
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                        content: Text('Erreur: $e'),
+                        content: const Text('Impossible de terminer l’opération. Réessayez.'),
                         backgroundColor: Colors.red),
                   );
                 }
@@ -567,7 +571,7 @@ class _ExpensesScreenState extends State<ExpensesScreen>
                       if (mounted) {
                         messenger.showSnackBar(
                           SnackBar(
-                              content: Text('Erreur: $e'),
+                              content: const Text('Impossible de terminer l’opération. Réessayez.'),
                               backgroundColor: Colors.red),
                         );
                       }

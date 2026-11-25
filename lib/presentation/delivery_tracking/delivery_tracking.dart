@@ -474,7 +474,6 @@ class _DeliveryTrackingState extends State<DeliveryTracking> {
                         Text('Erreur de chargement des livraisons',
                             style: theme.textTheme.titleMedium),
                         SizedBox(height: 1.h),
-                        Text(_error!, textAlign: TextAlign.center),
                         SizedBox(height: 2.h),
                         ElevatedButton(
                           onPressed: _loadDeliveries,

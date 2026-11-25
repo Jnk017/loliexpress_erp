@@ -58,7 +58,7 @@ class _SettingsConfigurationScreenState
     return Scaffold(
       appBar: const CustomAppBar(title: 'Paramètres'),
       body: ListView(
-        padding: EdgeInsets.all(3.w),
+        padding: EdgeInsets.fromLTRB(3.w, 3.w, 3.w, 24 + MediaQuery.paddingOf(context).bottom),
         children: [
           UserProfileHeaderWidget(
             name: _userName,
@@ -113,7 +113,7 @@ class _SettingsConfigurationScreenState
                 }),
               ),
               SettingsItemWidget(
-                icon: Icons.attach_money,
+                icon: Icons.currency_exchange,
                 title: 'Devise par défaut',
                 subtitle: _selectedCurrency,
                 onTap: () => _showCurrencyDialog(),
@@ -305,7 +305,7 @@ class _SettingsConfigurationScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Close'),
+            child: Text('Fermer'),
           ),
         ],
       ),
@@ -416,11 +416,11 @@ class _SettingsConfigurationScreenState
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Se déconnecter'),
-        content: Text('Are you sure you want to logout?'),
+        content: Text('Voulez-vous vous déconnecter ?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
+            child: Text('Annuler'),
           ),
           ElevatedButton(
             onPressed: () async {

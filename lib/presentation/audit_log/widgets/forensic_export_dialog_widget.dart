@@ -70,7 +70,7 @@ class _ForensicExportDialogWidgetState
       setState(() => _isLoadingTemplates = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading templates: $e')),
+          SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
         );
       }
     }
@@ -161,7 +161,7 @@ class _ForensicExportDialogWidgetState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Export failed: $e'),
+            content: Text('Impossible de terminer l’opération. Réessayez.'),
             backgroundColor: Colors.red,
           ),
         );

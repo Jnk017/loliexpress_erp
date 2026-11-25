@@ -326,6 +326,7 @@ class _InventoryManagementState extends State<InventoryManagement>
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: CustomAppBar(
         title: 'Gestion des Stocks',
+        root: true,
         variant: CustomAppBarVariant.standard,
         actions: [
           IconButton(
@@ -409,16 +410,16 @@ class _InventoryManagementState extends State<InventoryManagement>
         onPressed: _operationPending ? null : _showQuickActions,
         icon: CustomIconWidget(
           iconName: 'add',
-          color: const Color(0xFF121212),
+          color: theme.colorScheme.onPrimary,
           size: 24,
         ),
         label: Text(
           'Actions',
           style: theme.textTheme.labelLarge?.copyWith(
-            color: const Color(0xFF121212),
+            color: theme.colorScheme.onPrimary,
           ),
         ),
-        backgroundColor: theme.colorScheme.tertiary,
+        backgroundColor: theme.colorScheme.primary,
       ),
       bottomNavigationBar: const CustomBottomBar(currentIndex: 1),
     );

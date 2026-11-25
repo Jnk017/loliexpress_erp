@@ -177,7 +177,7 @@ class UserCardWidget extends StatelessWidget {
                     child: OutlinedButton.icon(
                       onPressed: onEdit,
                       icon: const Icon(Icons.edit_outlined, size: 16.0),
-                      label: const Text('Edit'),
+                      label: const Text('Modifier'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF1976D2),
                         side: const BorderSide(color: Color(0xFF1976D2)),
@@ -193,7 +193,7 @@ class UserCardWidget extends StatelessWidget {
                     child: OutlinedButton.icon(
                       onPressed: onResetPassword,
                       icon: const Icon(Icons.lock_reset, size: 16.0),
-                      label: const Text('Reset'),
+                      label: const Text('Réinitialiser'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.orange,
                         side: const BorderSide(color: Colors.orange),

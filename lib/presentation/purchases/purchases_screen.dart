@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../widgets/screen_state_view.dart';
 import '../../widgets/treasury_account_picker.dart';
 import 'package:sizer/sizer.dart';
 import 'package:intl/intl.dart';
@@ -351,6 +353,7 @@ class _PurchasesScreenState extends State<PurchasesScreen>
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Achats',
+        root: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -368,7 +371,7 @@ class _PurchasesScreenState extends State<PurchasesScreen>
             child: TabBar(
               controller: _tabController,
               labelColor: theme.primaryColor,
-              unselectedLabelColor: Colors.grey,
+              unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
               indicatorColor: theme.primaryColor,
               tabs: _statusTabs.map((t) => Tab(text: t)).toList(),
             ),
@@ -396,59 +399,24 @@ class _PurchasesScreenState extends State<PurchasesScreen>
     }
 
     if (_errorMessage != null) {
-      return Center(
-        child: Padding(
-          padding: EdgeInsets.all(4.w),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.error_outline, size: 48, color: Colors.red.shade300),
-              SizedBox(height: 2.h),
-              Text(
-                'Erreur de chargement',
-                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 1.h),
-              Text(
-                _errorMessage!,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 11.sp, color: Colors.grey),
-              ),
-              SizedBox(height: 2.h),
-              ElevatedButton.icon(
-                onPressed: _loadPurchases,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Réessayer'),
-              ),
-            ],
-          ),
-        ),
+      return ScreenStateView.error(
+        message: 'Impossible de charger les achats.',
+        onAction: _loadPurchases,
       );
     }
 
     if (_purchases.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.shopping_bag_outlined,
-                size: 64, color: Colors.grey.shade400),
-            SizedBox(height: 2.h),
-            Text(
-              'Aucun achat trouvé',
-              style: TextStyle(fontSize: 14.sp, color: Colors.grey),
-            ),
-            if (_canCreatePurchase) FilledButton(
-              onPressed: _showCreatePurchaseDialog,
-              child: const Text('Créer un achat'),
-            ),
-          ],
-        ),
+      return ScreenStateView(
+        icon: Icons.shopping_bag_outlined,
+        message: 'Aucun achat trouvé.',
+        actionLabel: 'Nouvel achat',
+        onAction: _canCreatePurchase ? _showCreatePurchaseDialog : null,
       );
     }
 
     return ListView.builder(
-      padding: EdgeInsets.all(3.w),
+      padding: EdgeInsets.fromLTRB(3.w, 3.w, 3.w,
+          (_canCreatePurchase ? 88 : 24) + MediaQuery.paddingOf(context).bottom),
       itemCount: _purchases.length,
       itemBuilder: (context, index) => _buildPurchaseCard(_purchases[index]),
     );
@@ -619,7 +587,7 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
       if (!mounted) return;
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur chargement données: $e')),
+        SnackBar(content: Text('Impossible de charger le formulaire d’achat.')),
       );
     }
   }
@@ -691,7 +659,7 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
       if (!mounted) return;
       setState(() => _isSubmitting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur: $e')),
+        SnackBar(content: Text('L’achat n’a pas pu être enregistré.')),
       );
     }
   }
@@ -716,11 +684,11 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Nouvel Achat',
+                    'Nouvel achat',
                     style:
                         TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 2.h),
+                  const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: _selectedSupplierId,
                     decoration: const InputDecoration(
@@ -736,24 +704,24 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                         .toList(),
                     onChanged: (v) => setState(() => _selectedSupplierId = v),
                   ),
-                  SizedBox(height: 2.h),
+                  const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: _selectedCurrency,
                     decoration: const InputDecoration(
                       labelText: 'Devise',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.monetization_on),
+                      prefixIcon: Icon(Icons.currency_exchange),
                     ),
                     items: const [
                       DropdownMenuItem(
-                          value: 'CDF', child: Text('CDF (Franc Congolais)')),
+                          value: 'CDF', child: Text('CDF (franc congolais)')),
                       DropdownMenuItem(
                           value: 'USD', child: Text('USD (Dollar US)')),
                     ],
                     onChanged: (v) =>
                         setState(() => _selectedCurrency = v ?? 'CDF'),
                   ),
-                  SizedBox(height: 2.h),
+                  const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -765,7 +733,7 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                       TextButton.icon(
                         onPressed: _addItem,
                         icon: const Icon(Icons.add, size: 18),
-                        label: const Text('Ajouter'),
+                        label: const Text('Ajouter un produit'),
                       ),
                     ],
                   ),
@@ -786,7 +754,7 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                         ),
                         Text(
                           '$currencySymbol ${_totalAmount.toStringAsFixed(_selectedCurrency == "USD" ? 2 : 0)}',
-                          style: TextStyle(
+                          style: theme.textTheme.titleMedium?.copyWith(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.bold,
                             color: theme.primaryColor,
@@ -795,7 +763,7 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                       ],
                     ),
                   ],
-                  SizedBox(height: 2.h),
+                  const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
