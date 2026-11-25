@@ -32,3 +32,4 @@
 | PERF-003-D | P0 | Réceptions concurrentes avec la même clé de requête | Deux sessions chevauchantes, un reçu, un mouvement et stock rapproché |
 | PERF-003-E | P0 | Encaissements concurrents sur une même créance | Un paiement accepté, un refus, un seul mouvement, solde rapproché |
 | PERF-003-F | P0 | Remise concurrente de deux commandes sur stock limité | Une remise, une commande reste expédiée, aucun stock négatif |
+| SEC-001-C | P0 | Prix, commandes et émission selon l’identité | Tests positifs par acteur, refus hors affectation et accès B2B croisé |

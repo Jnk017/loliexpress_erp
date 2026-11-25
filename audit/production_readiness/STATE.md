@@ -60,3 +60,7 @@ La reprise de la concurrence porte sur les ventes, encaissements, réceptions fo
 Cinq scénarios multisessions sont démontrés. La répétition séquentielle et le rollback partiel ont des preuves séparées dans `delivery_boundary_results.json`. Le cas restant de double avoir doit utiliser des factures de test rattachées à un environnement jetable. Leurs lignes sont immuables, ce qui empêche le nettoyage normal par suppression sur le Gate partagé. Les autres audits et parcours restent indépendants.
 
 La prochaine vérification côté Web prolonge la réception magasinier vers la commande commerciale. Le harnais `test_warehouse_receipt_web.py` fournit la préparation ciblée et la connexion Flutter. La prochaine revue RPC couvre `create_order_with_items`, `issue_order_invoice` et les fonctions de prix qui les alimentent.
+
+| ID | Priorité | État | Correction et preuve |
+|---|---|---|---|
+| SEC-001-C | P0 | DONE | Quatre RPC supplémentaires validées par une fixture à deux clients et rôles distincts. [SQL reproductible](verify_order_invoice_scope.sql) et [résultat Gate](order_invoice_scope_results.json). |

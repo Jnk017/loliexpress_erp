@@ -35,3 +35,14 @@ Ces six fonctions sont privilégiées avec un `search_path` vide. L’audit dire
 ## Réception du magasinier, lot 028
 
 `public.list_warehouse_purchase_receipts()` est une nouvelle RPC `SECURITY DEFINER` en lecture, à `search_path` vide. Flutter appelle cette fonction depuis le raccourci de réception. La RPC vérifie le profil actif et le rôle magasinier via `current_user_role`, refuse les comptes sans profil et ne renvoie que le numéro d’achat, la ligne, le nom du produit et le restant à réceptionner. Elle n’écrit aucune donnée. La réception utilise la RPC existante `receive_purchase_item`, verrouillée et idempotente sur l’identifiant de requête. Le test Gate confirme une réception répétée sans double mouvement ni lecture directe des données d’achat. [Preuves](warehouse_receipt_results.json)
+
+## Commandes, prix et émission
+
+| Fonction | Contrôle et impact | Vérification Gate |
+|---|---|---|
+| `set_customer_product_price(uuid,uuid,numeric,text)` | Administrateur actif. La devise est soumise à la contrainte de la table et le tarif est audité. | Écriture administrateur, refus du commercial. |
+| `order_unit_price(uuid,uuid,text)` | Administrateur, commercial affecté ou propriétaire B2B. Produit actif, devise et taux contrôlés. Lecture seule. | Deux prix distincts, refus de lecture croisée B2B. |
+| `create_order_with_items(uuid,jsonb,text,text,numeric,text,numeric)` | Administrateur, commercial affecté ou propriétaire B2B. Le serveur recalcule les prix et réserve les remises à l’administration. Écrit la commande et ses lignes. | Commande B2B au tarif propre, refus d’un client non affecté au commercial. |
+| `issue_order_invoice(uuid,timestamptz,boolean,numeric)` | Administrateur ou comptable. Commande confirmée, paramètres de livraison vérifiés, verrou et unicité des conditions. Écrit la facture et fige les lignes. | Refus B2B et émission comptable de 12 CDF conformément au tarif affecté. |
+
+Propriétaire `postgres`, `search_path` vide et exécution client réservée à `authenticated` selon le catalogue de référence. Les quatre signatures sont appelées depuis les services Flutter. [Preuve de périmètre](order_invoice_scope_results.json)

@@ -17,3 +17,4 @@
 - [Réception fournisseur concurrente](concurrent_receipt.json) à `7350ad2`. Rejouable via `test_concurrent_receipt.py` et le paramètre `--with-gate-fixtures` du gate.
 - [Réception réelle depuis Flutter Web](warehouse-web.json), [capture](warehouse_web.png), [script](test_warehouse_receipt_web.py). Compiler le Web en configuration Gate avant le test. Fournir le PAT dans l’environnement, le fichier local ignoré `cloud.env`, et lancer le script avec `--evidence-dir` depuis la racine. Le script crée puis retire un compte et les références jetables sur Gate.
 - [Encaissements concurrents](concurrent_payment.json) et [ventes concurrentes](concurrent_sales.json) sur Gate. Sessions distinctes, chevauchement, un succès et un refus par scénario, journaux rapprochés et données jetables retirées.
+- [Périmètre commandes et facturation](order_invoice_scope_results.json). Quatre refus attendus et émission par le comptable au tarif du client. La transaction de test est annulée.
