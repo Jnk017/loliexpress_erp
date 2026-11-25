@@ -1,5 +1,11 @@
 # Gate final LoliExpress ERP
 
+## Moyens de paiement clients et fournisseurs
+
+- Migration 021 appliquée au projet de test. Cash, Mobile Money et virement bancaire sont enregistrés comme moyens distincts. Un portefeuille Mobile Money est un compte de trésorerie catégorisé, avec solde séparé du compte bancaire dans le tableau financier. Aucun compte ni solde initial ajouté.
+- Le scénario SQL de trésorerie a enregistré les trois moyens des deux côtés, confirmé la séparation des soldes, refusé un compte de catégorie ou de devise incompatible et annulé toutes les données de test.
+- Analyse Flutter : 0 erreur, 0 avertissement. Tests : 18 PASS. Parcours Android restant à vérifier sur un APK récent.
+
 ## Achats, ventes, stock et trésorerie
 
 - Migration 020 appliquée au projet de test. L'encaissement client, le règlement fournisseur et le paiement des dépenses exigent désormais une caisse ou une banque active dans leur devise. La dette, la créance ou la dépense et le mouvement de trésorerie sont mis à jour dans une transaction unique. Les anciens appels authentifiés sans compte sont fermés.

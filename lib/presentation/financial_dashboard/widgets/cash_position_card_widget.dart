@@ -13,6 +13,7 @@ class CashPositionCardWidget extends StatelessWidget {
     final format = NumberFormat('#,##0.00', 'fr');
     final cash = data['cash'] as Map<String, num>?;
     final bank = data['bank'] as Map<String, num>?;
+    final mobile = data['mobileMoney'] as Map<String, num>?;
     return Card(
       child: InkWell(
         onTap: onTap,
@@ -23,7 +24,7 @@ class CashPositionCardWidget extends StatelessWidget {
             children: [
               Text('Caisse et banque', style: theme.textTheme.titleMedium),
               const SizedBox(height: 8),
-              if (cash == null || bank == null)
+              if (cash == null || bank == null || mobile == null)
                 Text(data['unavailable'] == true
                     ? 'Soldes indisponibles'
                     : 'Chargement des soldes…')
@@ -33,7 +34,8 @@ class CashPositionCardWidget extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 6),
                     child: Text(
                       '$currency\nCaisse ${format.format(cash[currency] ?? 0)}\n'
-                      'Banque ${format.format(bank[currency] ?? 0)}',
+                      'Banque ${format.format(bank[currency] ?? 0)}\n'
+                      'Mobile Money ${format.format(mobile[currency] ?? 0)}',
                     ),
                   ),
             ],

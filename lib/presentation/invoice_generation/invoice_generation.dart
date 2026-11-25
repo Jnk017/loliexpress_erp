@@ -139,7 +139,7 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
       if (!mounted || invoice == null) return;
       var amountText = '';
       var reference = '';
-      final account = await pickTreasuryAccount(context, invoice['currency'] as String, incoming: true);
+      final account = await pickTreasuryAccount(context, invoice['currency'] as String, incoming: true, includeMobileMoney: true);
       if (!mounted || account == null) return;
       final requestId = newRequestId();
       var busy = false;
@@ -189,6 +189,7 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
                         'p_reference': reference,
                         'p_kind': account.kind,
                         'p_account_id': account.id,
+                        'p_method': account.method,
                         'p_request_id': requestId,
                       });
                       if (dialogContext.mounted) Navigator.pop(dialogContext, true);

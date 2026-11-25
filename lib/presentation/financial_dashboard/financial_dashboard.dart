@@ -488,7 +488,8 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
                     for (final row in group.$2)
                       ListTile(
                         title: Text((row['name'] ?? row['account_name']) as String),
-                        subtitle: Text(group.$1 == 0 ? 'Caisse' : 'Banque'),
+                        subtitle: Text(group.$1 == 0 ? 'Caisse'
+                            : row['account_channel'] == 'mobile_money' ? 'Mobile Money' : 'Banque'),
                         trailing: Text("${row['current_balance']} ${row['currency']}"),
                       ),
                 ],

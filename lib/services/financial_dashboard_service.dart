@@ -106,7 +106,7 @@ class FinancialDashboardService {
   Future<List<List<Map<String, dynamic>>>> getTreasuryAccounts() => Future.wait([
     _supabase.from('cash_registers').select('name,currency,current_balance')
         .eq('is_active', true).order('name'),
-    _supabase.from('bank_accounts').select('account_name,currency,current_balance')
+    _supabase.from('bank_accounts').select('account_name,currency,current_balance,account_channel')
         .eq('is_active', true).order('account_name'),
   ]);
 
@@ -122,7 +122,11 @@ class FinancialDashboardService {
         }
         return sums;
       }
-      return {'cash': totals(response[0]), 'bank': totals(response[1])};
+      return {
+        'cash': totals(response[0]),
+        'bank': totals(response[1].where((row) => row['account_channel'] == 'bank_transfer').toList()),
+        'mobileMoney': totals(response[1].where((row) => row['account_channel'] == 'mobile_money').toList()),
+      };
     } catch (_) {
       return {'unavailable': true};
     }

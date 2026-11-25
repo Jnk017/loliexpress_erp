@@ -1,4 +1,4 @@
--- Fixtures are rolled back. Run on the isolated gate project after 020.
+-- Fixtures are rolled back. Run on the isolated gate project after 021.
 BEGIN;
 DO $verify$
 DECLARE
@@ -9,6 +9,7 @@ DECLARE
     warehouse uuid := gen_random_uuid();
     cash_id uuid := gen_random_uuid();
     bank_id uuid := gen_random_uuid();
+    wallet_id uuid := gen_random_uuid();
     usd_id uuid := gen_random_uuid();
     expense_id uuid := gen_random_uuid();
     usd_expense_id uuid := gen_random_uuid();
@@ -36,6 +37,8 @@ BEGIN
       VALUES (cash_id,'QA','CDF',100,100),(usd_id,'QA USD','USD',10,10);
     INSERT INTO public.bank_accounts(id,account_name,bank_name,currency,current_balance)
       VALUES (bank_id,'QA','QA','CDF',200);
+    INSERT INTO public.bank_accounts(id,account_name,bank_name,currency,current_balance,account_channel)
+      VALUES (wallet_id,'QA Wallet','QA','CDF',30,'mobile_money');
     PERFORM public.adjust_stock(product,warehouse,10,'QA initial stock');
 
     purchase := public.create_purchase_with_items(supplier,
@@ -61,8 +64,16 @@ BEGIN
     IF EXISTS (SELECT FROM public.supplier_bill_payments WHERE bill_id=bill.id) THEN
       RAISE EXCEPTION 'Wrong account left a supplier payment';
     END IF;
-    PERFORM public.pay_supplier_bill_from_account(bill.id,40,'CDF','QA supplier',request_id,'bank',bank_id);
-    PERFORM public.pay_supplier_bill_from_account(bill.id,40,'CDF','QA supplier',request_id,'bank',bank_id);
+    BEGIN
+      PERFORM public.pay_supplier_bill_from_account(bill.id,10,'CDF','QA wrong channel',
+        gen_random_uuid(),'bank',bank_id,'mobile_money');
+      RAISE EXCEPTION 'Bank account accepted as a wallet';
+    EXCEPTION WHEN invalid_parameter_value THEN NULL;
+    END;
+    PERFORM public.pay_supplier_bill_from_account(bill.id,25,'CDF','QA supplier bank',request_id,'bank',bank_id,'bank_transfer');
+    PERFORM public.pay_supplier_bill_from_account(bill.id,25,'CDF','QA supplier bank',request_id,'bank',bank_id,'bank_transfer');
+    PERFORM public.pay_supplier_bill_from_account(bill.id,10,'CDF','QA supplier wallet',gen_random_uuid(),'bank',wallet_id,'mobile_money');
+    PERFORM public.pay_supplier_bill_from_account(bill.id,5,'CDF','QA supplier cash',gen_random_uuid(),'cash',cash_id,'cash');
 
     sale := public.create_order_with_items(customer,
       jsonb_build_array(jsonb_build_object('product_id',product,'quantity',3)));
@@ -80,14 +91,15 @@ BEGIN
       RAISE EXCEPTION 'Handover failed';
     END IF;
     invoice := public.issue_order_invoice(sale.id,now()+interval '10 days');
-    IF (SELECT current_balance FROM public.cash_registers WHERE id=cash_id) <> 100 THEN
+    IF (SELECT current_balance FROM public.cash_registers WHERE id=cash_id) <> 95 THEN
       RAISE EXCEPTION 'Invoice changed cash before payment';
     END IF;
     posting_id := public.receive_invoice_payment(invoice.id,25,'CDF','QA receipt','cash',cash_id,payment_id);
     IF posting_id IS DISTINCT FROM public.receive_invoice_payment(invoice.id,25,'CDF','QA receipt','cash',cash_id,payment_id) THEN
       RAISE EXCEPTION 'Receipt retry duplicated the payment';
     END IF;
-    PERFORM public.receive_invoice_payment(invoice.id,35,'CDF','QA balance','bank',bank_id,gen_random_uuid());
+    PERFORM public.receive_invoice_payment(invoice.id,25,'CDF','QA bank','bank',bank_id,gen_random_uuid(),'bank_transfer');
+    PERFORM public.receive_invoice_payment(invoice.id,10,'CDF','QA wallet','bank',wallet_id,gen_random_uuid(),'mobile_money');
 
     INSERT INTO public.expenses(id,category,description,amount,expense_date,currency,status,approved_by,created_by,requested_by)
       VALUES (expense_id,'QA','QA',15,current_date,'CDF','pending_payment',actor,actor,actor);
@@ -107,11 +119,15 @@ BEGIN
         IS DISTINCT FROM 10+8-3
       OR (SELECT sum(CASE WHEN movement_type='out' THEN -quantity ELSE quantity END)
           FROM public.stock_movements WHERE product_id=product AND warehouse_id=warehouse) IS DISTINCT FROM 15::bigint
-      OR (SELECT current_balance FROM public.cash_registers WHERE id=cash_id) IS DISTINCT FROM 100+25-15
-      OR (SELECT current_balance FROM public.bank_accounts WHERE id=bank_id) IS DISTINCT FROM 200-40+35
+      OR (SELECT current_balance FROM public.cash_registers WHERE id=cash_id) IS DISTINCT FROM 100-5+25-15
+      OR (SELECT current_balance FROM public.bank_accounts WHERE id=bank_id) IS DISTINCT FROM 200-25+25
       OR (SELECT current_balance FROM public.cash_registers WHERE id=usd_id) IS DISTINCT FROM 8
-      OR (SELECT sum(CASE WHEN movement_type='out' THEN -amount ELSE amount END) FROM public.cash_movements WHERE cash_register_id=cash_id) IS DISTINCT FROM 10
-      OR (SELECT sum(CASE WHEN transaction_type='debit' THEN -amount ELSE amount END) FROM public.bank_transactions WHERE bank_account_id=bank_id) IS DISTINCT FROM -5
+      OR (SELECT sum(CASE WHEN movement_type='out' THEN -amount ELSE amount END) FROM public.cash_movements WHERE cash_register_id=cash_id) IS DISTINCT FROM 5
+      OR (SELECT sum(CASE WHEN transaction_type='debit' THEN -amount ELSE amount END) FROM public.bank_transactions WHERE bank_account_id=bank_id) IS DISTINCT FROM 0
+      OR (SELECT current_balance FROM public.bank_accounts WHERE id=wallet_id) IS DISTINCT FROM 30
+      OR (SELECT count(*) FROM public.bank_transactions WHERE bank_account_id=wallet_id) <> 2
+      OR (SELECT count(DISTINCT payment_method) FROM public.supplier_bill_payments WHERE bill_id=bill.id) <> 3
+      OR (SELECT count(DISTINCT payment_method) FROM public.payments WHERE invoice_id=invoice.id) <> 3
       OR (SELECT status FROM public.expenses WHERE id=expense_id) IS DISTINCT FROM 'paid'
       OR (SELECT payment_status::text FROM public.invoices WHERE id=invoice.id) IS DISTINCT FROM 'paid'
       OR (SELECT amount_paid FROM public.supplier_bills WHERE id=bill.id) IS DISTINCT FROM 40 THEN
@@ -119,5 +135,5 @@ BEGIN
     END IF;
 END;
 $verify$;
-SELECT true AS reconciled, 15 AS closing_stock, 110 AS cash_cdf, 195 AS bank_cdf, 8 AS cash_usd;
+SELECT true AS reconciled, 15 AS closing_stock, 105 AS cash_cdf, 200 AS bank_cdf, 30 AS wallet_cdf, 8 AS cash_usd;
 ROLLBACK;

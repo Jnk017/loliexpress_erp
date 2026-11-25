@@ -150,6 +150,7 @@ class PurchaseService {
     required String reference,
     required String requestId,
     required String accountKind,
+    required String paymentMethod,
     required String accountId,
   }) async {
     await _client.rpc('pay_supplier_bill_from_account', params: {
@@ -159,6 +160,7 @@ class PurchaseService {
       'p_reference': reference,
       'p_request_id': requestId,
       'p_kind': accountKind,
+      'p_method': paymentMethod,
       'p_account_id': accountId,
     });
   }

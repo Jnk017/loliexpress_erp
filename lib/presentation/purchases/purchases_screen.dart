@@ -236,7 +236,7 @@ class _PurchasesScreenState extends State<PurchasesScreen>
         );
         if (!mounted || bill == null) return;
         final requestId = newRequestId();
-        final account = await pickTreasuryAccount(context, bill['currency'] as String, incoming: false);
+        final account = await pickTreasuryAccount(context, bill['currency'] as String, incoming: false, includeMobileMoney: true);
         if (!mounted || account == null) return;
         await _submitPurchaseOperation('Règlement fournisseur',
           ['Montant (${bill['currency']})', 'Référence du règlement'],
@@ -247,6 +247,7 @@ class _PurchasesScreenState extends State<PurchasesScreen>
             reference: values[1],
             requestId: requestId,
             accountKind: account.kind,
+            paymentMethod: account.method,
             accountId: account.id,
           ),
         );
