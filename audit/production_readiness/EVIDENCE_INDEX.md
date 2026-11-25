@@ -14,3 +14,4 @@
 - Migration 027 appliquée au projet Gate. [Frontière livreur](verify_delivery_client_boundary.sql) et [20 assertions ciblées, remise, commande et stock](delivery_boundary_results.json).
 - [Double confirmation concurrente](concurrent_handover.json) sur Gate. Deux sessions PostgreSQL distinctes et chevauchantes, deux réponses positives, une seule remise, une sortie de stock, fixturation retirée.
 - [Lot 028, file de réception](warehouse_receipt_results.json) et [contrôle SQL reproductible](verify_warehouse_receipt_queue.sql). La file n’expose pas les coûts et vérifie le rôle en base. Les assertions achats, réception et brouillons ont été rejouées sur Gate.
+- [Réception fournisseur concurrente](concurrent_receipt.json) à `7350ad2`. Rejouable via `test_concurrent_receipt.py` et le paramètre `--with-gate-fixtures` du gate.

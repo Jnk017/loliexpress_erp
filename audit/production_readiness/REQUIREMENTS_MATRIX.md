@@ -29,3 +29,4 @@
 | SEC-003-B | P0 | Livraison affectée accessible en lecture avec confirmation par RPC | Mise à jour directe refusée et régression de remise réussie |
 | PERF-003-C | P0 | Confirmations concurrentes de la même remise | Deux sessions chevauchantes, une remise et une sortie, nettoyage confirmé |
 | WEB-001-A | P0 | Réception magasinier depuis le raccourci Stock | Connexion magasinier, liste opérationnelle en lecture limitée, réception et réconciliation PostgreSQL |
+| PERF-003-D | P0 | Réceptions concurrentes avec la même clé de requête | Deux sessions chevauchantes, un reçu, un mouvement et stock rapproché |
