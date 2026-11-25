@@ -251,3 +251,5 @@ Le [lot trésorerie](audit/production_readiness/RPC_SECURITY_MATRIX.md) ferme l�
 Le premier scénario multisession du lot passe sur Gate. Deux transferts simultanés ont donné une seule sortie de six unités, un refus faute de stock et un journal rapproché. [Preuve](audit/production_readiness/concurrent_transfer.json)
 
 La migration 027 ferme la mise à jour directe des livraisons par le livreur. La lecture affectée et les régressions de remise, commande et stock ont réussi sur Gate. [Preuves](audit/production_readiness/delivery_boundary_results.json)
+
+La migration 028 raccorde la réception magasinier à une liste opérationnelle limitée. Sur Flutter Web, le magasinier a reçu deux unités et PostgreSQL a enregistré un seul mouvement. Les deux réceptions concurrentes d’une même ligne avec la même clé ont également donné un seul reçu et un seul mouvement. [Preuves](audit/production_readiness/EVIDENCE_INDEX.md)

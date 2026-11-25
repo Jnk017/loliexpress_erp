@@ -50,5 +50,5 @@ La reprise de la concurrence porte sur les ventes, encaissements, réceptions fo
 
 | ID | Priorité | État | Correction et preuve |
 |---|---|---|---|
-| WEB-001-A | P0 | TEST_PASSED | La route de réception est autorisée au magasinier et utilise une file RPC sans données financières. [Tests SQL](warehouse_receipt_results.json), analyse et 18 tests Flutter réussis. Test navigateur de réception à confirmer. |
+| WEB-001-A | P0 | DONE | Réception magasinier sur Flutter Web, HTTP 200, stock 2 et un mouvement. Analyse, 18 tests Flutter, build Web et [preuve Chromium](warehouse-web.json) au code `7350ad2`. |
 | PERF-003-D | P0 | DONE | Deux réceptions du même achat et de la même requête sur deux connexions en parallèle. Une réception, un mouvement et stock final de deux. | [Preuve](concurrent_receipt.json). Fixtures retirées. |

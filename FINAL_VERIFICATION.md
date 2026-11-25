@@ -110,3 +110,5 @@ La migration 026 est appliquée sur Gate. Le lot de sécurité de la trésorerie
 ## Lots livraison et concurrence — Gate
 
 Migration 027 appliquée. La lecture d’une livraison affectée reste disponible pour le livreur, et la modification directe est refusée. Les suites remise, commandes et stock passent. La confirmation concurrente d’une même livraison conserve une seule remise et une seule sortie de stock. [Frontière du livreur](audit/production_readiness/delivery_boundary_results.json) · [Concurrence de remise](audit/production_readiness/concurrent_handover.json)
+
+Sur Flutter Web à `7350ad2`, le magasinier a exécuté la réception depuis le raccourci Stock, avec HTTP 200 et rapprochement PostgreSQL. La [preuve de réception](audit/production_readiness/warehouse-web.json) couvre une étape du cycle transversal. Le cycle complet reste ouvert.
