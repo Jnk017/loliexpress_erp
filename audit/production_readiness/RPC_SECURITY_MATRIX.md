@@ -1,6 +1,6 @@
 # Matrice de sécurité des RPC
 
-Le [catalogue live de référence](gate_catalog_summary.json) recense 41 signatures publiques `SECURITY DEFINER` exécutables par `authenticated`. Les signatures surchargées sont comptées séparément. Les lignes ci-dessous couvrent le lot atomique SEC-001-A. Les 35 autres signatures restent à examiner individuellement.
+Le [catalogue live de référence](gate_catalog_summary.json) recense 41 signatures publiques `SECURITY DEFINER` exécutables par `authenticated`. Les signatures surchargées sont comptées séparément. Sur les 41 signatures de référence, 10 sont validées et 6 autres ont été examinées avec des contrôles individuels encore ouverts. La nouvelle signature de réception magasinier est validée séparément. Les 25 autres signatures restent à examiner.
 
 | Signature dans public | Appelant | Autorisation et périmètre | Validation et écritures | Verdict du lot |
 |---|---|---|---|---|
