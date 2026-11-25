@@ -1,0 +1,7 @@
+[
+  {
+    "treasury_write_boundary_pass": true,
+    "denied_rpc_calls": 49,
+    "rpc_grants_verified": 6
+  }
+]

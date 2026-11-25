@@ -114,3 +114,5 @@ Migration 027 appliquée. La lecture d’une livraison affectée reste disponibl
 Sur Flutter Web à `7350ad2`, le magasinier a exécuté la réception depuis le raccourci Stock, avec HTTP 200 et rapprochement PostgreSQL. La [preuve de réception](audit/production_readiness/warehouse-web.json) couvre une étape du cycle transversal. Le cycle complet reste ouvert.
 
 Le [contrôle des encaissements](audit/production_readiness/concurrent_payment.json) et le [contrôle des ventes](audit/production_readiness/concurrent_sales.json) ont réussi sur deux sessions simultanées chacun. Les écritures et quantités ont été rapprochées, puis les données jetables retirées.
+
+Le [rejeu local du gate après 028](audit/production_readiness/release_gate_028_results.json) compte 22 contrôles réussis et 7 non lancés. La validation intégrale et la promotion restent ouvertes.

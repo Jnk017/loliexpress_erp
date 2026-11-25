@@ -1,0 +1,7 @@
+[
+  {
+    "account_opening_pass": true,
+    "warehouse_and_supplier_pass": true,
+    "role_guards_pass": true
+  }
+]
