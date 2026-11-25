@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/app_export.dart';
 import '../../services/financial_dashboard_service.dart';
@@ -430,27 +431,27 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
                 _handleExportData();
               },
             ),
-            ListTile(
+            if (RoleService.instance.canManageUsers) ListTile(
               leading: CustomIconWidget(
                 iconName: 'notifications',
                 color: theme.colorScheme.onSurface,
                 size: 24,
               ),
-              title: Text('Configurer les alertes',
+              title: Text('Alertes de sécurité',
                   style: theme.textTheme.bodyLarge),
               onTap: () {
                 Navigator.pop(context);
                 _handleSetAlerts();
               },
             ),
-            ListTile(
+            if (RoleService.instance.canManageUsers) ListTile(
               leading: CustomIconWidget(
                 iconName: 'history',
                 color: theme.colorScheme.onSurface,
                 size: 24,
               ),
               title:
-                  Text('Voir l\'historique', style: theme.textTheme.bodyLarge),
+                  Text('Journal d’audit', style: theme.textTheme.bodyLarge),
               onTap: () {
                 Navigator.pop(context);
                 _handleViewHistory();
@@ -522,52 +523,73 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
   }
 
   void _navigateToDetail(String type) {
-    // Navigate to detailed view
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Navigation vers détails: $type'),
-        duration: const Duration(seconds: 1),
-      ),
-    );
-  }
-
-  void _handleReceivableItemTap(Map<String, dynamic> receivable) {
     Navigator.pushNamed(
       context,
-      '/invoice-generation',
-      arguments: receivable,
+      type == 'expenses' ? AppRoutes.expenses : AppRoutes.reportsAnalytics,
     );
   }
 
-  void _handleSendReminder(Map<String, dynamic> receivable) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Rappel envoyé à ${receivable["customerName"]}'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
-    );
+  void _handleReceivableItemTap(Map<String, dynamic> receivable) =>
+      _handleViewInvoice(receivable);
+
+  Future<void> _openCustomerEmail(
+    Map<String, dynamic> receivable, {
+    required bool reminder,
+  }) async {
+    final email = (receivable['customerEmail'] as String?)?.trim();
+    if (email != null && email.isNotEmpty) {
+      final number = receivable['invoiceNumber'];
+      final query = reminder
+          ? 'subject=${Uri.encodeComponent('Rappel de paiement – facture $number')}'
+              '&body=${Uri.encodeComponent("Bonjour,\n\nLe solde de la facture $number est de ${receivable['amount']} ${receivable['currency']}.\n\nCordialement.")}'
+          : null;
+      try {
+        if (await launchUrl(Uri(scheme: 'mailto', path: email, query: query))) {
+          return;
+        }
+      } catch (_) {
+        // The system may not have an email app configured.
+      }
+    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(email == null || email.isEmpty
+          ? 'Aucune adresse e-mail renseignée pour ce client.'
+          : 'Impossible d’ouvrir la messagerie.'),
+    ));
   }
 
-  void _handleRecordPayment(Map<String, dynamic> receivable) {
-    Navigator.pushNamed(context, '/invoice-generation', arguments: receivable);
+  void _handleSendReminder(Map<String, dynamic> receivable) =>
+      _openCustomerEmail(receivable, reminder: true);
+
+  Future<void> _handleRecordPayment(Map<String, dynamic> receivable) async {
+    await Navigator.pushNamed(context, AppRoutes.invoiceGeneration,
+        arguments: receivable['id'] as String);
+    if (mounted) await _financialService.refreshFinancialMetrics();
   }
 
   void _handleViewInvoice(Map<String, dynamic> receivable) {
-    Navigator.pushNamed(
-      context,
-      '/invoice-generation',
-      arguments: receivable,
-    );
-  }
-
-  void _handleContactCustomer(Map<String, dynamic> receivable) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Contact client: ${receivable["customerName"]}'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Facture ${receivable['invoiceNumber']}"),
+        content: Text(
+          "${receivable['customerName']}\n"
+          "Échéance : ${ receivable['dueDate'] ?? 'non renseignée'}\n"
+          "Solde : ${receivable['amount']} ${receivable['currency']}",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Fermer'),
+          ),
+        ],
       ),
     );
   }
+
+  void _handleContactCustomer(Map<String, dynamic> receivable) =>
+      _openCustomerEmail(receivable, reminder: false);
 
   void _handleRecordExpense() => Navigator.pushNamed(context, AppRoutes.expenses);
 
@@ -577,30 +599,11 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
   void _handleGenerateReport() =>
       Navigator.pushNamed(context, AppRoutes.reportsAnalytics);
 
-  void _handleExportData() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Export des données en cours...'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
-    );
-  }
+  void _handleExportData() =>
+      Navigator.pushNamed(context, AppRoutes.reportsAnalytics, arguments: true);
 
-  void _handleSetAlerts() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Configuration des alertes'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
-    );
-  }
+  void _handleSetAlerts() =>
+      Navigator.pushNamed(context, AppRoutes.securityAlertCenter);
 
-  void _handleViewHistory() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Affichage de l\'historique'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
-    );
-  }
+  void _handleViewHistory() => Navigator.pushNamed(context, AppRoutes.auditLog);
 }

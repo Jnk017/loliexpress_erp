@@ -25,7 +25,9 @@ import './widgets/notes_widget.dart';
 import './widgets/payment_terms_widget.dart';
 
 class InvoiceGeneration extends StatefulWidget {
-  const InvoiceGeneration({super.key});
+  const InvoiceGeneration({super.key, this.paymentInvoiceId});
+
+  final String? paymentInvoiceId;
 
   @override
   State<InvoiceGeneration> createState() => _InvoiceGenerationState();
@@ -63,7 +65,15 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
     _generateInvoiceNumber();
     _loadInvoiceSources();
     _loadDefaultInvoiceCurrency();
-    _loadInvoicePermissions();
+    _loadInvoicePermissions().then((_) {
+      if (mounted && widget.paymentInvoiceId != null) {
+        if (_canIssueInvoice) {
+          _recordInvoicePayment();
+        } else {
+          _showErrorSnackBar('Encaissement indisponible pour ce compte.');
+        }
+      }
+    });
     _termsController.text =
         'Paiement à effectuer dans les $_paymentDays jours suivant la date de facturation. Pénalités de retard applicables selon les conditions générales de vente.';
   }
@@ -107,10 +117,12 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
     final client = Supabase.instance.client;
     setState(() => _isProcessing = true);
     try {
-      final invoices = await client.from('invoice_open_balances')
-          .select('invoice_id,currency,outstanding_amount')
-          .order('due_date')
-          .limit(100);
+      final balances = client.from('invoice_open_balances')
+          .select('invoice_id,currency,outstanding_amount');
+      final invoiceId = widget.paymentInvoiceId;
+      final invoices = invoiceId == null
+          ? await balances.order('due_date').limit(100)
+          : await balances.eq('invoice_id', invoiceId);
       final ids = invoices.map((invoice) => invoice['invoice_id'] as String).toList();
       if (!mounted) return;
       if (ids.isEmpty) {
@@ -207,7 +219,10 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
           ),
         ),
       );
-      if (mounted && saved == true) _showSuccessSnackBar('Encaissement enregistré.');
+      if (mounted && saved == true) {
+        _showSuccessSnackBar('Encaissement enregistré.');
+        if (widget.paymentInvoiceId != null) Navigator.pop(context);
+      }
     } catch (_) {
       if (mounted) _showErrorSnackBar('Les factures à encaisser sont indisponibles.');
     } finally {

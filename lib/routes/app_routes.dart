@@ -71,7 +71,10 @@ class AppRoutes {
         aiAssistant: (context) => const AiAssistantScreen(),
         financialDashboard: (context) => const FinancialDashboard(),
         splash: (context) => const SplashScreen(),
-        invoiceGeneration: (context) => const InvoiceGeneration(),
+        invoiceGeneration: (context) {
+          final argument = ModalRoute.of(context)?.settings.arguments;
+          return InvoiceGeneration(paymentInvoiceId: argument is String ? argument : null);
+        },
         deliveryTracking: (context) => const DeliveryTracking(),
         customerManagement: (context) => const CustomerManagement(),
         barcodeScanner: (context) => const BarcodeScanner(),
@@ -92,7 +95,8 @@ class AppRoutes {
         },
         notificationsScreen: (context) => const NotificationsCenter(),
         notificationsCenter: (context) => const NotificationsCenter(),
-        reportsAnalytics: (context) => const ReportsAnalyticsScreen(),
+        reportsAnalytics: (context) => ReportsAnalyticsScreen(
+            openExport: ModalRoute.of(context)?.settings.arguments == true),
         settingsConfiguration: (context) => const SettingsConfigurationScreen(),
         userRoleManagement: (context) => const UserRoleManagementScreen(),
         auditLog: (context) => const AuditLogScreen(),

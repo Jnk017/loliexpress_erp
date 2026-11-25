@@ -194,7 +194,7 @@ class FinancialDashboardService {
             customer_id,
             customers (
               company_name,
-              contact_person
+              email
             )
           ''').inFilter('payment_status', [
         'pending',
@@ -219,6 +219,7 @@ class FinancialDashboardService {
 
         return {
           'id': invoice['id'],
+          'customerEmail': customer?['email'],
           'customerName': customer?['company_name'] ?? 'Unknown',
           'customerAvatar':
               'https://ui-avatars.com/api/?name=${customer?['company_name']?.replaceAll(' ', '+') ?? 'U'}',

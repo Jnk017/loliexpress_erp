@@ -207,3 +207,10 @@ Rendre disponible un checkout exploitable du dépôt privé à `5a68a99` avec so
 - Création d’un entrepôt depuis les paramètres et d’un fournisseur depuis un achat, avec sélection immédiate du fournisseur. Les raccourcis financiers ouvrent les écrans existants.
 - `audit/verify_operational_setup.sql` : ouverture, références et contrôles de rôle PASS. `audit/verify_operational_treasury.sql` : rapprochement stock et trésorerie PASS. Les données de ces vérifications sont annulées en fin de transaction.
 - Tests Flutter : 18/18 PASS. Vérification des nouveaux écrans sur téléphone en attente.
+
+## Câblage du tableau financier et du partage des documents
+
+- Les actions des créances utilisent la facture sélectionnée. L’encaissement passe par le RPC existant et le tableau se rafraîchit au retour. Le rappel ouvre un brouillon dans la messagerie du téléphone.
+- Les options financières ouvrent les rapports, les alertes de sécurité et le journal d’audit. Le partage CSV produit un fichier. Les documents privés sont récupérés avec la session Supabase de l’utilisateur avant partage.
+- Les lectures REST `invoices` avec le contact client et `invoice_open_balances` répondent HTTP 200 avec le compte admin sur le projet de gate. Aucun enregistrement de facture disponible pendant cette sonde. Tests Flutter 18/18.
+- À valider sur Android : ouverture de la messagerie, encaissement sur facture réelle du gate et partage des fichiers. Les préférences de notification ne sont pas encore enregistrées côté serveur et les canaux de livraison restent à qualifier.

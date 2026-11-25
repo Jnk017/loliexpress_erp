@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../services/document_service.dart';
 import '../../../widgets/custom_app_bar.dart';
 
@@ -20,7 +21,8 @@ class _DocumentPreviewWidgetState extends State<DocumentPreviewWidget> {
   final _documentService = DocumentService();
   String? _signedUrl;
   bool _isLoading = true;
-  String? _error;
+  bool _hasError = false;
+  bool _isSharing = false;
 
   @override
   void initState() {
@@ -31,22 +33,47 @@ class _DocumentPreviewWidgetState extends State<DocumentPreviewWidget> {
   Future<void> _loadSignedUrl() async {
     setState(() {
       _isLoading = true;
-      _error = null;
+      _hasError = false;
     });
 
     try {
       final url = await _documentService.getDocumentUrl(
         widget.document['file_path'] as String,
       );
+      if (!mounted) return;
       setState(() {
         _signedUrl = url;
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (_) {
+      if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _hasError = true;
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _shareDocument() async {
+    if (_isSharing) return;
+    setState(() => _isSharing = true);
+    try {
+      final document = widget.document;
+      final bytes = await _documentService.downloadDocument(
+        document['file_path'] as String,
+      );
+      if (!mounted) return;
+      await SharePlus.instance.share(ShareParams(
+        files: [XFile.fromData(bytes, mimeType: document['mime_type'] as String)],
+        fileNameOverrides: [document['file_name'] as String],
+      ));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Impossible de récupérer le document.')),
+      );
+    } finally {
+      if (mounted) setState(() => _isSharing = false);
     }
   }
 
@@ -61,15 +88,9 @@ class _DocumentPreviewWidgetState extends State<DocumentPreviewWidget> {
         actions: [
           if (_signedUrl != null)
             IconButton(
-              icon: const Icon(Icons.download),
-              onPressed: () {
-                // TODO: Implement download functionality
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Téléchargement non encore implémenté'),
-                  ),
-                );
-              },
+              tooltip: 'Partager le fichier',
+              icon: const Icon(Icons.share),
+              onPressed: _isSharing ? null : _shareDocument,
             ),
         ],
       ),
@@ -82,14 +103,14 @@ class _DocumentPreviewWidgetState extends State<DocumentPreviewWidget> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_error != null) {
+    if (_hasError) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            Text('Erreur: $_error'),
+            const Text('Impossible de charger le document.'),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadSignedUrl,
@@ -140,16 +161,9 @@ class _DocumentPreviewWidgetState extends State<DocumentPreviewWidget> {
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
-            onPressed: () {
-              // TODO: Open in external viewer or download
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Ouverture externe non encore implémentée'),
-                ),
-              );
-            },
-            icon: const Icon(Icons.open_in_new),
-            label: const Text('Ouvrir dans une application externe'),
+            onPressed: _isSharing ? null : _shareDocument,
+            icon: const Icon(Icons.share),
+            label: const Text('Partager le fichier'),
           ),
         ],
       ),

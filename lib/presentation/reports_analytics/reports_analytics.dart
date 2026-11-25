@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -15,7 +18,9 @@ import './widgets/receivables_report_widget.dart';
 import './widgets/report_card_widget.dart';
 
 class ReportsAnalyticsScreen extends StatefulWidget {
-  const ReportsAnalyticsScreen({super.key});
+  const ReportsAnalyticsScreen({super.key, this.openExport = false});
+
+  final bool openExport;
 
   @override
   State<ReportsAnalyticsScreen> createState() => _ReportsAnalyticsScreenState();
@@ -89,7 +94,10 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
     } catch (e) {
       debugPrint('Error initializing realtime data: $e');
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+        if (widget.openExport) _showExportOptions();
+      }
     }
   }
 
@@ -139,14 +147,6 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
             ListTile(
               leading: Icon(Icons.table_chart, color: Colors.green),
               title: Text('Exporter en CSV'),
-              onTap: () {
-                Navigator.pop(context);
-                _exportToCSV();
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.email, color: Colors.blue),
-              title: Text('Envoyer par Email'),
               onTap: () {
                 Navigator.pop(context);
                 _exportToCSV();
@@ -706,6 +706,13 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
   }
 
   Future<void> _exportToPDF() async {
+    if (_financialMetrics == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Les données financières sont indisponibles.')),
+      );
+      return;
+    }
+
     final pdf = pw.Document();
     pdf.addPage(
       pw.Page(
@@ -741,6 +748,13 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
   }
 
   Future<void> _exportToCSV() async {
+    if (_financialMetrics == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Les données financières sont indisponibles.')),
+      );
+      return;
+    }
+
     final buffer = StringBuffer();
     buffer.writeln('Indicateur,Valeur,Devise');
     buffer
@@ -751,7 +765,8 @@ class _ReportsAnalyticsScreenState extends State<ReportsAnalyticsScreen>
         'Dépenses Totales,${_financialMetrics?['totalExpenses'] ?? 0},FC');
 
     await SharePlus.instance.share(ShareParams(
-        text: buffer.toString(), subject: 'Rapport LoliExpress CSV'));
+        files: [XFile.fromData(Uint8List.fromList(utf8.encode(buffer.toString())), mimeType: 'text/csv')],
+        fileNameOverrides: const ['rapport_loliexpress.csv'], subject: 'Rapport LoliExpress CSV'));
   }
 
   Widget _buildAgingBucket(String label, double amount, {bool isBold = false}) {
