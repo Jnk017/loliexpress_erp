@@ -247,3 +247,5 @@ La [machine d’état](audit/production_readiness/STATE.md) porte les exigences 
 ## Reprise — lot 026
 
 Le [lot trésorerie](audit/production_readiness/RPC_SECURITY_MATRIX.md) ferme l’écriture directe dans les journaux et les comptes, tout en conservant les opérations via les six signatures financières. Le [suivi de reprise](audit/production_readiness/STATE.md) distingue ce lot des contrôles de concurrence, des parcours UI et des autres RPC.
+
+Le premier scénario multisession du lot passe sur Gate. Deux transferts simultanés ont donné une seule sortie de six unités, un refus faute de stock et un journal rapproché. [Preuve](audit/production_readiness/concurrent_transfer.json)

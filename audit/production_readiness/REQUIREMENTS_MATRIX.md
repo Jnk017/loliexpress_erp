@@ -23,3 +23,6 @@
 | SEC-001-A | P0 | Six signatures financières et frontière d’écriture des journaux | Matrice RPC, refus par rôle et rapprochement en CDF et USD |
 | SEC-001-B | P0 | Autres signatures privilégiées | Revue et tests des 35 signatures restantes |
 | REL-001-A | P0 | Orchestrateur local indépendant | Rapport machine-readable qui distingue les tests réussis, en échec et non lancés |
+| DB-002-A | P0 | Script de rejeu de baseline | Refus des cibles existantes et rejeu réel sur une cible autorisée |
+| SEC-002-A | P0 | Quatre tables à accès indirect | Contrôles REST, vues et fonctions indirectes |
+| PERF-003-A | P0 | Transferts concurrents sur un stock limité | Sessions distinctes, chevauchement, quantité et journal rapprochés, fixtures retirées |

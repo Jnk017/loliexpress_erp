@@ -56,6 +56,8 @@ def main():
     parser.add_argument("--deno", default="deno")
     parser.add_argument("--web-defines", type=Path)
     parser.add_argument("--expected-sha", required=True)
+    parser.add_argument("--with-gate-fixtures", action="store_true",
+                        help="Autorise la création temporaire de fixtures sur Gate")
     parser.add_argument("--sql", choices=SQL_TESTS, help=argparse.SUPPRESS)
     args = parser.parse_args()
     os.chdir(ROOT)
@@ -128,12 +130,20 @@ def main():
         else:
             record(test_id, reason="PAT absent de l’environnement", environment=PROJECTS["gate"][1])
 
+    if args.with_gate_fixtures and env.get("SUPABASE_PAT"):
+        record("DB-CONCURRENT-TRANSFER", [
+            "python3", str(Path(__file__).with_name("test_concurrent_transfer.py")),
+            "--evidence", str(args.output / "concurrent_transfer.json"),
+        ], environment=PROJECTS["gate"][1])
+    else:
+        record("DB-CONCURRENT-TRANSFER", reason="Fixtures Gate non activées ou PAT absent")
+
     tests = sorted(str(path.relative_to(ROOT)) for path in (ROOT / "supabase/functions").rglob("*_test.ts"))
     record("EDGE-DENO", [args.deno, "test", "--cached-only", *tests] if tests else None,
            reason=None if tests else "Suite Deno absente")
     for check, reason in {
         "DB-BASELINE": "Rejeu sur une cible vierge autorisée à raccorder",
-        "DB-CONCURRENCY": "Suite multisession à raccorder",
+        "DB-CONCURRENCY-OTHER": "Autres scénarios multisession à raccorder",
         "EDGE-HTTP": "Rejeu HTTP lié au candidat à raccorder",
         "WEB-E2E": "Suite métier Playwright à raccorder",
         "ANDROID": "APK et preuves appareil du candidat requis",

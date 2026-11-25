@@ -30,3 +30,6 @@ Gate initial `6a98532ebf5217c802cdab953c2af9201f5afe72`. Main `5a68a99`. PR #13 
 | REL-001-A | P0 | DONE | [Orchestrateur](run_release_gate.py) et statuts explicites. | [Rapport](release_gate_results.json) produit, le gate sort en erreur tant que des contrôles restent non exécutés. | `ed4b52d` |
 | DB-002-A | P0 | IMPLEMENTED | [Rejeu](replay_baseline.py) de la baseline, du registre numéroté et des suites SQL. | Garde de refus de Gate testée localement. Rejeu complet bloqué sur une cible vierge autorisée. | Lot de preuves 026 |
 | SEC-002-A | P0 | TEST_PASSED | Contrôles REST et recherche de vues dépendantes. | 12/12 lectures directes sans données pour trois rôles, zéro vue dépendante. Revue des fonctions indirectes à achever. | Lot de preuves 026 |
+| PERF-003-A | P0 | DONE | Deux transferts de six unités sur un stock de dix. Le premier nettoyage a nécessité l’identité d’audit. Le script la définit désormais. | [Preuve multisession](concurrent_transfer.json), un transfert réussi, un refus, solde conservé, nettoyage confirmé. | Lot de concurrence `test_concurrent_transfer.py` |
+
+Les autres scénarios de concurrence sont ouverts. Le test de transfert est raccordé au gate avec `--with-gate-fixtures` sur le projet Gate.
