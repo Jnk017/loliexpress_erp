@@ -7,10 +7,39 @@ class NotificationService {
   // Resend API key from environment
   static const String _resendApiKey = String.fromEnvironment('RESEND_API_KEY');
 
+  static const centerTypes = <String, String>{
+    'new_order': 'Nouvelles commandes',
+    'low_stock': 'Stock faible',
+    'payment_received': 'Paiements reçus',
+    'overdue_invoice': 'Factures échues',
+    'order_delivered': 'Livraisons effectuées',
+  };
+
+  Future<Set<String>> loadCenterPreferences() async {
+    final user = _client.auth.currentUser;
+    if (user == null) throw StateError('Session indisponible');
+    final row = await _client
+        .from('notification_center_preferences')
+        .select('hidden_types')
+        .eq('user_id', user.id)
+        .maybeSingle();
+    return (row?['hidden_types'] as List? ?? const []).cast<String>().toSet();
+  }
+
+  Future<void> saveCenterPreferences(Set<String> hiddenTypes) async {
+    final user = _client.auth.currentUser;
+    if (user == null) throw StateError('Session indisponible');
+    await _client.from('notification_center_preferences').upsert({
+      'user_id': user.id,
+      'hidden_types': hiddenTypes.toList(),
+    });
+  }
+
   /// Get notifications for current user
   Future<List<Map<String, dynamic>>> getUserNotifications({
     int limit = 50,
     String? status,
+    Set<String> hiddenTypes = const {},
   }) async {
     try {
       final user = _client.auth.currentUser;
@@ -27,7 +56,12 @@ class NotificationService {
           status != null ? baseQuery.eq('status', status) : baseQuery;
 
       // Apply ordering and limit
-      final response = await filteredQuery
+      final excluded = centerTypes.keys.where(hiddenTypes.contains).toList();
+      final visibleQuery = excluded.isEmpty
+          ? filteredQuery
+          : filteredQuery.not('notification_type', 'in', "(${excluded.join(',')})");
+
+      final response = await visibleQuery
           .order('created_at', ascending: false)
           .limit(limit);
 

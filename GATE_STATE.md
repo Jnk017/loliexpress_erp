@@ -214,3 +214,10 @@ Rendre disponible un checkout exploitable du dépôt privé à `5a68a99` avec so
 - Les options financières ouvrent les rapports, les alertes de sécurité et le journal d’audit. Le partage CSV produit un fichier. Les documents privés sont récupérés avec la session Supabase de l’utilisateur avant partage.
 - Les lectures REST `invoices` avec le contact client et `invoice_open_balances` répondent HTTP 200 avec le compte admin sur le projet de gate. Aucun enregistrement de facture disponible pendant cette sonde. Tests Flutter 18/18.
 - À valider sur Android : ouverture de la messagerie, encaissement sur facture réelle du gate et partage des fichiers. Les préférences de notification ne sont pas encore enregistrées côté serveur et les canaux de livraison restent à qualifier.
+
+## Préférences du centre de notifications
+
+- Migration 023 appliquée à `loliexpress-gate-test` via l’API Management HTTPS après confirmation du projet.
+- Chaque compte choisit les types affichés dans son centre. Les préférences sont relues depuis Supabase et le filtre est appliqué avant la limite de résultats.
+- `audit/verify_notification_center_preferences.sql` : persistance et isolation entre deux comptes PASS, transaction annulée. Analyse Flutter sans erreur ni avertissement, quatre remarques de style préexistantes. Tests Flutter 18/18.
+- La livraison externe par e-mail, push et SMS est hors de ce réglage. Parcours Android à vérifier.

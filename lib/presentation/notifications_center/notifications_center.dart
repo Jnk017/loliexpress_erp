@@ -52,15 +52,20 @@ class _NotificationsCenterState extends State<NotificationsCenter> {
     });
 
     try {
-      final notifications = await _notificationService.getUserNotifications();
+      final hiddenTypes = await _notificationService.loadCenterPreferences();
+      final notifications = await _notificationService.getUserNotifications(
+        hiddenTypes: hiddenTypes,
+      );
+      if (!mounted) return;
       setState(() {
         _allNotifications = notifications;
         _filterNotifications();
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (_) {
+      if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = 'Impossible de charger les notifications.';
         _isLoading = false;
       });
     }
@@ -157,15 +162,16 @@ class _NotificationsCenterState extends State<NotificationsCenter> {
     ).showSnackBar(SnackBar(content: Text(message), backgroundColor: color));
   }
 
-  void _showNotificationSettings() {
-    showModalBottomSheet(
+  Future<void> _showNotificationSettings() async {
+    final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
       ),
-      builder: (context) => const NotificationSettingsWidget(),
+      builder: (context) => NotificationSettingsWidget(service: _notificationService),
     );
+    if (mounted && saved == true) await _loadNotifications();
   }
 
   @override
