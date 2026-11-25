@@ -1,5 +1,12 @@
 # Gate final LoliExpress ERP
 
+## Achats, ventes, stock et trésorerie
+
+- Migration 020 appliquée au projet de test. L'encaissement client, le règlement fournisseur et le paiement des dépenses exigent désormais une caisse ou une banque active dans leur devise. La dette, la créance ou la dépense et le mouvement de trésorerie sont mis à jour dans une transaction unique. Les anciens appels authentifiés sans compte sont fermés.
+- [Scénario réconcilié](audit/verify_operational_treasury.sql) sur données annulées : stock `10 + 8 - 3 = 15`, caisse CDF `100 + 25 - 15 = 110`, banque CDF `200 - 40 + 35 = 195`, caisse USD `10 - 2 = 8`. Refus des comptes d'une autre devise et contrôle des tentatives répétées. Les 13 assertions de remise et retour ainsi que le test transfert/comptage sont repassés.
+- Flutter : 18 tests PASS. Sélecteur dans Encaissement, Règlement fournisseur et Paiement de dépense. Soldes par compte et agrégats séparés CDF/USD. Créances nettes des avoirs, dépenses mensuelles selon date de paiement.
+- Au contrôle avant migration, aucun compte de caisse ou de banque actif sur le projet de test. Les soldes d'ouverture historiques n'ont pas été imputés. Les parcours sur téléphone nécessitent un nouvel APK et des comptes de test configurés.
+
 ## Retour Android — opérations de stock
 
 - Migration 019 appliquée au projet de test gardé. Transfert atomique et inventaire physique par article et entrepôt, avec motif, contrôle serveur du rôle et journalisation. Les options sont disponibles dans Actions rapides pour admin et magasinier.

@@ -99,12 +99,15 @@ class ReceivablesCardWidget extends StatelessWidget {
             ),
             SizedBox(height: 0.5.h),
             Text(
-              _formatCurrency(amount, currency),
+              [
+                _formatCurrency(amount, currency),
+                if (data['amountUsd'] case final num usd) _formatCurrency(usd, 'USD'),
+              ].join('\n'),
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
                 fontSize: 18.sp,
               ),
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
           ],
@@ -114,7 +117,7 @@ class ReceivablesCardWidget extends StatelessWidget {
   }
 
   String _formatCurrency(num amount, String currency) {
-    final formatted = amount.toStringAsFixed(0).replaceAllMapped(
+    final formatted = amount.toStringAsFixed(currency == 'USD' ? 2 : 0).replaceAllMapped(
           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
           (Match m) => '${m[1]} ',
         );

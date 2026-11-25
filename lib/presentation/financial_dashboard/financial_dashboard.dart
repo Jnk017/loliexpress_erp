@@ -324,7 +324,7 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
                           child: CashPositionCardWidget(
                             data: _financialData["cashPosition"]
                                 as Map<String, dynamic>,
-                            onTap: () => _navigateToDetail('cash-position'),
+                            onTap: _showTreasuryAccounts,
                           ),
                         ),
                         SizedBox(width: 3.w),
@@ -517,6 +517,49 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
     );
   }
 
+  void _showTreasuryAccounts() {
+    final future = _financialService.getTreasuryAccounts();
+    showDialog<void>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text('Caisse et banque'),
+        children: [
+          FutureBuilder<List<List<Map<String, dynamic>>>>(
+            future: future,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return const ListTile(title: Text('Soldes indisponibles.'));
+              }
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final groups = snapshot.data!;
+              if (groups.every((group) => group.isEmpty)) {
+                return const ListTile(title: Text('Aucun compte actif.'));
+              }
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (final group in groups.indexed)
+                    for (final row in group.$2)
+                      ListTile(
+                        title: Text((row['name'] ?? row['account_name']) as String),
+                        subtitle: Text(group.$1 == 0 ? 'Caisse' : 'Banque'),
+                        trailing: Text("${row['current_balance']} ${row['currency']}"),
+                      ),
+                ],
+              );
+            },
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Fermer'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _navigateToDetail(String type) {
     // Navigate to detailed view
     ScaffoldMessenger.of(context).showSnackBar(
@@ -545,13 +588,7 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
   }
 
   void _handleRecordPayment(Map<String, dynamic> receivable) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-            'Enregistrement du paiement pour ${receivable["customerName"]}'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
-    );
+    Navigator.pushNamed(context, '/invoice-generation', arguments: receivable);
   }
 
   void _handleViewInvoice(Map<String, dynamic> receivable) {

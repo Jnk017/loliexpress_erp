@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import '../../widgets/treasury_account_picker.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -138,7 +139,9 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
       if (!mounted || invoice == null) return;
       var amountText = '';
       var reference = '';
-      var method = 'Espèces';
+      final account = await pickTreasuryAccount(context, invoice['currency'] as String, incoming: true);
+      if (!mounted || account == null) return;
+      final requestId = newRequestId();
       var busy = false;
       String? error;
       final saved = await showDialog<bool>(
@@ -162,13 +165,6 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
                     decoration: const InputDecoration(labelText: 'Référence du paiement'),
                     onChanged: (value) => reference = value.trim(),
                   ),
-                  DropdownButton<String>(
-                    value: method,
-                    items: const ['Espèces', 'Virement', 'Mobile Money']
-                        .map((value) => DropdownMenuItem(value: value, child: Text(value)))
-                        .toList(),
-                    onChanged: busy ? null : (value) => updateDialog(() => method = value ?? method),
-                  ),
                   if (error != null) Text(error!),
                 ]),
               ),
@@ -186,16 +182,15 @@ class _InvoiceGenerationState extends State<InvoiceGeneration> {
                     }
                     updateDialog(() { busy = true; error = null; });
                     try {
-                      final result = await client.rpc('record_payment', params: {
+                      await client.rpc('receive_invoice_payment', params: {
                         'p_invoice_id': invoice['invoice_id'],
                         'p_amount': amount,
                         'p_currency': invoice['currency'],
-                        'p_payment_method': method,
-                        'p_reference_number': reference,
+                        'p_reference': reference,
+                        'p_kind': account.kind,
+                        'p_account_id': account.id,
+                        'p_request_id': requestId,
                       });
-                      if (result is! Map || result['success'] != true) {
-                        throw const FormatException('Encaissement refusé');
-                      }
                       if (dialogContext.mounted) Navigator.pop(dialogContext, true);
                     } catch (_) {
                       if (dialogContext.mounted) updateDialog(() {

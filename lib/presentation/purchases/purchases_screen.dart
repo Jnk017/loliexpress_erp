@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/treasury_account_picker.dart';
 import 'package:sizer/sizer.dart';
 import 'package:intl/intl.dart';
 
@@ -233,6 +234,8 @@ class _PurchasesScreenState extends State<PurchasesScreen>
         );
         if (!mounted || bill == null) return;
         final requestId = newRequestId();
+        final account = await pickTreasuryAccount(context, bill['currency'] as String, incoming: false);
+        if (!mounted || account == null) return;
         await _submitPurchaseOperation('Règlement fournisseur',
           ['Montant (${bill['currency']})', 'Référence du règlement'],
           (values) => service.recordSupplierBillPayment(
@@ -241,6 +244,8 @@ class _PurchasesScreenState extends State<PurchasesScreen>
             currency: bill['currency'] as String,
             reference: values[1],
             requestId: requestId,
+            accountKind: account.kind,
+            accountId: account.id,
           ),
         );
       }

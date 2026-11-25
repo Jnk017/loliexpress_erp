@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/treasury_account_picker.dart';
 import 'package:sizer/sizer.dart';
 import '../../services/expense_service.dart';
 import '../../services/role_service.dart';
@@ -241,7 +242,7 @@ class _ExpensesScreenState extends State<ExpensesScreen>
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   ElevatedButton.icon(
-                    onPressed: () => _markAsPaid(expense['id']),
+                    onPressed: () => _markAsPaid(expense['id'] as String, expense['currency'] as String),
                     icon: const Icon(Icons.payment),
                     label: const Text('Marquer Payé'),
                     style:
@@ -341,9 +342,11 @@ class _ExpensesScreenState extends State<ExpensesScreen>
     }
   }
 
-  Future<void> _markAsPaid(String id) async {
+  Future<void> _markAsPaid(String id, String currency) async {
+    final account = await pickTreasuryAccount(context, currency, incoming: false);
+    if (!mounted || account == null) return;
     try {
-      await _expenseService.markAsPaid(id);
+      await _expenseService.markAsPaid(id, accountKind: account.kind, accountId: account.id);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

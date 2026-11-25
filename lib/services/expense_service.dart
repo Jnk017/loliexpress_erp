@@ -114,20 +114,16 @@ class ExpenseService {
     }
   }
 
-  Future<void> markAsPaid(String expenseId, {String? comment}) async {
-    try {
-      final userId = _client.auth.currentUser?.id;
-      await _client.from('expenses').update({
-        'status': 'paid',
-        'paid_by': userId,
-        'paid_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('id', expenseId);
-
-      await _addHistory(expenseId, 'paid', comment);
-    } catch (e) {
-      throw Exception('Erreur paiement: $e');
-    }
+  Future<void> markAsPaid(
+    String expenseId, {
+    required String accountKind,
+    required String accountId,
+  }) async {
+    await _client.rpc('pay_expense_from_account', params: {
+      'p_expense_id': expenseId,
+      'p_kind': accountKind,
+      'p_account_id': accountId,
+    });
   }
 
   Future<void> markAsExecuted(String expenseId, {String? receiptUrl}) async {
