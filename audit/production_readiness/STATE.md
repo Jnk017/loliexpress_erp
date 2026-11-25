@@ -33,3 +33,13 @@ Gate initial `6a98532ebf5217c802cdab953c2af9201f5afe72`. Main `5a68a99`. PR #13 
 | PERF-003-A | P0 | DONE | Deux transferts de six unités sur un stock de dix. Le premier nettoyage a nécessité l’identité d’audit. Le script la définit désormais. | [Preuve multisession](concurrent_transfer.json), un transfert réussi, un refus, solde conservé, nettoyage confirmé. | Lot de concurrence `test_concurrent_transfer.py` |
 
 Les autres scénarios de concurrence sont ouverts. Le test de transfert est raccordé au gate avec `--with-gate-fixtures` sur le projet Gate.
+
+## Lot 027
+
+| ID | Priorité | État | Correction et preuve |
+|---|---|---|---|
+| SEC-003-B | P0 | DONE | Suppression de la mise à jour directe par le livreur. Lecture affectée, écriture refusée et régressions validées sur Gate. [Résultats](delivery_boundary_results.json) |
+| SEC-001-B | P0 | IN_PROGRESS | Six signatures supplémentaires examinées sur les commandes, la livraison et le stock. Les tests d’autorisation individuels restent à compléter. |
+| PERF-003-B | P0 | TEST_PASSED | Rejeu séquentiel après une remise réussie et rollback après une tentative avec stock insuffisant. Deux assertions de la [suite de remise](delivery_boundary_results.json). La confirmation multisession reste ouverte. |
+
+Reprise exécutable : ajouter un deuxième scénario à sessions réelles sur la confirmation de livraison. Utiliser les fixtures de `audit/verify_p1a_handover.sql` et le harnais `test_concurrent_transfer.py`. Vérifier les références des écritures et supprimer exclusivement les fixtures créées pour l’essai.

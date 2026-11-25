@@ -18,3 +18,16 @@ Pour ces six signatures, le propriétaire effectif dans le catalogue Gate est `p
 [Contrôle des droits](verify_treasury_rpc_boundary.sql) · [Ouverture des comptes](../verify_operational_setup.sql) · [Paiements et rapprochement](../verify_operational_treasury.sql) · [Résultats](release_gate_results.json)
 
 Le verdict du lot couvre les permissions et la régression séquentielle sur Gate. Les tests multisession et les parcours UI relèvent de leurs exigences P0 respectives.
+
+## Livraison et stock, lot 027
+
+| Signature | Scope et comportement vérifiés | Preuve |
+|---|---|---|
+| `assign_delivery_warehouse(uuid,uuid)` | Admin ou magasinier actif. Entrepôt actif, livraison encore en attente. Écrit l’affectation sans mouvement de stock. | Handover CDF/USD. |
+| `confirm_delivery(uuid,text,text)` | Admin ou livreur de la tournée. Verrous sur livraison, commande et quantités. Contrôle du journal, de la quantité et du statut. Écrit remise, mouvements, statuts et audit. | Remise et reprise séquentielle, une seule sortie, rollback après échec. |
+| `transition_order_status(uuid,order_status,text)` | Admin, magasinier, commercial affecté, ou client B2B propriétaire pour son annulation avant confirmation. L’ordre des statuts est vérifié par trigger. | Vérification P0.a et garde de remise. |
+| `adjust_stock(uuid,uuid,integer,text,uuid,text)` | Admin ou magasinier. Contrôle du produit, de l’entrepôt, du delta et de la concordance avec le journal. | Vérifications P0.a, transfert et comptage. |
+| `transfer_stock(uuid,uuid,uuid,integer,text)` | Admin ou magasinier. Valide les deux entrepôts et verrouille dans un ordre stable. Deux écritures opposées via `adjust_stock`. | Test positif, refus B2B, conservation sous concurrence. |
+| `record_physical_stock_count(uuid,uuid,integer,integer,text)` | Admin ou magasinier. Vérifie la quantité attendue sous verrou et audite le comptage, même sans mouvement. | Tests positif, quantité périmée et refus B2B. |
+
+Ces six fonctions sont privilégiées avec un `search_path` vide. L’audit direct des rôles et privilèges n’est pas terminé pour chaque signature. La migration 027 retire la politique de mise à jour directe du livreur. Sa lecture sur les tournées affectées et la confirmation via RPC sont conservées. [Résultats Gate](delivery_boundary_results.json)

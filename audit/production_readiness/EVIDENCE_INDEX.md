@@ -11,3 +11,4 @@
 - Quatre tables protégées. [12 lectures REST](rest_rpc_only.json) sans exposition de données et [inventaire des vues dépendantes](rpc_only_views.json) vide. [Requête reproductible](rpc_only_view_inventory.sql).
 - [Rejeu de baseline](replay_baseline.py). Garde testée contre la référence du Gate existant, qui est refusée avant toute connexion. Rejeu réel en attente d’un projet vierge autorisé.
 - [Test multisession du transfert](test_concurrent_transfer.py) et [preuve](concurrent_transfer.json) sur le même code applicatif que `ed4b52d`. Deux sessions distinctes et chevauchantes, un refus faute de stock et stock total conservé. Les fixtures du premier essai et du rejeu ont été retirées.
+- Migration 027 appliquée au projet Gate. [Frontière livreur](verify_delivery_client_boundary.sql) et [20 assertions ciblées, remise, commande et stock](delivery_boundary_results.json).

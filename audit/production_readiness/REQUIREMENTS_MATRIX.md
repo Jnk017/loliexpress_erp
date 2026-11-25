@@ -26,3 +26,4 @@
 | DB-002-A | P0 | Script de rejeu de baseline | Refus des cibles existantes et rejeu réel sur une cible autorisée |
 | SEC-002-A | P0 | Quatre tables à accès indirect | Contrôles REST, vues et fonctions indirectes |
 | PERF-003-A | P0 | Transferts concurrents sur un stock limité | Sessions distinctes, chevauchement, quantité et journal rapprochés, fixtures retirées |
+| SEC-003-B | P0 | Livraison affectée accessible en lecture avec confirmation par RPC | Mise à jour directe refusée et régression de remise réussie |
