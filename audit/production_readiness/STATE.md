@@ -79,3 +79,8 @@ Gate local `f7d70c3` : [22 contrôles réussis et 7 non lancés](release_gate_02
 
 
 La [preuve acheteur → magasinier](purchase-web.json) est rattachée au code `308435a` et vérifiée sur Gate. Les deux écritures ont été demandées depuis Flutter Web, avec deux sessions séparées et réconciliation PostgreSQL. Les références de préparation ont été insérées par le harnais. Le cycle transversal entier ne peut donc pas encore être validé.
+
+| ID | Priorité | État | Correction et preuve |
+|---|---|---|---|
+| SEC-001-F1 | P0 | DONE | Annulation d’achat par l’acheteur, répétition et refus après réception ou facturation. Grants et refus B2B répertoriés dans le lot F. [Preuve](rpc_boundary_followup.json) |
+| SEC-001-B1 | P0 | TEST_PASSED | Cinq refus supplémentaires du livreur sur les RPC de stock et de transition. Contrôles positifs de remise, stock et commande rejoués. [Preuve](rpc_boundary_followup.json) |

@@ -37,3 +37,5 @@
 | SEC-001-D | P0 | Onze prédicats de rôle | Matrice de dix états de profil et grants vérifiés |
 | SEC-001-E | P0 | Réglages, progression et rapport administrateur | Refus, accès légitime et régressions métier |
 | SEC-001-F | P0 | Dix signatures du dernier groupe | Privilèges effectifs, refus et tests positifs individuels |
+| SEC-001-F1 | P0 | Annulation d’achat | Annulation autorisée et idempotente, refus après réception ou facturation |
+| SEC-001-B1 | P0 | Limiter les opérations de stock et de transition du livreur | Cinq refus et régression du parcours de remise |

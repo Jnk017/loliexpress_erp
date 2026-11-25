@@ -60,3 +60,9 @@ Les propriétaires et configurations de chemins sont inventoriés dans le catalo
 ## Refus et grants supplémentaires
 
 `cancel_unreceived_purchase`, `complete_password_setup`, `create_purchase_with_items`, `get_customer_return_lines`, `inspect_customer_return`, `receive_purchase_item`, `record_delivery_fee_credit`, `record_return_item_credit`, `register_supplier_bill` et `save_invoice_draft` passent le contrôle d’exécution anonyme/authentifiée et les refus B2B ou sans identité, selon le contrat. La clôture individuelle de ce groupe exige encore de lier les tests positifs et tous les cas d’isolement à chaque signature. [Preuve](remaining_rpc_grants_results.json)
+
+## Vérifications complémentaires des frontières stock et achats
+
+Les cinq refus du livreur couvrent l’affectation d’entrepôt, la transition de commande, l’ajustement, le transfert et le comptage. La lecture affectée, l’entrée dans le contrôle de confirmation pour le livreur affecté et le refus du profil absent restent testés. Les suites positives de stock et de remise ont été rejouées. [Résultats](rpc_boundary_followup.json)
+
+`cancel_unreceived_purchase(uuid)` est une fonction transactionnelle du schéma `public`, propriétaire `postgres`, `SECURITY DEFINER` et `search_path` vide. Le service achats Flutter l’appelle avec une session authentifiée. Elle exige un acheteur ou administrateur actif. Sous verrou de l’achat, elle refuse les achats avec réception ou facture, écrit le statut annulé et accepte la répétition d’une annulation valide. Le contrôle précédent couvre le refus B2B et les grants. Le nouveau test couvre l’acheteur, l’annulation, sa répétition et les deux interdictions. [Test](verify_purchase_cancellation.sql)

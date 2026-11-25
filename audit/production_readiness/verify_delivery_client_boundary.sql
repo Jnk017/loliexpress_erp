@@ -15,6 +15,7 @@ DO $$
 DECLARE
   target uuid := (SELECT delivery FROM gate_delivery_actor);
   signature text;
+  operation text;
 BEGIN
   IF NOT EXISTS (SELECT FROM public.deliveries WHERE id=target) THEN
     RAISE EXCEPTION 'Le livreur doit lire sa livraison affectée';
@@ -25,6 +26,19 @@ BEGIN
        'Pending delivery and active assigned warehouse required' THEN
     RAISE EXCEPTION 'Le livreur affecté doit atteindre les contrôles métier';
   END IF;
+  FOREACH operation IN ARRAY ARRAY[
+    'assign_delivery_warehouse(NULL,NULL)',
+    'transition_order_status(NULL,NULL,NULL)',
+    'adjust_stock(NULL,NULL,1,''Gate'',NULL,''manual_adjustment'')',
+    'transfer_stock(NULL,NULL,NULL,1,''Gate'')',
+    'record_physical_stock_count(NULL,NULL,0,1,''Gate'')'
+  ] LOOP
+    BEGIN
+      EXECUTE 'SELECT public.' || operation;
+      RAISE EXCEPTION 'Opération non autorisée acceptée : %', operation;
+    EXCEPTION WHEN insufficient_privilege THEN NULL;
+    END;
+  END LOOP;
   PERFORM set_config('request.jwt.claim.sub',gen_random_uuid()::text,true);
   IF EXISTS (SELECT FROM public.deliveries WHERE id=target)
      OR (public.confirm_delivery(target)->>'error') IS DISTINCT FROM
