@@ -5,3 +5,4 @@
 - L’exclusion de GitHub Actions demeure. Les vérifications du workflow sont locales ou sur les outils de build autorisés.
 - Le test de base vierge se déroule avant provisionnement. Les comptes de Gate sont conservés.
 - Les réglages métier et comptables nécessitant un arbitrage sont documentés avec leur dépendance. Les tests utilisent exclusivement des données contrôlées hors production.
+- L’orchestrateur local porte les contrôles applicables à la PR. Le mécanisme Git de non-déclenchement est réservé au workflow historique Actions exclu. Les résultats locaux, y compris les échecs et contrôles non exécutés, restent visibles.

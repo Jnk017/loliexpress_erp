@@ -25,6 +25,8 @@ Gate initial `6a98532ebf5217c802cdab953c2af9201f5afe72`. Main `5a68a99`. PR #13 
 
 | ID | Priorité | État | Cause, correction et fichiers | Tests et preuves | Commit |
 |---|---|---|---|---|---|
-| SEC-001-A | P0 | DONE | Privilèges d’écriture directe hérités sur les comptes et journaux. Migration 026. | Six signatures examinées et validées, 49 refus par rôle, deux suites de régression financière. [Matrice](RPC_SECURITY_MATRIX.md) | Commit qui introduit 026 |
+| SEC-001-A | P0 | DONE | Privilèges d’écriture directe hérités sur les comptes et journaux. Migration 026. | Six signatures examinées et validées, 49 refus par rôle, deux suites de régression financière. [Matrice](RPC_SECURITY_MATRIX.md) | `ed4b52d` |
 | SEC-001-B | P0 | TODO | Revue des 35 signatures restantes, en commençant par commandes et factures. | Tests par RPC à compléter. | — |
-| REL-001-A | P0 | IMPLEMENTED | [Orchestrateur](run_release_gate.py) et statuts explicites. | Rapport à enregistrer après exécution sur commit figé. | Lot 026 |
+| REL-001-A | P0 | DONE | [Orchestrateur](run_release_gate.py) et statuts explicites. | [Rapport](release_gate_results.json) produit, le gate sort en erreur tant que des contrôles restent non exécutés. | `ed4b52d` |
+| DB-002-A | P0 | IMPLEMENTED | [Rejeu](replay_baseline.py) de la baseline, du registre numéroté et des suites SQL. | Garde de refus de Gate testée localement. Rejeu complet bloqué sur une cible vierge autorisée. | Lot de preuves 026 |
+| SEC-002-A | P0 | TEST_PASSED | Contrôles REST et recherche de vues dépendantes. | 12/12 lectures directes sans données pour trois rôles, zéro vue dépendante. Revue des fonctions indirectes à achever. | Lot de preuves 026 |

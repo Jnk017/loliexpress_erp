@@ -1,0 +1,74 @@
+[
+  {
+    "role": "ADMIN",
+    "table": "company_settings",
+    "http": 403,
+    "passed": true
+  },
+  {
+    "role": "ADMIN",
+    "table": "customer_product_prices",
+    "http": 403,
+    "passed": true
+  },
+  {
+    "role": "ADMIN",
+    "table": "operational_treasury_postings",
+    "http": 403,
+    "passed": true
+  },
+  {
+    "role": "ADMIN",
+    "table": "stock_handovers",
+    "http": 403,
+    "passed": true
+  },
+  {
+    "role": "COMPTABLE",
+    "table": "company_settings",
+    "http": 403,
+    "passed": true
+  },
+  {
+    "role": "COMPTABLE",
+    "table": "customer_product_prices",
+    "http": 403,
+    "passed": true
+  },
+  {
+    "role": "COMPTABLE",
+    "table": "operational_treasury_postings",
+    "http": 403,
+    "passed": true
+  },
+  {
+    "role": "COMPTABLE",
+    "table": "stock_handovers",
+    "http": 403,
+    "passed": true
+  },
+  {
+    "role": "CLIENT_A",
+    "table": "company_settings",
+    "http": 403,
+    "passed": true
+  },
+  {
+    "role": "CLIENT_A",
+    "table": "customer_product_prices",
+    "http": 403,
+    "passed": true
+  },
+  {
+    "role": "CLIENT_A",
+    "table": "operational_treasury_postings",
+    "http": 403,
+    "passed": true
+  },
+  {
+    "role": "CLIENT_A",
+    "table": "stock_handovers",
+    "http": 403,
+    "passed": true
+  }
+]

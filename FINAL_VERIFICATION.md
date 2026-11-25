@@ -102,3 +102,7 @@ La baseline consolide le schéma applicatif observé. Les identifiants historiqu
 - P1.b.2 : après `017`, exécuter [verify_p1b.sql](audit/verify_p1b.sql) et attendre cinq lignes `passed = true`. Contrôler les [captures attendues](audit/P1B_CAPTURES_ATTENDUES.md). Les réglages persistants sont traités en P0.b selon G1 v3.
 
 La CI historique et les contrôles Flutter, Supabase, Edge Functions et build web restent à exécuter au gate final.
+
+## Reprise — candidat ed4b52d
+
+La migration 026 est appliquée sur Gate. Le lot de sécurité de la trésorerie vérifie six signatures et 49 refus. Le [gate local](audit/production_readiness/release_gate_results.json) confirme l’analyse Flutter sans remarque, les 18 tests Flutter, le build Web, les huit suites SQL ciblées et les sept tests Deno. Les sept étapes marquées `NOT_RUN` ne constituent pas des preuves de validation. Verdict **NOT_READY — REMAINING_BLOCKERS**.
