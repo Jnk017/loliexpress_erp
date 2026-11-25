@@ -78,7 +78,7 @@ class _QuickActionFabWidgetState extends State<QuickActionFabWidget>
           SizedBox(height: 2.h),
           _buildActionButton(
             context: context,
-            label: 'Créer un reçu',
+            label: 'Encaisser une facture',
             icon: Icons.description,
             onPressed: () {
               _toggleExpanded();

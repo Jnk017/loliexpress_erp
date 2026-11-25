@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../widgets/screen_state_view.dart';
+import '../../widgets/create_reference_form.dart';
 import '../../widgets/treasury_account_picker.dart';
 import 'package:sizer/sizer.dart';
 import 'package:intl/intl.dart';
@@ -593,6 +594,26 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
     }
   }
 
+  Future<void> _createSupplier() async {
+    Map<String, dynamic>? supplier;
+    final created = await showCreateReferenceForm(
+      context,
+      title: 'Nouveau fournisseur',
+      save: (name, address) async {
+        supplier = await PurchaseService.instance.createSupplier({
+          'company_name': name,
+          'address': address,
+          'is_active': true,
+        });
+      },
+    );
+    if (!created || !mounted || supplier == null) return;
+    setState(() {
+      _suppliers = [..._suppliers, supplier!];
+      _selectedSupplierId = supplier!['id'] as String;
+    });
+  }
+
   void _addItem() {
     setState(() {
       _items.add(_PurchaseItem());
@@ -691,6 +712,7 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
+                    key: ValueKey(_selectedSupplierId),
                     initialValue: _selectedSupplierId,
                     decoration: const InputDecoration(
                       labelText: 'Fournisseur',
@@ -705,6 +727,12 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                         .toList(),
                     onChanged: (v) => setState(() => _selectedSupplierId = v),
                   ),
+                  if (const [UserRole.admin, UserRole.acheteur].contains(RoleService.instance.currentRole))
+                    TextButton.icon(
+                      onPressed: _isSubmitting ? null : _createSupplier,
+                      icon: const Icon(Icons.person_add_alt),
+                      label: const Text('Nouveau fournisseur'),
+                    ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: _selectedCurrency,

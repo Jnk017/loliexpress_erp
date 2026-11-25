@@ -199,3 +199,11 @@ L’essai antérieur via le connecteur avait été refusé. La baseline contient
 ### Reprise attendue
 
 Rendre disponible un checkout exploitable du dépôt privé à `5a68a99` avec son `pubspec.yaml` et ses tests, Flutter/Dart compatibles, Supabase CLI, psql, un daemon Docker joignable et Deno compatible. Fournir un environnement capable de démarrer Chromium headless avec Playwright, ainsi qu'un SDK Android avec ADB et un émulateur ou appareil. Préparer, sur l'instance isolée seulement, son URL loopback, les sept comptes de test et un expéditeur de test pour Inbucket. Reprendre au Step 0 et réenregistrer les preuves avant tout assemblage.
+
+## Câblage des comptes de trésorerie et des références achats
+
+- Projet SQL vérifié : `loliexpress-gate-test`, ref `muzbwqxvamcbfiuehxro`. Migration 022 appliquée via l’API Management HTTPS.
+- L’ouverture d’un compte par un administrateur couvre les espèces, Mobile Money et le virement bancaire. Le solde est saisi explicitement et une relance identique ne double pas l’écriture.
+- Création d’un entrepôt depuis les paramètres et d’un fournisseur depuis un achat, avec sélection immédiate du fournisseur. Les raccourcis financiers ouvrent les écrans existants.
+- `audit/verify_operational_setup.sql` : ouverture, références et contrôles de rôle PASS. `audit/verify_operational_treasury.sql` : rapprochement stock et trésorerie PASS. Les données de ces vérifications sont annulées en fin de transaction.
+- Tests Flutter : 18/18 PASS. Vérification des nouveaux écrans sur téléphone en attente.

@@ -4,7 +4,8 @@ import 'package:sizer/sizer.dart';
 import '../../core/app_export.dart';
 import '../../services/financial_dashboard_service.dart';
 import '../../widgets/custom_bottom_bar.dart';
-import '../../widgets/custom_icon_widget.dart';
+import '../../widgets/treasury_account_form.dart';
+import '../../services/role_service.dart';
 import './widgets/accounts_receivable_list_widget.dart';
 import './widgets/cash_flow_chart_widget.dart';
 import './widgets/cash_position_card_widget.dart';
@@ -466,7 +467,7 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
     showDialog<void>(
       context: context,
       builder: (context) => SimpleDialog(
-        title: const Text('Caisse et banque'),
+        title: const Text('Trésorerie'),
         children: [
           FutureBuilder<List<List<Map<String, dynamic>>>>(
             future: future,
@@ -496,6 +497,14 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
               );
             },
           ),
+          if (RoleService.instance.canManageUsers)
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context);
+                _openTreasuryAccount();
+              },
+              child: const Text('Ouvrir un compte'),
+            ),
           SimpleDialogOption(
             onPressed: () => Navigator.pop(context),
             child: const Text('Fermer'),
@@ -503,6 +512,13 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
         ],
       ),
     );
+  }
+
+  Future<void> _openTreasuryAccount() async {
+    if (await showTreasuryAccountForm(context) && mounted) {
+      await _financialService.refreshFinancialMetrics();
+      if (mounted) _showTreasuryAccounts();
+    }
   }
 
   void _navigateToDetail(String type) {
@@ -553,32 +569,13 @@ class _FinancialDashboardState extends State<FinancialDashboard> {
     );
   }
 
-  void _handleRecordExpense() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Enregistrer une dépense'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
-    );
-  }
+  void _handleRecordExpense() => Navigator.pushNamed(context, AppRoutes.expenses);
 
-  void _handleCreateReceipt() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Créer un reçu'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
-    );
-  }
+  void _handleCreateReceipt() =>
+      Navigator.pushNamed(context, AppRoutes.invoiceGeneration);
 
-  void _handleGenerateReport() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Générer un rapport'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
-    );
-  }
+  void _handleGenerateReport() =>
+      Navigator.pushNamed(context, AppRoutes.reportsAnalytics);
 
   void _handleExportData() {
     ScaffoldMessenger.of(context).showSnackBar(

@@ -37,6 +37,14 @@ class InventoryService {
     }
   }
 
+  Future<void> createWarehouse({required String name, String? address}) async {
+    await _client.from('warehouse_locations').insert({
+      'name': name,
+      'address': address,
+      'is_active': true,
+    });
+  }
+
   Future<List<Map<String, dynamic>>> getStockMovements(
       {String? warehouseId, String? productId, int limit = 50}) async {
     try {

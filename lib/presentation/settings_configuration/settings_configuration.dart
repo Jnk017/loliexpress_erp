@@ -9,6 +9,8 @@ import '../../services/inventory_service.dart';
 import '../../services/theme_service.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_bottom_bar.dart';
+import '../../widgets/treasury_account_form.dart';
+import '../../widgets/create_reference_form.dart';
 import './widgets/settings_item_widget.dart';
 import './widgets/settings_section_widget.dart';
 import './widgets/user_profile_header_widget.dart';
@@ -135,6 +137,16 @@ class _SettingsConfigurationScreenState
                   'sender_name': 'Nom affiché', 'sender_email': 'Adresse e-mail',
                 }),
               ),
+              if (_userRole == 'admin')
+                SettingsItemWidget(
+                  icon: Icons.account_balance_wallet_outlined,
+                  title: 'Compte de trésorerie',
+                  subtitle: 'Ouvrir une caisse, une banque ou un portefeuille Mobile Money',
+                  onTap: () async {
+                    final created = await showTreasuryAccountForm(context);
+                    if (created && mounted) _showSettingsMessage('Compte créé.');
+                  },
+                ),
               SettingsItemWidget(
                 icon: Icons.warehouse,
                 title: 'Entrepôts',
@@ -393,6 +405,14 @@ class _SettingsConfigurationScreenState
           },
         ),
         actions: [
+          if (_userRole == 'admin')
+            FilledButton.tonal(
+              onPressed: () {
+                Navigator.pop(context);
+                _createWarehouse();
+              },
+              child: const Text('Ajouter un entrepôt'),
+            ),
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Fermer'),
@@ -400,6 +420,18 @@ class _SettingsConfigurationScreenState
         ],
       ),
     );
+  }
+
+  Future<void> _createWarehouse() async {
+    final created = await showCreateReferenceForm(
+      context,
+      title: 'Nouvel entrepôt',
+      save: (name, address) => InventoryService.instance.createWarehouse(
+        name: name,
+        address: address,
+      ),
+    );
+    if (created && mounted) _showWarehouseDialog();
   }
 
   void _showAboutDialog() {
