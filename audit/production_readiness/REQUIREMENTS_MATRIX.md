@@ -42,3 +42,5 @@
 | SEC-004-A | P0 | Exclure le coût du catalogue REST | Projections publiques acceptées et coût refusé sous les rôles clients |
 | WEB-001-C | P0 | Commande commerciale avec tarif et stock réels | Stock lu et tarif appliqué depuis Flutter, commande persistée sans sortie avant remise |
 | SEC-001-F2 | P0 | Recherche de retour avec le rôle magasinier | Positif après remise, reliquat mis à jour, déclaration de revendabilité refusée |
+
+**ERP-005-PLAN** — P0 · TEST_PASSED · Planifier une livraison depuis une commande expédiée. Le serveur contrôle le rôle, l’entrepôt et le livreur. Tests Gate positifs et négatifs réussis. Validation Web et Android en attente. [Preuve SQL](delivery_planning_results.json).

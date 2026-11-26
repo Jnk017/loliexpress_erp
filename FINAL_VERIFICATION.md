@@ -120,3 +120,5 @@ Le [rejeu local du gate après 028](audit/production_readiness/release_gate_028_
 Le sous-parcours Web acheteur → magasinier est vérifié sur le code `308435a` et Gate après 029. La création de l’achat et la réception ont répondu HTTP 200, avec une seule entrée de deux unités au journal. Les références de départ ont été créées par le harnais de test. Le cycle ERP transversal reste en cours. [Preuves](audit/production_readiness/purchase-web.json)
 
 Migration 030 appliquée sur Gate. Le catalogue n’expose plus le coût d’achat au client REST. La création et la confirmation d’une commande commerciale depuis Flutter Web passent au tarif de 6 CDF, avec trois unités conservées avant remise. [Preuve Web](audit/production_readiness/sales-web.json). Le cycle intégral reste ouvert.
+
+La migration 031 relie le suivi Flutter à la planification des livraisons par un administrateur. Gate confirme la création unique, le refus des planifications non autorisées et le débit du stock à la remise. Analyse Flutter propre et 19 tests réussis. La recette du formulaire en navigateur et sur Android reste ouverte. [Preuves SQL](audit/production_readiness/delivery_planning_results.json).

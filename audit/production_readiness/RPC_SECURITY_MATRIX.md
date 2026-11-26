@@ -80,3 +80,5 @@ Les cinq refus du livreur couvrent l’affectation d’entrepôt, la transition 
 | `save_invoice_draft` | Admin, comptable ou commercial affecté. Restreint le client et l’écriture au brouillon autorisé. Création et mise à jour sans créance repassent. |
 
 Les contrôles de rôle, les cas P0.a et les retours/remises se trouvent dans le [suivi des frontières](rpc_boundary_followup.json). Les [régressions achats et avoirs](purchase_return_rpc_regression.json) identifient les résultats détaillés.
+
+**public.plan_order_delivery(uuid, uuid, uuid, text, date)** · Migration 031 · SECURITY DEFINER et search_path vide · EXECUTE authentifié, contrôle administrateur côté serveur · appel depuis le suivi Flutter · verrou sur la commande · contrôle du statut, de l’adresse, du livreur actif et de l’entrepôt · crée une tournée et une livraison et journalise la planification · répétition identique idempotente, conflit refusé · [test positif, refus et remise assignée](verify_delivery_planning.sql).

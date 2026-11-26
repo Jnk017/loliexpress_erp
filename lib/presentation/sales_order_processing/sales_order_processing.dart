@@ -7,6 +7,7 @@ import 'package:sizer/sizer.dart';
 import '../../core/app_export.dart';
 import '../../services/company_settings_service.dart';
 import '../../services/customer_service.dart';
+import '../../services/delivery_service.dart';
 import '../../services/order_service.dart';
 import '../../services/product_service.dart';
 import '../../services/role_service.dart';
@@ -360,7 +361,9 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
                       'Client non renseigné',
                 ),
                 trailing: Text(
-                  _orderNextStatus[order['order_status']]?.$2 ?? 'Consulter',
+                  _canPlanDelivery(order)
+                      ? 'Planifier la livraison'
+                      : _orderNextStatus[order['order_status']]?.$2 ?? 'Consulter',
                 ),
                 onTap: () => Navigator.pop(context, order),
               ),
@@ -368,6 +371,10 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
         ),
       );
       if (!mounted || selected == null) return;
+      if (_canPlanDelivery(selected)) {
+        await _planDelivery(selected);
+        return;
+      }
       final next = _orderNextStatus[selected['order_status']];
       final confirmed = await showDialog<bool>(
         context: context,
@@ -400,6 +407,115 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
         const SnackBar(content: Text('Impossible de suivre cette commande.')),
       );
     }
+  }
+
+  bool _canPlanDelivery(Map<String, dynamic> order) =>
+      RoleService.instance.currentRole == UserRole.admin &&
+      order['order_status'] == 'shipped';
+
+  Future<void> _planDelivery(Map<String, dynamic> order) async {
+    final service = DeliveryService.instance;
+    final choices = await Future.wait([
+      service.getActiveDrivers(),
+      service.getActiveWarehouses(),
+    ]);
+    if (!mounted) return;
+    final drivers = choices[0];
+    final warehouses = choices[1];
+    if (drivers.isEmpty || warehouses.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Un livreur et un entrepôt actifs sont requis.')),
+      );
+      return;
+    }
+
+    String? driverId;
+    String? warehouseId;
+    var address = '';
+    var routeDate = DateUtils.dateOnly(DateTime.now());
+    final planned = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (dialogContext, update) => AlertDialog(
+          title: Text('Planifier ${order['order_number']}'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(labelText: 'Livreur'),
+                  isExpanded: true,
+                  items: [
+                    for (final driver in drivers)
+                      DropdownMenuItem(
+                        value: driver['id'] as String,
+                        child: Text(driver['full_name'] as String? ?? 'Livreur'),
+                      ),
+                  ],
+                  onChanged: (value) => update(() => driverId = value),
+                ),
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(labelText: 'Entrepôt'),
+                  isExpanded: true,
+                  items: [
+                    for (final warehouse in warehouses)
+                      DropdownMenuItem(
+                        value: warehouse['id'] as String,
+                        child: Text(warehouse['name'] as String),
+                      ),
+                  ],
+                  onChanged: (value) => update(() => warehouseId = value),
+                ),
+                TextField(
+                  decoration: const InputDecoration(labelText: 'Adresse de livraison'),
+                  maxLength: 500,
+                  onChanged: (value) => update(() => address = value.trim()),
+                ),
+                TextButton.icon(
+                  icon: const Icon(Icons.calendar_today),
+                  label: Text(MaterialLocalizations.of(dialogContext).formatShortDate(routeDate)),
+                  onPressed: () async {
+                    final date = await showDatePicker(
+                      context: dialogContext,
+                      initialDate: routeDate,
+                      firstDate: DateUtils.dateOnly(DateTime.now()),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                    );
+                    if (date != null && dialogContext.mounted) {
+                      update(() => routeDate = date);
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Fermer'),
+            ),
+            FilledButton(
+              onPressed: driverId == null || warehouseId == null || address.isEmpty
+                  ? null
+                  : () => Navigator.pop(dialogContext, true),
+              child: const Text('Planifier la livraison'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (planned != true || !mounted) return;
+    await service.planOrderDelivery(
+      orderId: order['id'] as String,
+      driverId: driverId!,
+      warehouseId: warehouseId!,
+      address: address,
+      routeDate: routeDate.toIso8601String().substring(0, 10),
+    );
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Livraison planifiée.')),
+    );
   }
 
   void _showCustomerSelector() {

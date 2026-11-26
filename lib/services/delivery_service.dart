@@ -42,6 +42,31 @@ class DeliveryService {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getActiveDrivers() async {
+    return _client.from('user_profiles')
+        .select('id,full_name')
+        .eq('role', 'delivery_agent')
+        .eq('is_active', true)
+        .eq('must_change_password', false)
+        .order('full_name');
+  }
+
+  Future<void> planOrderDelivery({
+    required String orderId,
+    required String driverId,
+    required String warehouseId,
+    required String address,
+    required String routeDate,
+  }) async {
+    await _client.rpc('plan_order_delivery', params: {
+      'p_order_id': orderId,
+      'p_driver_id': driverId,
+      'p_warehouse_id': warehouseId,
+      'p_address': address,
+      'p_route_date': routeDate,
+    });
+  }
+
   Future<void> assignDeliveryWarehouse(String deliveryId, String warehouseId) async {
     await _client.rpc('assign_delivery_warehouse', params: {
       'p_delivery_id': deliveryId,

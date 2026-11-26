@@ -28,3 +28,5 @@
 - [Régression acheteur → magasinier après 030](purchase-web-post030.json) sur `7c3d723`. Création et réception HTTP 200, un mouvement et deux unités, données de test retirées.
 - [Retour magasinier](warehouse_return_lookup_results.json) sur Gate. L’article d’une commande remise est retrouvé avec un numéro normalisé. Le reliquat décroît après réception et la déclaration de revendabilité non autorisée est refusée. Transaction annulée.
 - [Commande et confirmation réelles dans Flutter Web](sales-web.json), [scénario reproductible](test_sales_order_web.py). Le navigateur affiche le stock réel, le serveur applique 6 CDF au lieu du catalogue à 10 CDF, puis la commande passe à confirmé. PostgreSQL conserve les trois unités et l’unique mouvement initial. Fixtures retirées.
+
+- Migration 031 appliquée à Gate. [Tests de planification, accès livreur et 13 assertions de remise et retours](delivery_planning_results.json). Analyse Flutter et 19 tests réussis. Recette UI de planification à exécuter.
