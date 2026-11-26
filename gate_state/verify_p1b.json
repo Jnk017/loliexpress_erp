@@ -1,0 +1,28 @@
+[
+  {
+    "script": "verify_p1b.sql",
+    "http": "201",
+    "body": [
+      {
+        "scenario": "acheteur_progress_updates",
+        "passed": true
+      },
+      {
+        "scenario": "client_cannot_use_internal_progress",
+        "passed": true
+      },
+      {
+        "scenario": "commercial_empty_state",
+        "passed": true
+      },
+      {
+        "scenario": "commercial_progress_updates",
+        "passed": true
+      },
+      {
+        "scenario": "comptable_progress_is_role_specific",
+        "passed": true
+      }
+    ]
+  }
+]

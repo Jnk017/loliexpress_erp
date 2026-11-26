@@ -46,3 +46,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 android/app/.cxx
+
+# Identifiants d’essais locaux du gate
+.env.test
+
+# Configuration privée du gate cloud
+cloud.env

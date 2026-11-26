@@ -1,5 +1,8 @@
 # Supabase local development
 
+> **Current status — 2026-11-25:** Consolidated migrations 000–024 only; historical_migrations is provenance, not a second replay path. Fresh baseline assertions immediately after 000, then 001–024 and all audit scripts. Use disposable local/authorized test project only. Do not repair production history blindly. [Current audit](gate_audit_2026-11-25.md).
+
+
 Prerequisites: Supabase CLI and Docker.
 
 ```bash

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class UserProfileHeaderWidget extends StatelessWidget {
   final String name;
   final String email;
   final String role;
-  final String avatarUrl;
   final VoidCallback onEditProfile;
 
   const UserProfileHeaderWidget({
@@ -14,12 +12,12 @@ class UserProfileHeaderWidget extends StatelessWidget {
     required this.name,
     required this.email,
     required this.role,
-    required this.avatarUrl,
     required this.onEditProfile,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -27,33 +25,11 @@ class UserProfileHeaderWidget extends StatelessWidget {
         padding: EdgeInsets.all(4.w),
         child: Row(
           children: [
-            Stack(
-              children: [
-                CircleAvatar(
-                  radius: 30.sp,
-                  backgroundImage: CachedNetworkImageProvider(avatarUrl),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      padding: EdgeInsets.all(1.w),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
-                      ),
-                      child: Icon(
-                        Icons.camera_alt,
-                        size: 14.sp,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            CircleAvatar(
+              radius: 30.sp,
+              backgroundColor: colors.primaryContainer,
+              foregroundColor: colors.onPrimaryContainer,
+              child: const Icon(Icons.person_outline),
             ),
             SizedBox(width: 4.w),
             Expanded(
@@ -70,7 +46,9 @@ class UserProfileHeaderWidget extends StatelessWidget {
                   SizedBox(height: 0.5.h),
                   Text(
                     email,
-                    style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12.sp, color: colors.onSurfaceVariant),
                   ),
                   SizedBox(height: 0.5.h),
                   Container(
@@ -79,14 +57,14 @@ class UserProfileHeaderWidget extends StatelessWidget {
                       vertical: 0.5.h,
                     ),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withAlpha(26),
+                      color: colors.primaryContainer,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       role,
                       style: TextStyle(
                         fontSize: 11.sp,
-                        color: Theme.of(context).primaryColor,
+                        color: colors.onPrimaryContainer,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -95,7 +73,7 @@ class UserProfileHeaderWidget extends StatelessWidget {
               ),
             ),
             IconButton(
-              icon: Icon(Icons.edit, color: Theme.of(context).primaryColor),
+              icon: Icon(Icons.edit, color: colors.onSurface),
               onPressed: onEditProfile,
             ),
           ],

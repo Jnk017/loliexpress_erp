@@ -49,7 +49,7 @@ class _ForensicTimelineWidgetState extends State<ForensicTimelineWidget> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading timeline: $e')),
+          SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
         );
       }
     }

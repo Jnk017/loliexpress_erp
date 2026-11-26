@@ -1,0 +1,12 @@
+[
+  {
+    "endpoint": "create_user",
+    "options_status": 204,
+    "passed": true
+  },
+  {
+    "endpoint": "ai_assistant",
+    "options_status": 204,
+    "passed": true
+  }
+]

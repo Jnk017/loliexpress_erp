@@ -1,0 +1,17 @@
+{
+  "verify_product_catalog_boundary": [
+    {
+      "product_catalog_boundary_pass": true
+    }
+  ],
+  "verify_procurement_product_choices": [
+    {
+      "procurement_product_choices_pass": true
+    }
+  ],
+  "verify_order_invoice_scope": [
+    {
+      "order_invoice_scope_pass": true
+    }
+  ]
+}

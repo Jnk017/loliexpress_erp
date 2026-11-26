@@ -1,0 +1,30 @@
+[
+  {
+    "endpoint": "create_user",
+    "role": "ACHETEUR",
+    "status": 403,
+    "expected": 403,
+    "passed": true
+  },
+  {
+    "endpoint": "create_user",
+    "role": "ADMIN",
+    "status": 400,
+    "expected": 400,
+    "passed": true
+  },
+  {
+    "endpoint": "ai_assistant",
+    "role": "ACHETEUR",
+    "status": 403,
+    "expected": 403,
+    "passed": true
+  },
+  {
+    "endpoint": "ai_assistant",
+    "role": "ADMIN",
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  }
+]

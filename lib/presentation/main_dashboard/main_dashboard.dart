@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../widgets/screen_state_view.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
@@ -13,7 +15,7 @@ import '../../services/role_service.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_bottom_bar.dart';
 import './widgets/kpi_card_widget.dart';
-import './widgets/quick_action_button_widget.dart';
+import '../../widgets/role_workspace_panel.dart';
 import './widgets/revenue_chart_widget.dart';
 import './widgets/sync_status_widget.dart';
 
@@ -353,9 +355,10 @@ class _MainDashboardState extends State<MainDashboard>
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: CustomAppBar(
-        title: 'Tableau de Bord',
+        title: 'Tableau de bord',
+        root: true,
         variant: CustomAppBarVariant.sync,
-        showSyncStatus: true,
+        showSyncStatus: false,
         isSyncing: _isSyncing,
         lastSyncTime: _lastSyncTime,
         actions: [
@@ -388,38 +391,7 @@ class _MainDashboardState extends State<MainDashboard>
         ],
       ),
       body: _buildBody(theme),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          QuickActionButtonWidget(
-            icon: 'add_shopping_cart',
-            label: 'Nouvelle Vente',
-            onPressed: () =>
-                Navigator.pushNamed(context, '/sales-order-processing'),
-          ),
-          SizedBox(height: 2.h),
-          QuickActionButtonWidget(
-            icon: 'qr_code_scanner',
-            label: 'Scanner Produit',
-            onPressed: () => Navigator.pushNamed(context, '/barcode-scanner'),
-          ),
-          SizedBox(height: 2.h),
-          QuickActionButtonWidget(
-            icon: 'person_add',
-            label: 'Ajouter Client',
-            onPressed: () =>
-                Navigator.pushNamed(context, '/customer-management'),
-          ),
-        ],
-      ),
-      bottomNavigationBar: CustomBottomBar(
-        currentIndex: 0,
-        onTap: (index) {
-          if (index != 0) {
-            _tabController.animateTo(index);
-          }
-        },
-      ),
+      bottomNavigationBar: const CustomBottomBar(currentIndex: 0),
     );
   }
 
@@ -429,33 +401,16 @@ class _MainDashboardState extends State<MainDashboard>
     }
 
     if (_error != null && _kpiData.isEmpty) {
-      return Center(
+      return SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(4.w),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomIconWidget(
-                iconName: 'error_outline',
-                color: theme.colorScheme.error,
-                size: 48,
-              ),
-              SizedBox(height: 2.h),
-              Text(
-                'Erreur de chargement',
-                style: theme.textTheme.titleMedium,
-              ),
-              SizedBox(height: 1.h),
-              Text(
-                _error!,
-                style: theme.textTheme.bodyMedium,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 3.h),
-              ElevatedButton.icon(
-                onPressed: _refreshData,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Réessayer'),
+              const RoleWorkspacePanel(),
+              ScreenStateView.error(
+                message: 'Le tableau de bord n’a pas pu être chargé.',
+                onAction: _refreshData,
               ),
             ],
           ),
@@ -469,6 +424,7 @@ class _MainDashboardState extends State<MainDashboard>
         controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
+          const SliverToBoxAdapter(child: RoleWorkspacePanel()),
           SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -531,7 +487,9 @@ class _MainDashboardState extends State<MainDashboard>
                 child: RevenueChartWidget(weeklyData: _weeklyRevenue),
               ),
             ),
-          SliverToBoxAdapter(child: SizedBox(height: 10.h)),
+          SliverToBoxAdapter(
+            child: SizedBox(height: 24 + MediaQuery.paddingOf(context).bottom),
+          ),
         ],
       ),
     );
@@ -539,12 +497,12 @@ class _MainDashboardState extends State<MainDashboard>
 
   Widget _buildAdministrationSection(ThemeData theme) {
     final items = [
-      _AdminItem('Dashboard admin', 'dashboard', '/admin-dashboard'),
+      _AdminItem('Rapports administrateur', 'dashboard', '/admin-dashboard'),
       _AdminItem('Assistant IA', 'auto_awesome', '/ai-assistant'),
       _AdminItem('Audit', 'history', '/audit-log'),
       _AdminItem('Sécurité', 'security', '/security-dashboard'),
       _AdminItem('Alertes', 'warning', '/security-alert-center'),
-      _AdminItem('Automations', 'rule', '/automation-rules-manager'),
+      _AdminItem('Automatisations', 'rule', '/automation-rules-manager'),
       _AdminItem('Incidents', 'report_problem', '/incident-management-center'),
       _AdminItem('Utilisateurs', 'manage_accounts', '/user-role-management'),
     ];

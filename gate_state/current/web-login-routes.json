@@ -1,0 +1,58 @@
+[
+  {
+    "role": "commercial",
+    "expected_route": "/main-dashboard",
+    "passed": true,
+    "auth_http": 200,
+    "screenshot": "web_commercial_accueil.png",
+    "sha256": "2fd5027856bdfe9ccee2c17acbfdd473f2cae34b8c24f8ba343edb738263768c"
+  },
+  {
+    "role": "comptable",
+    "expected_route": "/main-dashboard",
+    "passed": true,
+    "auth_http": 200,
+    "screenshot": "web_comptable_accueil.png",
+    "sha256": "39e8ab2c3c492c6399242889a8aa7624afe0b152fe9092549b9c65481f0f8952"
+  },
+  {
+    "role": "acheteur",
+    "expected_route": "/purchases",
+    "passed": true,
+    "auth_http": 200,
+    "screenshot": "web_acheteur_accueil.png",
+    "sha256": "3275bb63ba843c4146d78f4fdfcc044aa178b6f74d9311afc449fa4e77e4ba48"
+  },
+  {
+    "role": "admin",
+    "expected_route": "/admin-dashboard",
+    "passed": true,
+    "auth_http": 200,
+    "screenshot": "web_admin_accueil.png",
+    "sha256": "282740c3c0e7cf634ba6209a4b09dfc3f4317b7a8aa762d831b288c7e2748a06"
+  },
+  {
+    "role": "livreur",
+    "expected_route": "/delivery-tracking",
+    "passed": true,
+    "auth_http": 200,
+    "screenshot": "web_livreur_accueil.png",
+    "sha256": "09d2553ea8e291b653a3e9641f7d719c8c3a8fde7f33e69ae353b455a2387132"
+  },
+  {
+    "role": "b2b_a",
+    "expected_route": "/customer-portal",
+    "passed": true,
+    "auth_http": 200,
+    "screenshot": "web_b2b_a_accueil.png",
+    "sha256": "235d1f76a6131d02fd415921fc3ddc2ea55f18e2d8b547b5b3f4a543519aaa9d"
+  },
+  {
+    "role": "b2b_b",
+    "expected_route": "/customer-portal",
+    "passed": true,
+    "auth_http": 200,
+    "screenshot": "web_b2b_b_accueil.png",
+    "sha256": "235d1f76a6131d02fd415921fc3ddc2ea55f18e2d8b547b5b3f4a543519aaa9d"
+  }
+]

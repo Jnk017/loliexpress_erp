@@ -1,0 +1,234 @@
+{
+  "project": "loliexpress-gate-test",
+  "catalog_sha256": "5b5b56e99108ac002fe987ced51ea63bb649be1d848d01af9a6357d9abde3abe",
+  "counts": {
+    "bucket": 1,
+    "column": 1172,
+    "column_acl": 14,
+    "constraint": 427,
+    "default_acl": 27,
+    "extension": 7,
+    "index": 382,
+    "migration": 26,
+    "policy": 147,
+    "publication": 2,
+    "publication_table": 6,
+    "relation": 120,
+    "relation_acl": 119,
+    "routine": 132,
+    "schema_acl": 3,
+    "sequence": 4,
+    "trigger": 66,
+    "type": 40,
+    "view": 4,
+    "edge": 2
+  },
+  "public_authenticated_security_definers": [
+    {
+      "signature": "public.adjust_stock(p_product_id uuid, p_warehouse_id uuid, p_quantity_delta integer, p_reason text, p_reference_id uuid, p_reference_type text)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.assign_delivery_warehouse(p_delivery_id uuid, p_warehouse_id uuid)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.can_read_finance()",
+      "search_path": "public",
+      "anon": false
+    },
+    {
+      "signature": "public.can_read_procurement()",
+      "search_path": "public",
+      "anon": false
+    },
+    {
+      "signature": "public.cancel_unreceived_purchase(p_purchase_id uuid)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.complete_password_setup()",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.confirm_delivery(p_delivery_id uuid, p_signature_url text, p_notes text)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.create_order_with_items(p_customer_id uuid, p_items jsonb, p_notes text, p_currency text, p_exchange_rate numeric, p_payment_type text, p_discount numeric)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.create_purchase_with_items(p_supplier_id uuid, p_items jsonb, p_currency text, p_exchange_rate numeric, p_notes text)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.get_admin_total_report(p_start timestamp with time zone, p_end timestamp with time zone)",
+      "search_path": "public",
+      "anon": false
+    },
+    {
+      "signature": "public.get_company_settings()",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.get_customer_return_lines(p_order_number text)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.get_workspace_setup_progress()",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.inspect_customer_return(p_order_item_id uuid, p_returned_quantity integer, p_sellable_quantity integer, p_inspection_note text, p_request_id uuid)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.is_acheteur()",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.is_admin()",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.is_admin_from_auth()",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.is_b2b_customer()",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.is_comptable()",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.is_delivery_agent()",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.is_sales_rep()",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.is_system_admin()",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.is_warehouse_staff()",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.issue_order_invoice(p_order_id uuid, p_due_date timestamp with time zone, p_home_delivery boolean, p_delivery_fee numeric)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.open_treasury_account(p_request_id uuid, p_method text, p_name text, p_provider text, p_currency text, p_opening numeric)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.order_unit_price(p_customer_id uuid, p_product_id uuid, p_currency text)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.pay_expense_from_account(p_expense_id uuid, p_kind text, p_account_id uuid)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.pay_supplier_bill_from_account(p_bill_id uuid, p_amount numeric, p_currency text, p_reference text, p_request_id uuid, p_kind text, p_account_id uuid)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.pay_supplier_bill_from_account(p_bill_id uuid, p_amount numeric, p_currency text, p_reference text, p_request_id uuid, p_kind text, p_account_id uuid, p_method text)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.receive_invoice_payment(p_invoice_id uuid, p_amount numeric, p_currency text, p_reference text, p_kind text, p_account_id uuid, p_request_id uuid)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.receive_invoice_payment(p_invoice_id uuid, p_amount numeric, p_currency text, p_reference text, p_kind text, p_account_id uuid, p_request_id uuid, p_method text)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.receive_purchase_item(p_purchase_item_id uuid, p_warehouse_id uuid, p_quantity integer, p_request_id uuid)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.record_delivery_fee_credit(p_invoice_id uuid, p_amount numeric, p_reason text, p_request_id uuid)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.record_physical_stock_count(p_product_id uuid, p_warehouse_id uuid, p_expected_quantity integer, p_counted_quantity integer, p_reason text)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.record_return_item_credit(p_inspection_id uuid)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.register_supplier_bill(p_purchase_id uuid, p_bill_number text, p_due_date date, p_amount numeric)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.save_invoice_draft(p_draft_id uuid, p_customer_id uuid, p_currency text, p_payload jsonb)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.set_customer_product_price(p_customer_id uuid, p_product_id uuid, p_unit_price numeric, p_currency text)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.transfer_stock(p_product_id uuid, p_source_id uuid, p_destination_id uuid, p_quantity integer, p_reason text)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.transition_order_status(p_order_id uuid, p_new_status order_status, p_reason text)",
+      "search_path": "\"\"",
+      "anon": false
+    },
+    {
+      "signature": "public.update_company_settings(p_patch jsonb)",
+      "search_path": "\"\"",
+      "anon": false
+    }
+  ],
+  "production_access_http": 403
+}

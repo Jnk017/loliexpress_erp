@@ -1,5 +1,8 @@
 # Matrice de permissions ERP
 
+> **Current status — 2026-11-25:** Gate rules supersede historical matrix where different: commercial discount refused by tested RPC; admin controls preferential prices and delivery fee credits; transfers/count admin or warehouse staff. Validate all role/tenant combinations, including 41 authenticated SECURITY DEFINER RPCs; 4 RLS tables without policies may be deliberately RPC-only. [Current audit](gate_audit_2026-11-25.md).
+
+
 Cette matrice décrit les autorisations **serveur**. Les contrôles Flutter servent uniquement à l’ergonomie : PostgreSQL/RLS et les RPC restent l’autorité.
 
 | Module / opération | admin | sales_rep | warehouse_staff | comptable | acheteur | delivery_agent | b2b_customer |
@@ -41,3 +44,5 @@ Cette matrice décrit les autorisations **serveur**. Les contrôles Flutter serv
 - `products.cost_price` n’est pas accordé au rôle PostgreSQL `authenticated`; les fonctions serveur de reporting conservent leur accès via `SECURITY DEFINER`.
 - Les lignes d’achat et fournisseurs ne sont jamais lisibles par `b2b_customer`, `sales_rep` ou `delivery_agent`.
 - Les helpers `can_read_customer`, `can_read_order`, `can_read_delivery` et `can_access_document_entity` centralisent l’isolation sans sous-requêtes RLS récursives.
+
+Le catalogue REST permet les lectures nommées des colonnes publiques sous les politiques de rôle. La colonne `cost_price` reste réservée aux opérations serveur. Les lectures clientes de produits doivent expliciter leurs colonnes.

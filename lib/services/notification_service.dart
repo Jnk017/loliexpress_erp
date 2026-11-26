@@ -4,13 +4,39 @@ import './supabase_service.dart';
 class NotificationService {
   final _client = SupabaseService.instance.client;
 
-  // Resend API key from environment
-  static const String _resendApiKey = String.fromEnvironment('RESEND_API_KEY');
+  static const centerTypes = <String, String>{
+    'new_order': 'Nouvelles commandes',
+    'low_stock': 'Stock faible',
+    'payment_received': 'Paiements reçus',
+    'overdue_invoice': 'Factures échues',
+    'order_delivered': 'Livraisons effectuées',
+  };
+
+  Future<Set<String>> loadCenterPreferences() async {
+    final user = _client.auth.currentUser;
+    if (user == null) throw StateError('Session indisponible');
+    final row = await _client
+        .from('notification_center_preferences')
+        .select('hidden_types')
+        .eq('user_id', user.id)
+        .maybeSingle();
+    return (row?['hidden_types'] as List? ?? const []).cast<String>().toSet();
+  }
+
+  Future<void> saveCenterPreferences(Set<String> hiddenTypes) async {
+    final user = _client.auth.currentUser;
+    if (user == null) throw StateError('Session indisponible');
+    await _client.from('notification_center_preferences').upsert({
+      'user_id': user.id,
+      'hidden_types': hiddenTypes.toList(),
+    });
+  }
 
   /// Get notifications for current user
   Future<List<Map<String, dynamic>>> getUserNotifications({
     int limit = 50,
-    String? status,
+    bool? read,
+    Set<String> hiddenTypes = const {},
   }) async {
     try {
       final user = _client.auth.currentUser;
@@ -22,12 +48,18 @@ class NotificationService {
           .select('*')
           .eq('recipient_id', user.id);
 
-      // Apply optional status filter
-      final filteredQuery =
-          status != null ? baseQuery.eq('status', status) : baseQuery;
+      final filteredQuery = switch (read) {
+        true => baseQuery.not('read_at', 'is', null),
+        false => baseQuery.isFilter('read_at', null),
+        null => baseQuery,
+      };
 
-      // Apply ordering and limit
-      final response = await filteredQuery
+      final excluded = centerTypes.keys.where(hiddenTypes.contains).toList();
+      final visibleQuery = excluded.isEmpty
+          ? filteredQuery
+          : filteredQuery.not('notification_type', 'in', "(${excluded.join(',')})");
+
+      final response = await visibleQuery
           .order('created_at', ascending: false)
           .limit(limit);
 
@@ -47,7 +79,7 @@ class NotificationService {
           .from('notification_queue')
           .select('id')
           .eq('recipient_id', user.id)
-          .eq('status', 'pending')
+          .isFilter('read_at', null)
           .count();
 
       return response.count;
@@ -70,33 +102,13 @@ class NotificationService {
         .map((data) => data.isNotEmpty ? data.first : {});
   }
 
-  /// Mark notification as read (sent)
+  /// Reading does not change the delivery state of the notification.
   Future<void> markAsRead(String notificationId) async {
-    try {
-      await _client.from('notification_queue').update({
-        'status': 'sent',
-        'sent_at': DateTime.now().toIso8601String()
-      }).eq('id', notificationId);
-    } catch (e) {
-      throw Exception('Failed to mark notification as read: $e');
-    }
-  }
-
-  /// Send email notification via Resend API
-  Future<void> sendEmailNotification({
-    required String to,
-    required String subject,
-    required String htmlContent,
-  }) async {
-    if (_resendApiKey.isEmpty) {
-      throw Exception(
-          'RESEND_API_KEY is not configured in environment variables');
-    }
-
-    // Note: Actual email sending would be implemented in a backend/edge function
-    // This is a placeholder for the client-side service structure
-    throw UnimplementedError(
-        'Email sending should be implemented in a Supabase Edge Function or backend service');
+    final user = _client.auth.currentUser;
+    if (user == null) throw StateError('Session indisponible');
+    await _client.from('notification_queue').update({
+      'read_at': DateTime.now().toUtc().toIso8601String(),
+    }).eq('id', notificationId).eq('recipient_id', user.id).isFilter('read_at', null);
   }
 
   /// Create a custom notification

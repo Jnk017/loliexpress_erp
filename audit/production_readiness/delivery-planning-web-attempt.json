@@ -1,0 +1,12 @@
+{
+  "role": "sales_rep",
+  "passed": false,
+  "cleanup": true,
+  "sha": "1bfc6161d57f862e2e06a77626920273ecf12d65",
+  "login_http": 200,
+  "phase": "Mettre en pr\u00e9paration",
+  "order_http": 200,
+  "order_response_shape": "dict",
+  "transition_http": 200,
+  "error": "TimeoutError"
+}

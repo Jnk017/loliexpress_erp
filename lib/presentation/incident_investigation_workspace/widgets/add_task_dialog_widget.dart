@@ -107,7 +107,7 @@ class _AddTaskDialogWidgetState extends State<AddTaskDialogWidget> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to add task: $e')),
+          SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
         );
       }
     } finally {
@@ -252,7 +252,7 @@ class _AddTaskDialogWidgetState extends State<AddTaskDialogWidget> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: const Text('Annuler'),
         ),
         ElevatedButton(
           onPressed: _isLoading ? null : _submitTask,

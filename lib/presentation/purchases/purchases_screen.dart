@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
+
+import '../../widgets/screen_state_view.dart';
+import '../../widgets/create_reference_form.dart';
+import '../../widgets/treasury_account_picker.dart';
 import 'package:sizer/sizer.dart';
 import 'package:intl/intl.dart';
 
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../core/request_id.dart';
+import '../../services/company_settings_service.dart';
+import '../../services/delivery_service.dart';
 import '../../services/purchase_service.dart';
-import '../../services/product_service.dart';
+import '../../services/role_service.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_bottom_bar.dart';
+import '../../widgets/role_workspace_panel.dart';
 
 class PurchasesScreen extends StatefulWidget {
   const PurchasesScreen({super.key});
@@ -20,6 +30,11 @@ class _PurchasesScreenState extends State<PurchasesScreen>
   bool _isLoading = false;
   List<Map<String, dynamic>> _purchases = [];
   String? _errorMessage;
+  bool get _canCreatePurchase => const [UserRole.admin, UserRole.acheteur]
+      .contains(RoleService.instance.currentRole);
+
+  bool get _isWarehouseStaff =>
+      RoleService.instance.currentRole == UserRole.warehouseStaff;
 
   final List<String> _statusTabs = ['Tous', 'En attente', 'Reçus'];
 
@@ -62,9 +77,10 @@ class _PurchasesScreenState extends State<PurchasesScreen>
     });
 
     try {
-      final purchases = await PurchaseService.instance.getPurchases(
-        status: _getStatusFilter(),
-      );
+      final service = PurchaseService.instance;
+      final purchases = _isWarehouseStaff
+          ? await service.getWarehouseReceiptQueue()
+          : await service.getPurchases(status: _getStatusFilter());
       if (!mounted) return;
       setState(() {
         _purchases = purchases;
@@ -73,7 +89,7 @@ class _PurchasesScreenState extends State<PurchasesScreen>
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = e.toString();
+        _errorMessage = 'Impossible de charger les achats.';
         _isLoading = false;
       });
     }
@@ -131,24 +147,297 @@ class _PurchasesScreenState extends State<PurchasesScreen>
     }
   }
 
-  void _showCreatePurchaseDialog() {
-    showDialog(
+  Future<void> _showCreatePurchaseDialog() async {
+    final result = await showDialog<bool>(
       context: context,
       builder: (context) => const _CreatePurchaseDialog(),
-    ).then((result) {
-      if (result == true) {
-        _loadPurchases();
+    );
+    if (result == true && mounted) await _loadPurchases();
+  }
+
+  Future<void> _openPurchaseOperations(Map<String, dynamic> purchase) async {
+    final client = Supabase.instance.client;
+    final userId = client.auth.currentUser?.id;
+    if (userId == null) return;
+    final service = PurchaseService.instance;
+    try {
+      final profile = await client.from('user_profiles')
+          .select('role,is_active,must_change_password')
+          .eq('id', userId)
+          .maybeSingle();
+      if (!mounted || profile == null || profile['is_active'] != true ||
+          profile['must_change_password'] != false) {
+        return;
       }
-    });
+      final role = profile['role'];
+      final purchaseId = purchase['id'] as String;
+      final detail = await service.getPurchaseById(purchaseId);
+      if (!mounted || detail == null) return;
+      final lines = List<Map<String, dynamic>>.from(detail['purchase_items'] as List);
+      final bills = List<Map<String, dynamic>>.from(detail['supplier_bills'] as List);
+      final currency = detail['currency'] as String;
+      final canReceive = const ['admin', 'acheteur', 'warehouse_staff'].contains(role)
+          && const ['pending', 'partial'].contains(detail['status']);
+      final canBill = const ['admin', 'acheteur', 'comptable'].contains(role)
+          && detail['status'] != 'cancelled';
+      final canPay = const ['admin', 'comptable'].contains(role)
+          && detail['status'] != 'cancelled';
+      if (!canReceive && !canBill && !canPay) return;
+      final operation = await showDialog<String>(
+        context: context,
+        builder: (context) => SimpleDialog(
+          title: Text('Achat ${detail['purchase_number']}'),
+          children: [
+            if (canReceive)
+              SimpleDialogOption(onPressed: () => Navigator.pop(context, 'receive'),
+                  child: const Text('Réceptionner des articles')),
+            if (canBill)
+              SimpleDialogOption(onPressed: () => Navigator.pop(context, 'bill'),
+                  child: const Text('Enregistrer une facture fournisseur')),
+            if (canPay)
+              SimpleDialogOption(onPressed: () => Navigator.pop(context, 'pay'),
+                  child: const Text('Enregistrer un règlement')),
+          ],
+        ),
+      );
+      if (!mounted || operation == null) return;
+
+      if (operation == 'receive') {
+        final line = await _choosePurchaseRow(
+          'Article à réceptionner',
+          lines.where((row) => (row['quantity'] as int) > (row['received_quantity'] as int? ?? 0)),
+          (row) => "${row['products']?['name'] ?? 'Article'} · ${(row['quantity'] as int) - (row['received_quantity'] as int? ?? 0)} restant(s)",
+        );
+        if (!mounted || line == null) return;
+        final warehouses = await DeliveryService.instance.getActiveWarehouses();
+        if (!mounted) return;
+        final warehouse = await _choosePurchaseRow('Entrepôt de réception', warehouses, (row) => row['name'] as String);
+        if (!mounted || warehouse == null) return;
+        final requestId = newRequestId();
+        await _submitPurchaseOperation('Réception physique', const ['Quantité reçue'], (values) async {
+          final quantity = int.tryParse(values.single);
+          if (quantity == null || quantity <= 0) throw const FormatException('Quantité invalide');
+          await service.receivePurchaseItem(
+            purchaseItemId: line['id'] as String,
+            warehouseId: warehouse['id'] as String,
+            quantity: quantity,
+            requestId: requestId,
+          );
+        });
+      } else if (operation == 'bill') {
+        await _submitPurchaseOperation('Facture fournisseur', [
+          'Numéro de facture', 'Échéance (AAAA-MM-JJ)', 'Montant ($currency)',
+        ], (values) async {
+          final date = DateTime.tryParse(values[1]);
+          if (date == null || DateFormat('yyyy-MM-dd').format(date) != values[1]) {
+            throw const FormatException('Échéance invalide');
+          }
+          await service.registerSupplierBill(purchaseId: purchaseId, billNumber: values[0],
+              dueDate: values[1], amount: _readOperationAmount(values[2]));
+        });
+      } else {
+        final bill = await _choosePurchaseRow('Facture à régler',
+          bills.where((row) => (row['amount'] as num) > (row['amount_paid'] as num)),
+          (row) => "${row['bill_number']} · ${(row['amount'] as num) - (row['amount_paid'] as num)} ${row['currency']}",
+        );
+        if (!mounted || bill == null) return;
+        final requestId = newRequestId();
+        final account = await pickTreasuryAccount(context, bill['currency'] as String, incoming: false, includeMobileMoney: true);
+        if (!mounted || account == null) return;
+        await _submitPurchaseOperation('Règlement fournisseur',
+          ['Montant (${bill['currency']})', 'Référence du règlement'],
+          (values) => service.recordSupplierBillPayment(
+            billId: bill['id'] as String,
+            amount: _readOperationAmount(values[0]),
+            currency: bill['currency'] as String,
+            reference: values[1],
+            requestId: requestId,
+            accountKind: account.kind,
+            paymentMethod: account.method,
+            accountId: account.id,
+          ),
+        );
+      }
+      if (mounted) await _loadPurchases();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Opération fournisseur indisponible.')),
+      );
+    }
+  }
+
+  double _readOperationAmount(String value) {
+    final text = value.replaceAll(',', '.');
+    if (!RegExp(r'^\d{1,10}(\.\d{1,2})?$').hasMatch(text)) {
+      throw const FormatException('Montant invalide');
+    }
+    final amount = double.parse(text);
+    if (amount <= 0) throw const FormatException('Montant invalide');
+    return amount;
+  }
+
+  Future<Map<String, dynamic>?> _choosePurchaseRow(
+    String title, Iterable<Map<String, dynamic>> rows,
+    String Function(Map<String, dynamic>) label,
+  ) {
+    return showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text(title),
+        children: [
+          if (rows.isEmpty)
+            const Padding(padding: EdgeInsets.all(16), child: Text('Aucun élément disponible.')),
+          for (final row in rows)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(context, row),
+              child: Text(label(row)),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _submitPurchaseOperation(String title, List<String> fields,
+      Future<void> Function(List<String>) submit) async {
+    final values = List<String>.filled(fields.length, '');
+    var busy = false;
+    var submitted = false;
+    String? error;
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (dialogContext, update) => PopScope(
+          canPop: !busy,
+          child: AlertDialog(
+            title: Text(title),
+            content: SingleChildScrollView(
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                for (var index = 0; index < fields.length; index++)
+                  TextField(enabled: !submitted,
+                    decoration: InputDecoration(labelText: fields[index]),
+                    onChanged: (value) => values[index] = value.trim()),
+                if (error != null) Text(error!),
+              ]),
+            ),
+            actions: [
+              TextButton(onPressed: busy ? null : () => Navigator.pop(dialogContext),
+                  child: const Text('Fermer')),
+              FilledButton(
+                onPressed: busy ? null : () async {
+                  if (values.any((value) => value.isEmpty)) {
+                    update(() => error = 'Tous les champs sont requis.');
+                    return;
+                  }
+                  update(() { busy = true; error = null; });
+                  try {
+                    await submit(values);
+                    if (dialogContext.mounted) Navigator.pop(dialogContext);
+                  } on FormatException catch (e) {
+                    if (dialogContext.mounted) update(() { busy = false; error = e.message; });
+                  } catch (_) {
+                    if (dialogContext.mounted) {
+                      update(() {
+                        busy = false;
+                        submitted = true;
+                        error = 'Opération non confirmée. Réessayez ou vérifiez les données.';
+                      });
+                    }
+                  }
+                },
+                child: Text(submitted ? 'Réessayer' : 'Enregistrer'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _receiveWarehouseLine(Map<String, dynamic> line) async {
+    try {
+      final warehouses = await DeliveryService.instance.getActiveWarehouses();
+      if (!mounted) return;
+      final warehouse = await _choosePurchaseRow(
+        'Entrepôt de réception',
+        warehouses,
+        (row) => row['name'] as String,
+      );
+      if (!mounted || warehouse == null) return;
+      final requestId = newRequestId();
+      await _submitPurchaseOperation(
+        'Réception physique',
+        const ['Quantité reçue'],
+        (values) async {
+          final quantity = int.tryParse(values.single);
+          final remaining = line['remaining_quantity'] as int;
+          if (quantity == null || quantity < 1 || quantity > remaining) {
+            throw FormatException('Saisissez une quantité de 1 à $remaining.');
+          }
+          await PurchaseService.instance.receivePurchaseItem(
+            purchaseItemId: line['purchase_item_id'] as String,
+            warehouseId: warehouse['id'] as String,
+            quantity: quantity,
+            requestId: requestId,
+          );
+        },
+      );
+      if (mounted) await _loadPurchases();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Impossible de préparer la réception.')),
+      );
+    }
+  }
+
+  Widget _buildWarehouseReceiptQueue() {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Réception des marchandises'),
+        actions: [
+          IconButton(
+            tooltip: 'Actualiser',
+            onPressed: _isLoading ? null : _loadPurchases,
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _errorMessage != null
+                ? Center(child: Text(_errorMessage!))
+                : _purchases.isEmpty
+                    ? const Center(child: Text('Aucun article à réceptionner.'))
+                    : ListView(
+                        children: [
+                          for (final line in _purchases)
+                            ListTile(
+                              title: Text(line['product_name'] as String),
+                              subtitle: Text(
+                                '${line['purchase_number']} · '
+                                '${line['remaining_quantity']} restant(s)',
+                              ),
+                              trailing: const Icon(Icons.chevron_right),
+                              onTap: () => _receiveWarehouseLine(line),
+                            ),
+                        ],
+                      ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isWarehouseStaff) return _buildWarehouseReceiptQueue();
     final theme = Theme.of(context);
 
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Achats',
+        root: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -159,12 +448,14 @@ class _PurchasesScreenState extends State<PurchasesScreen>
       ),
       body: Column(
         children: [
+          if (RoleService.instance.currentRole == UserRole.acheteur)
+            RoleWorkspacePanel(onNewPurchase: _showCreatePurchaseDialog),
           Container(
             color: theme.cardColor,
             child: TabBar(
               controller: _tabController,
               labelColor: theme.primaryColor,
-              unselectedLabelColor: Colors.grey,
+              unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
               indicatorColor: theme.primaryColor,
               tabs: _statusTabs.map((t) => Tab(text: t)).toList(),
             ),
@@ -177,11 +468,11 @@ class _PurchasesScreenState extends State<PurchasesScreen>
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: _canCreatePurchase ? FloatingActionButton(
         onPressed: _showCreatePurchaseDialog,
         tooltip: 'Nouvel achat',
         child: const Icon(Icons.add),
-      ),
+      ) : null,
       bottomNavigationBar: const CustomBottomBar(currentIndex: 0),
     );
   }
@@ -192,55 +483,24 @@ class _PurchasesScreenState extends State<PurchasesScreen>
     }
 
     if (_errorMessage != null) {
-      return Center(
-        child: Padding(
-          padding: EdgeInsets.all(4.w),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.error_outline, size: 48, color: Colors.red.shade300),
-              SizedBox(height: 2.h),
-              Text(
-                'Erreur de chargement',
-                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 1.h),
-              Text(
-                _errorMessage!,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 11.sp, color: Colors.grey),
-              ),
-              SizedBox(height: 2.h),
-              ElevatedButton.icon(
-                onPressed: _loadPurchases,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Réessayer'),
-              ),
-            ],
-          ),
-        ),
+      return ScreenStateView.error(
+        message: 'Impossible de charger les achats.',
+        onAction: _loadPurchases,
       );
     }
 
     if (_purchases.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.shopping_bag_outlined,
-                size: 64, color: Colors.grey.shade400),
-            SizedBox(height: 2.h),
-            Text(
-              'Aucun achat trouvé',
-              style: TextStyle(fontSize: 14.sp, color: Colors.grey),
-            ),
-          ],
-        ),
+      return ScreenStateView(
+        icon: Icons.shopping_bag_outlined,
+        message: 'Aucun achat trouvé.',
+        actionLabel: 'Nouvel achat',
+        onAction: _canCreatePurchase ? _showCreatePurchaseDialog : null,
       );
     }
 
     return ListView.builder(
-      padding: EdgeInsets.all(3.w),
+      padding: EdgeInsets.fromLTRB(3.w, 3.w, 3.w,
+          (_canCreatePurchase ? 88 : 24) + MediaQuery.paddingOf(context).bottom),
       itemCount: _purchases.length,
       itemBuilder: (context, index) => _buildPurchaseCard(_purchases[index]),
     );
@@ -335,6 +595,10 @@ class _PurchasesScreenState extends State<PurchasesScreen>
                 ),
               ],
             ),
+            TextButton(
+              onPressed: () => _openPurchaseOperations(purchase),
+              child: const Text('Réception, facture et règlement'),
+            ),
             SizedBox(height: 1.h),
             Row(
               children: [
@@ -393,21 +657,43 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
     try {
       final results = await Future.wait([
         PurchaseService.instance.getSuppliers(),
-        ProductService.instance.getProducts(),
+        PurchaseService.instance.getProcurementProductChoices(),
       ]);
+      final settings = await const CompanySettingsService().load();
       if (!mounted) return;
       setState(() {
         _suppliers = results[0];
         _products = results[1];
+        _selectedCurrency = settings['default_currency'] as String;
         _isLoading = false;
       });
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur chargement données: $e')),
+        SnackBar(content: Text('Impossible de charger le formulaire d’achat.')),
       );
     }
+  }
+
+  Future<void> _createSupplier() async {
+    Map<String, dynamic>? supplier;
+    final created = await showCreateReferenceForm(
+      context,
+      title: 'Nouveau fournisseur',
+      save: (name, address) async {
+        supplier = await PurchaseService.instance.createSupplier({
+          'company_name': name,
+          'address': address,
+          'is_active': true,
+        });
+      },
+    );
+    if (!created || !mounted || supplier == null) return;
+    setState(() {
+      _suppliers = [..._suppliers, supplier!];
+      _selectedSupplierId = supplier!['id'] as String;
+    });
   }
 
   void _addItem() {
@@ -477,7 +763,7 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
       if (!mounted) return;
       setState(() => _isSubmitting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur: $e')),
+        SnackBar(content: Text('L’achat n’a pas pu être enregistré.')),
       );
     }
   }
@@ -502,12 +788,13 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Nouvel Achat',
+                    'Nouvel achat',
                     style:
                         TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 2.h),
+                  const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
+                    key: ValueKey(_selectedSupplierId),
                     initialValue: _selectedSupplierId,
                     decoration: const InputDecoration(
                       labelText: 'Fournisseur',
@@ -522,24 +809,30 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                         .toList(),
                     onChanged: (v) => setState(() => _selectedSupplierId = v),
                   ),
-                  SizedBox(height: 2.h),
+                  if (const [UserRole.admin, UserRole.acheteur].contains(RoleService.instance.currentRole))
+                    TextButton.icon(
+                      onPressed: _isSubmitting ? null : _createSupplier,
+                      icon: const Icon(Icons.person_add_alt),
+                      label: const Text('Nouveau fournisseur'),
+                    ),
+                  const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: _selectedCurrency,
                     decoration: const InputDecoration(
                       labelText: 'Devise',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.monetization_on),
+                      prefixIcon: Icon(Icons.currency_exchange),
                     ),
                     items: const [
                       DropdownMenuItem(
-                          value: 'CDF', child: Text('CDF (Franc Congolais)')),
+                          value: 'CDF', child: Text('CDF (franc congolais)')),
                       DropdownMenuItem(
                           value: 'USD', child: Text('USD (Dollar US)')),
                     ],
                     onChanged: (v) =>
                         setState(() => _selectedCurrency = v ?? 'CDF'),
                   ),
-                  SizedBox(height: 2.h),
+                  const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -551,7 +844,7 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                       TextButton.icon(
                         onPressed: _addItem,
                         icon: const Icon(Icons.add, size: 18),
-                        label: const Text('Ajouter'),
+                        label: const Text('Ajouter un produit'),
                       ),
                     ],
                   ),
@@ -572,7 +865,7 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                         ),
                         Text(
                           '$currencySymbol ${_totalAmount.toStringAsFixed(_selectedCurrency == "USD" ? 2 : 0)}',
-                          style: TextStyle(
+                          style: theme.textTheme.titleMedium?.copyWith(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.bold,
                             color: theme.primaryColor,
@@ -581,7 +874,7 @@ class _CreatePurchaseDialogState extends State<_CreatePurchaseDialog> {
                       ],
                     ),
                   ],
-                  SizedBox(height: 2.h),
+                  const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [

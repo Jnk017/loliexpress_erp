@@ -1,0 +1,16 @@
+{
+  "role": "warehouse_staff",
+  "passed": true,
+  "cleanup": true,
+  "sha": "7c3d7238c0c3b49aede1cc934ff192ba36fa0899",
+  "login_http": 200,
+  "phase": "submit",
+  "purchase_http": 200,
+  "login": true,
+  "receipt_http": 200,
+  "database": {
+    "stock": 2,
+    "movements": 1,
+    "purchase_status": "received"
+  }
+}

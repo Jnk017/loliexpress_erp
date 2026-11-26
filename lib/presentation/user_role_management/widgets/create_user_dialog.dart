@@ -12,7 +12,7 @@ class CreateUserDialog extends StatefulWidget {
 
 class _CreateUserDialogState extends State<CreateUserDialog> {
   final _formKey = GlobalKey<FormState>();
-  final UserManagementService _userService = UserManagementService();
+  late final UserManagementService _userService = UserManagementService();
 
   final _emailController = TextEditingController();
   final _fullNameController = TextEditingController();
@@ -50,7 +50,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error creating user: $e')),
+          SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
         );
       }
     }
@@ -201,7 +201,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
                             borderRadius: BorderRadius.circular(12.0),
                           ),
                         ),
-                        child: const Text('Cancel'),
+                        child: const Text('Annuler'),
                       ),
                     ),
                     SizedBox(width: 3.w),

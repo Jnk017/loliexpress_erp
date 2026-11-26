@@ -282,7 +282,7 @@ class _IncidentManagementCenterState extends State<IncidentManagementCenter> {
       if (!mounted) return;
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load incidents: $e')),
+        SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
       );
     }
   }
@@ -308,7 +308,7 @@ class _IncidentManagementCenterState extends State<IncidentManagementCenter> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update status: $e')),
+        SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
       );
     }
   }

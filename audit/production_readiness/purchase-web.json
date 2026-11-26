@@ -1,0 +1,20 @@
+{
+  "role": "warehouse_staff",
+  "passed": true,
+  "cleanup": true,
+  "sha": "308435a95ee9869f2a32d9c08829256c86d1afb8",
+  "login_http": 200,
+  "phase": "submit",
+  "purchase_http": 200,
+  "login": true,
+  "receipt_http": 200,
+  "database": {
+    "stock": 2,
+    "movements": 1,
+    "purchase_status": "received"
+  },
+  "screenshots": {
+    "purchase_web_before_submit.png": "9da2b639df77db54a27c2a3ddd2b25ee7330a0ce8ee60e7567fa6294a5819437",
+    "purchase_web_after_receipt.png": "d69f4ce1ed9ffb1d2eca99c4d27b5312c7460db3bf7135c33a088dcc204205e4"
+  }
+}

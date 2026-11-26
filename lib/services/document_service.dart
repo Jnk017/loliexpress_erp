@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import './supabase_service.dart';
 
@@ -151,6 +152,9 @@ class DocumentService {
       throw Exception('Failed to get document URL: $e');
     }
   }
+
+  Future<Uint8List> downloadDocument(String filePath) =>
+      _client.storage.from('erp-documents').download(filePath);
 
   /// Delete a document
   Future<void> deleteDocument(String documentId, String filePath) async {

@@ -374,60 +374,7 @@ class _ProductCatalogState extends State<ProductCatalog> {
                 ),
               ],
             ),
-      bottomNavigationBar: CustomBottomBar(
-        currentIndex: 1,
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              Navigator.pushReplacementNamed(context, '/main-dashboard');
-              break;
-            case 1:
-              break;
-            case 2:
-              Navigator.pushReplacementNamed(
-                  context, '/sales-order-processing');
-              break;
-            case 3:
-              Navigator.pushReplacementNamed(context, '/customer-management');
-              break;
-            case 4:
-              Navigator.pushReplacementNamed(context, '/financial-dashboard');
-              break;
-          }
-        },
-        customItems: const [
-          CustomBottomBarItem(
-            icon: Icons.dashboard_outlined,
-            activeIcon: Icons.dashboard,
-            label: 'Tableau de bord',
-            route: '/main-dashboard',
-          ),
-          CustomBottomBarItem(
-            icon: Icons.inventory_2_outlined,
-            activeIcon: Icons.inventory_2,
-            label: 'Inventaire',
-            route: '/product-catalog',
-          ),
-          CustomBottomBarItem(
-            icon: Icons.shopping_cart_outlined,
-            activeIcon: Icons.shopping_cart,
-            label: 'Commandes',
-            route: '/sales-order-processing',
-          ),
-          CustomBottomBarItem(
-            icon: Icons.people_outline,
-            activeIcon: Icons.people,
-            label: 'Clients',
-            route: '/customer-management',
-          ),
-          CustomBottomBarItem(
-            icon: Icons.analytics_outlined,
-            activeIcon: Icons.analytics,
-            label: 'Rapports',
-            route: '/financial-dashboard',
-          ),
-        ],
-      ),
+      bottomNavigationBar: const CustomBottomBar(currentIndex: 1),
     );
   }
 

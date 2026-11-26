@@ -49,7 +49,7 @@ class _AlertConfigurationDialogState extends State<AlertConfigurationDialog> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update threshold: $e')),
+          SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
         );
       }
     }
@@ -114,7 +114,7 @@ class _AlertConfigurationDialogState extends State<AlertConfigurationDialog> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Done'),
+                child: const Text('Terminer'),
               ),
             ),
           ],

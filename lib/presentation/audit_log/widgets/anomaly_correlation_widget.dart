@@ -54,7 +54,7 @@ class _AnomalyCorrelationWidgetState extends State<AnomalyCorrelationWidget> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading patterns: $e')),
+          SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
         );
       }
     }
@@ -127,7 +127,7 @@ class _AnomalyCorrelationWidgetState extends State<AnomalyCorrelationWidget> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error updating status: $e')),
+            SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
           );
         }
       }

@@ -1,0 +1,35 @@
+[
+  {
+    "script": "verify_p0a.sql",
+    "http": "400",
+    "body": {
+      "message": "Failed to run sql query: ERROR:  23502: null value in column \"user_id\" of relation \"audit_logs\" violates not-null constraint\nDETAIL:  Failing row contains (f40bb92e-ecf7-41b6-bd07-d66c29a70eda, products, 0cc69e18-e04a-4c5b-a215-3814e6cc1596, insert, null, {\"id\": \"0cc69e18-e04a-4c5b-a215-3814e6cc1596\", \"sku\": \"p0a-0cc69..., null, null, null, 2026-11-23 23:34:18.98483+00).\nCONTEXT:  SQL statement \"INSERT INTO public.audit_logs (\n            table_name,\n            record_id,\n            action_type,\n            new_values,\n            user_id\n        ) VALUES (\n            TG_TABLE_NAME,\n            NEW.id,\n            'insert'::public.audit_action_type,\n            to_jsonb(NEW),\n            auth.uid()\n        )\"\nPL/pgSQL function log_audit_trail() line 36 at SQL statement\nSQL statement \"INSERT INTO public.products(id, sku, name, unit_price, currency, is_active)\n    VALUES (product_id, product_sku, 'Paquet d’eau', 4000, 'CDF', true)\"\nPL/pgSQL function inline_code_block line 34 at SQL statement\n"
+    }
+  },
+  {
+    "script": "verify_p0a.sql",
+    "http": "201",
+    "body": [
+      {
+        "scenario": "order_and_admin_pricing",
+        "passed": true
+      },
+      {
+        "scenario": "password_flag_cleared",
+        "passed": true
+      },
+      {
+        "scenario": "password_setup",
+        "passed": true
+      },
+      {
+        "scenario": "stock_and_rollback",
+        "passed": true
+      },
+      {
+        "scenario": "transition_and_audit",
+        "passed": true
+      }
+    ]
+  }
+]

@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 class AppTheme {
   AppTheme._();
 
+  static const tabularFigures = <FontFeature>[FontFeature.tabularFigures()];
+
   // Loliexpress Official Brand Colors
   static const Color loliexpressRed = Color(0xFFE30613); // Primary red
   static const Color loliexpressBlack = Color(0xFF000000); // Primary black
@@ -54,10 +56,10 @@ class AppTheme {
   static const Color onBackgroundLight = loliexpressBlack;
   static const Color onSurfaceLight = loliexpressBlack;
   static const Color onErrorLight = Color(0xFFFFFFFF);
-  static const Color onAccentLight = Color(0xFFFFFFFF);
+  static const Color onAccentLight = Color(0xFF241000);
 
   // Dark Theme Colors
-  static const Color primaryDark = loliexpressRed;
+  static const Color primaryDark = Color(0xFFFF8089);
   static const Color primaryVariantDark = Color(0xFFB00510);
   static const Color secondaryDark = loliexpressBlack;
   static const Color secondaryVariantDark = Color(0xFF1A1A1A);
@@ -82,12 +84,12 @@ class AppTheme {
   static const Color dividerDark = Color(0xFF3A3A3A);
   static const Color shadowDark = Color(0x1FFFFFFF);
 
-  static const Color onPrimaryDark = Color(0xFFFFFFFF);
+  static const Color onPrimaryDark = Color(0xFF230004);
   static const Color onSecondaryDark = Color(0xFFFFFFFF);
   static const Color onBackgroundDark = Color(0xFFFFFFFF);
   static const Color onSurfaceDark = Color(0xFFFFFFFF);
   static const Color onErrorDark = Color(0xFFFFFFFF);
-  static const Color onAccentDark = Color(0xFFFFFFFF);
+  static const Color onAccentDark = Color(0xFF241000);
 
   /// Light theme configuration
   static ThemeData lightTheme = ThemeData(
@@ -453,7 +455,7 @@ class AppTheme {
       primary: primaryDark,
       onPrimary: onPrimaryDark,
       primaryContainer: primaryVariantDark,
-      onPrimaryContainer: onPrimaryDark,
+      onPrimaryContainer: loliexpressWhite,
       secondary: secondaryDark,
       onSecondary: onSecondaryDark,
       secondaryContainer: secondaryVariantDark,
@@ -736,7 +738,7 @@ class AppTheme {
       space: 1.0,
     ),
     chipTheme: ChipThemeData(
-      backgroundColor: backgroundDark,
+      backgroundColor: cardDark,
       deleteIconColor: textSecondaryDark,
       disabledColor: dividerDark,
       selectedColor: primaryDark.withValues(alpha: 0.2),
@@ -773,6 +775,7 @@ class AppTheme {
     return TextTheme(
       // Display styles - Large headings
       displayLarge: GoogleFonts.inter(
+        fontFeatures: tabularFigures,
         fontSize: 57,
         fontWeight: FontWeight.w700,
         color: textHighEmphasis,
@@ -780,6 +783,7 @@ class AppTheme {
         height: 1.12,
       ),
       displayMedium: GoogleFonts.inter(
+        fontFeatures: tabularFigures,
         fontSize: 45,
         fontWeight: FontWeight.w700,
         color: textHighEmphasis,
@@ -787,6 +791,7 @@ class AppTheme {
         height: 1.16,
       ),
       displaySmall: GoogleFonts.inter(
+        fontFeatures: tabularFigures,
         fontSize: 36,
         fontWeight: FontWeight.w600,
         color: textHighEmphasis,
@@ -796,6 +801,7 @@ class AppTheme {
 
       // Headline styles - Section headers
       headlineLarge: GoogleFonts.inter(
+        fontFeatures: tabularFigures,
         fontSize: 32,
         fontWeight: FontWeight.w600,
         color: textHighEmphasis,
@@ -803,6 +809,7 @@ class AppTheme {
         height: 1.25,
       ),
       headlineMedium: GoogleFonts.inter(
+        fontFeatures: tabularFigures,
         fontSize: 28,
         fontWeight: FontWeight.w600,
         color: textHighEmphasis,
@@ -810,6 +817,7 @@ class AppTheme {
         height: 1.29,
       ),
       headlineSmall: GoogleFonts.inter(
+        fontFeatures: tabularFigures,
         fontSize: 24,
         fontWeight: FontWeight.w600,
         color: textHighEmphasis,
@@ -819,6 +827,7 @@ class AppTheme {
 
       // Title styles - Card headers, list items
       titleLarge: GoogleFonts.inter(
+        fontFeatures: tabularFigures,
         fontSize: 22,
         fontWeight: FontWeight.w600,
         color: textHighEmphasis,
@@ -826,6 +835,7 @@ class AppTheme {
         height: 1.27,
       ),
       titleMedium: GoogleFonts.inter(
+        fontFeatures: tabularFigures,
         fontSize: 16,
         fontWeight: FontWeight.w600,
         color: textHighEmphasis,
@@ -833,6 +843,7 @@ class AppTheme {
         height: 1.50,
       ),
       titleSmall: GoogleFonts.inter(
+        fontFeatures: tabularFigures,
         fontSize: 14,
         fontWeight: FontWeight.w600,
         color: textHighEmphasis,
@@ -842,6 +853,7 @@ class AppTheme {
 
       // Body styles - Main content
       bodyLarge: GoogleFonts.inter(
+        fontFeatures: tabularFigures,
         fontSize: 16,
         fontWeight: FontWeight.w400,
         color: textHighEmphasis,
@@ -849,6 +861,7 @@ class AppTheme {
         height: 1.50,
       ),
       bodyMedium: GoogleFonts.inter(
+        fontFeatures: tabularFigures,
         fontSize: 14,
         fontWeight: FontWeight.w400,
         color: textHighEmphasis,
@@ -856,6 +869,7 @@ class AppTheme {
         height: 1.43,
       ),
       bodySmall: GoogleFonts.inter(
+        fontFeatures: tabularFigures,
         fontSize: 12,
         fontWeight: FontWeight.w400,
         color: textMediumEmphasis,
@@ -865,6 +879,7 @@ class AppTheme {
 
       // Label styles - Buttons, tabs, labels
       labelLarge: GoogleFonts.inter(
+        fontFeatures: tabularFigures,
         fontSize: 14,
         fontWeight: FontWeight.w600,
         color: textHighEmphasis,
@@ -872,6 +887,7 @@ class AppTheme {
         height: 1.43,
       ),
       labelMedium: GoogleFonts.inter(
+        fontFeatures: tabularFigures,
         fontSize: 12,
         fontWeight: FontWeight.w500,
         color: textMediumEmphasis,
@@ -879,6 +895,7 @@ class AppTheme {
         height: 1.33,
       ),
       labelSmall: GoogleFonts.inter(
+        fontFeatures: tabularFigures,
         fontSize: 11,
         fontWeight: FontWeight.w500,
         color: textDisabled,
@@ -897,6 +914,7 @@ class AppTheme {
     final Color textColor =
         isLight ? textHighEmphasisLight : textHighEmphasisDark;
     return GoogleFonts.jetBrainsMono(
+      fontFeatures: tabularFigures,
       fontSize: fontSize,
       fontWeight: fontWeight,
       color: textColor,

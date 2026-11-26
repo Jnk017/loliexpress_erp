@@ -13,6 +13,7 @@ class OrderSummaryCard extends StatelessWidget {
   final double total;
   final VoidCallback onCreateOrder;
   final bool isProcessing;
+  final String currency;
 
   const OrderSummaryCard({
     super.key,
@@ -22,6 +23,7 @@ class OrderSummaryCard extends StatelessWidget {
     required this.total,
     required this.onCreateOrder,
     this.isProcessing = false,
+    this.currency = 'CDF',
   });
 
   @override
@@ -49,7 +51,7 @@ class OrderSummaryCard extends StatelessWidget {
               _buildSummaryRow(
                 context,
                 'Sous-total',
-                '${subtotal.toStringAsFixed(0)} FC',
+                '${subtotal.toStringAsFixed(2)} $currency',
                 false,
               ),
               if (discount > 0) ...[
@@ -57,7 +59,7 @@ class OrderSummaryCard extends StatelessWidget {
                 _buildSummaryRow(
                   context,
                   'Remise',
-                  '-${discount.toStringAsFixed(0)} FC',
+                  '-${discount.toStringAsFixed(2)} $currency',
                   false,
                   color: theme.colorScheme.tertiary,
                 ),
@@ -66,7 +68,7 @@ class OrderSummaryCard extends StatelessWidget {
               _buildSummaryRow(
                 context,
                 'TVA (18%)',
-                '${tax.toStringAsFixed(0)} FC',
+                '${tax.toStringAsFixed(2)} $currency',
                 false,
               ),
               SizedBox(height: 1.h),
@@ -77,7 +79,7 @@ class OrderSummaryCard extends StatelessWidget {
               _buildSummaryRow(
                 context,
                 'Total',
-                '${total.toStringAsFixed(0)} FC',
+                '${total.toStringAsFixed(2)} $currency',
                 true,
               ),
               SizedBox(height: 2.h),

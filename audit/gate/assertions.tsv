@@ -1,0 +1,67 @@
+lot	id	source	verdict	preuve_ou_cause
+P0.a	public_tables	audit/verify_p0a_baseline.sql	NOT_RUN	L’état intermédiaire 000 seul n’a pas été capturé avant 017.
+P0.a	public_rls_tables	audit/verify_p0a_baseline.sql	NOT_RUN	L’état intermédiaire 000 seul n’a pas été capturé avant 017.
+P0.a	public_indexes	audit/verify_p0a_baseline.sql	NOT_RUN	L’état intermédiaire 000 seul n’a pas été capturé avant 017.
+P0.a	public_and_storage_policies	audit/verify_p0a_baseline.sql	NOT_RUN	L’état intermédiaire 000 seul n’a pas été capturé avant 017.
+P0.a	create_order_body	audit/verify_p0a_baseline.sql	NOT_RUN	L’état intermédiaire 000 seul n’a pas été capturé avant 017.
+P0.a	adjust_stock_body	audit/verify_p0a_baseline.sql	NOT_RUN	L’état intermédiaire 000 seul n’a pas été capturé avant 017.
+P0.a	transition_absent	audit/verify_p0a_baseline.sql	NOT_RUN	L’état intermédiaire 000 seul n’a pas été capturé avant 017.
+P0.a	password_setup_absent	audit/verify_p0a_baseline.sql	NOT_RUN	L’état intermédiaire 000 seul n’a pas été capturé avant 017.
+P0.a	private_documents	audit/verify_p0a_baseline.sql	NOT_RUN	L’état intermédiaire 000 seul n’a pas été capturé avant 017.
+P0.a	order_and_admin_pricing	audit/verify_p0a.sql	PASS	gate_state/verify_p0a.json
+P0.a	transition_and_audit	audit/verify_p0a.sql	PASS	gate_state/verify_p0a.json
+P0.a	stock_and_rollback	audit/verify_p0a.sql	PASS	gate_state/verify_p0a.json
+P0.a	password_setup	audit/verify_p0a.sql	PASS	gate_state/verify_p0a.json
+P0.a	password_flag_cleared	audit/verify_p0a.sql	PASS	gate_state/verify_p0a.json
+P0.b	empty_demo_data	audit/verify_p0b.sql	PASS	gate_state/verify_p0b.json
+P0.b	private_document_bucket	audit/verify_p0b.sql	PASS	gate_state/verify_p0b.json
+P0.b	b2b_a_scope_and_role	audit/verify_p0b.sql	PASS	gate_state/verify_p0b.json
+P0.b	storage_a_scope	audit/verify_p0b.sql	PASS	gate_state/verify_p0b.json
+P0.b	b2b_b_scope	audit/verify_p0b.sql	PASS	gate_state/verify_p0b.json
+P0.b	storage_b_scope	audit/verify_p0b.sql	PASS	gate_state/verify_p0b.json
+P0.b	driver_a_scope	audit/verify_p0b.sql	PASS	gate_state/verify_p0b.json
+P0.b	driver_b_scope	audit/verify_p0b.sql	PASS	gate_state/verify_p0b.json
+P0.b	reload_company_settings_after_session_change	audit/verify_p0b_settings.sql	PASS	gate_state/verify_p0b.json
+P0.b	reader_cannot_change_settings	audit/verify_p0b_settings.sql	PASS	gate_state/verify_p0b.json
+P0.b	client_cannot_read_internal_settings	audit/verify_p0b_settings.sql	PASS	gate_state/verify_p0b.json
+P0.b	nonzero_tax_refused	audit/verify_p0b_settings.sql	PASS	gate_state/verify_p0b.json
+P0.b	issued_pdf_keeps_persisted_template	audit/verify_p0b_settings.sql	PASS	gate_state/verify_p0b.json
+P1.a	optional_delivery_and_zero_tax	audit/verify_p1a_invoice_delivery.sql	PASS	gate_state/verify_p1a.json
+P1.a	issue_retry_returns_same_invoice	audit/verify_p1a_invoice_delivery.sql	PASS	gate_state/verify_p1a.json
+P1.a	delivery_fee_in_outstanding_balance	audit/verify_p1a_invoice_delivery.sql	PASS	gate_state/verify_p1a.json
+P1.a	accountant_denied	audit/verify_p1a_admin_delivery_credit.sql	PASS	gate_state/verify_p1a.json
+P1.a	admin_credit_and_retry	audit/verify_p1a_admin_delivery_credit.sql	PASS	gate_state/verify_p1a.json
+P1.a	fee_cap	audit/verify_p1a_admin_delivery_credit.sql	PASS	gate_state/verify_p1a.json
+P1.a	payment_uses_net_amount	audit/verify_p1a_admin_delivery_credit.sql	PASS	gate_state/verify_p1a.json
+P1.a	paid_invoice_refund_due	audit/verify_p1a_admin_delivery_credit.sql	PASS	gate_state/verify_p1a.json
+P1.a	return_requires_actual_handover	audit/verify_p1a_handover.sql	PASS	gate_state/verify_p1a.json
+P1.a	shipment_does_not_decrement	audit/verify_p1a_handover.sql	PASS	gate_state/verify_p1a.json
+P1.a	status_requires_handover	audit/verify_p1a_handover.sql	PASS	gate_state/verify_p1a.json
+P1.a	handover_decrements_once	audit/verify_p1a_handover.sql	PASS	gate_state/verify_p1a.json
+P1.a	insufficient_stock_rolls_back	audit/verify_p1a_handover.sql	PASS	gate_state/verify_p1a.json
+P1.a	usd_handover_uses_same_stock_rule	audit/verify_p1a_handover.sql	PASS	gate_state/verify_p1a.json
+P1.a	mixed_return_restocks_sellable_once	audit/verify_p1a_handover.sql	PASS	gate_state/verify_p1a.json
+P1.a	return_quantity_ceiling	audit/verify_p1a_handover.sql	PASS	gate_state/verify_p1a.json
+P1.a	unsellable_return_keeps_stock_and_accounts	audit/verify_p1a_handover.sql	PASS	gate_state/verify_p1a.json
+P1.a	unsellable_units_never_credited	audit/verify_p1a_handover.sql	PASS	gate_state/verify_p1a.json
+P1.a	mixed_return_credit_once_at_invoiced_price	audit/verify_p1a_handover.sql	PASS	gate_state/verify_p1a.json
+P1.a	cdf_cycle_reconciled	audit/verify_p1a_handover.sql	PASS	gate_state/verify_p1a.json
+P1.a	usd_cycle_reconciled	audit/verify_p1a_handover.sql	PASS	gate_state/verify_p1a.json
+P1.a	draft_persisted_and_updated	audit/verify_p1a_drafts_and_purchases.sql	PASS	gate_state/verify_p1a.json
+P1.a	draft_without_receivable	audit/verify_p1a_drafts_and_purchases.sql	PASS	gate_state/verify_p1a.json
+P1.a	invalid_line_rolls_back_header	audit/verify_p1a_drafts_and_purchases.sql	PASS	gate_state/verify_p1a.json
+P1.a	atomic_purchase	audit/verify_p1a_drafts_and_purchases.sql	PASS	gate_state/verify_p1a.json
+P1.a	partial_receipt_and_idempotency	audit/verify_p1a_drafts_and_purchases.sql	PASS	gate_state/verify_p1a.json
+P1.a	supplier_bill_is_separate_from_receipt	audit/verify_p1a_drafts_and_purchases.sql	PASS	gate_state/verify_p1a.json
+P1.a	supplier_partial_payment_and_idempotency	audit/verify_p1a_drafts_and_purchases.sql	PASS	gate_state/verify_p1a.json
+P1.a	supplier_balance_settled_without_stock_change	audit/verify_p1a_drafts_and_purchases.sql	PASS	gate_state/verify_p1a.json
+P1.a	RA1_non_sellable_refused_P4101	audit/verify_p1a_ra.sql	PASS	gate_state/verify_p1a.json
+P1.a	RA2_three_credited_two_traced	audit/verify_p1a_ra.sql	PASS	gate_state/verify_p1a.json
+P1.a	RA3_original_net_line	audit/verify_p1a_ra.sql	PASS	gate_state/verify_p1a.json
+P1.a	RA4_repeat_refused_P4104	audit/verify_p1a_ra.sql	PASS	gate_state/verify_p1a.json
+P1.a	RA5_only_explicit_admin_delivery_credit	audit/verify_p1a_ra.sql	PASS	gate_state/verify_p1a.json
+P1.b.2	commercial_empty_state	audit/verify_p1b.sql	PASS	gate_state/verify_p1b.json
+P1.b.2	commercial_progress_updates	audit/verify_p1b.sql	PASS	gate_state/verify_p1b.json
+P1.b.2	comptable_progress_is_role_specific	audit/verify_p1b.sql	PASS	gate_state/verify_p1b.json
+P1.b.2	acheteur_progress_updates	audit/verify_p1b.sql	PASS	gate_state/verify_p1b.json
+P1.b.2	client_cannot_use_internal_progress	audit/verify_p1b.sql	PASS	gate_state/verify_p1b.json

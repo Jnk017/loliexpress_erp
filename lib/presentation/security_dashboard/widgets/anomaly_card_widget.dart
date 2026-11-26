@@ -80,7 +80,7 @@ class AnomalyCardWidget extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const Text('Fermer'),
           ),
           if (onStatusUpdate != null && anomaly['alert_status'] == 'pending')
             ElevatedButton(
@@ -130,14 +130,14 @@ class AnomalyCardWidget extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Annuler'),
           ),
           ElevatedButton(
             onPressed: () {
               onStatusUpdate?.call(selectedStatus, notesController.text.trim());
               Navigator.pop(context);
             },
-            child: const Text('Save'),
+            child: const Text('Enregistrer'),
           ),
         ],
       ),

@@ -103,155 +103,79 @@ class FinancialDashboardService {
     }
   }
 
-  /// Fetch and calculate current cash position
+  Future<List<List<Map<String, dynamic>>>> getTreasuryAccounts() => Future.wait([
+    _supabase.from('cash_registers').select('name,currency,current_balance')
+        .eq('is_active', true).order('name'),
+    _supabase.from('bank_accounts').select('account_name,currency,current_balance,account_channel')
+        .eq('is_active', true).order('account_name'),
+  ]);
+
+  /// Read actual treasury balances without mixing currencies.
   Future<Map<String, dynamic>> getCashPosition() async {
     try {
-      // Calculate total payments received
-      final paymentsResponse = await _supabase
-          .from('payments')
-          .select('amount')
-          .gte(
-              'payment_date',
-              DateTime.now()
-                  .subtract(const Duration(days: 30))
-                  .toIso8601String());
-
-      double totalPayments = 0;
-      for (var payment in paymentsResponse) {
-        totalPayments += (payment['amount'] as num?)?.toDouble() ?? 0;
+      final response = await getTreasuryAccounts();
+      Map<String, num> totals(List<Map<String, dynamic>> rows) {
+        final sums = <String, num>{'CDF': 0, 'USD': 0};
+        for (final row in rows) {
+          final currency = row['currency'] as String;
+          sums[currency] = (sums[currency] ?? 0) + (row['current_balance'] as num);
+        }
+        return sums;
       }
-
-      // Calculate total expenses
-      final expensesResponse = await _supabase
-          .from('expenses')
-          .select('amount')
-          .gte(
-              'expense_date',
-              DateTime.now()
-                  .subtract(const Duration(days: 30))
-                  .toIso8601String());
-
-      double totalExpenses = 0;
-      for (var expense in expensesResponse) {
-        totalExpenses += (expense['amount'] as num?)?.toDouble() ?? 0;
-      }
-
-      final cashPosition = totalPayments - totalExpenses;
-
       return {
-        'amount': cashPosition,
-        'currency': 'CDF',
-        'change': 0.0, // Calculate actual change from previous period
-        'trend': cashPosition > 0 ? 'up' : 'down',
+        'cash': totals(response[0]),
+        'bank': totals(response[1].where((row) => row['account_channel'] == 'bank_transfer').toList()),
+        'mobileMoney': totals(response[1].where((row) => row['account_channel'] == 'mobile_money').toList()),
       };
-    } catch (e) {
-      debugPrint('Error fetching cash position: $e');
-      return {
-        'amount': 0,
-        'currency': 'CDF',
-        'change': 0.0,
-        'trend': 'neutral'
-      };
+    } catch (_) {
+      return {'unavailable': true};
     }
   }
 
-  /// Fetch daily revenue
+  Map<String, dynamic> _currencyMetrics(
+    List<Map<String, dynamic>> rows,
+    String amountColumn,
+  ) {
+    final sums = <String, num>{'CDF': 0, 'USD': 0};
+    for (final row in rows) {
+      final currency = row['currency'];
+      if (sums.containsKey(currency)) {
+        sums[currency as String] = sums[currency]! + (row[amountColumn] as num? ?? 0);
+      }
+    }
+    return {
+      'amount': sums['CDF'],
+      'amountUsd': sums['USD'],
+      'currency': 'CDF',
+      'change': 0,
+      'trend': 'neutral',
+    };
+  }
+
   Future<Map<String, dynamic>> getDailyRevenue() async {
-    try {
-      final today = DateTime.now();
-      final startOfDay = DateTime(today.year, today.month, today.day);
-
-      final ordersResponse = await _supabase
-          .from('sales_orders')
-          .select('total_amount')
-          .gte('order_date', startOfDay.toIso8601String())
-          .eq('order_status', 'delivered');
-
-      double totalRevenue = 0;
-      for (var order in ordersResponse) {
-        totalRevenue += (order['total_amount'] as num?)?.toDouble() ?? 0;
-      }
-
-      return {
-        'amount': totalRevenue,
-        'currency': 'CDF',
-        'change': 0.0, // Calculate actual change
-        'trend': 'up',
-      };
-    } catch (e) {
-      debugPrint('Error fetching daily revenue: $e');
-      return {
-        'amount': 0,
-        'currency': 'CDF',
-        'change': 0.0,
-        'trend': 'neutral'
-      };
-    }
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    final rows = await _supabase.from('sales_orders')
+        .select('total_amount,currency')
+        .gte('order_date', startOfDay.toIso8601String())
+        .eq('order_status', 'delivered');
+    return _currencyMetrics(rows, 'total_amount');
   }
 
-  /// Fetch outstanding receivables
   Future<Map<String, dynamic>> getOutstandingReceivables() async {
-    try {
-      final invoicesResponse = await _supabase
-          .from('invoices')
-          .select('total_amount, amount_paid')
-          .inFilter('payment_status', ['pending', 'partial']);
-
-      double totalOutstanding = 0;
-      for (var invoice in invoicesResponse) {
-        final total = (invoice['total_amount'] as num?)?.toDouble() ?? 0;
-        final paid = (invoice['amount_paid'] as num?)?.toDouble() ?? 0;
-        totalOutstanding += (total - paid);
-      }
-
-      return {
-        'amount': totalOutstanding,
-        'currency': 'CDF',
-        'change': 0.0, // Calculate actual change
-        'trend': 'up',
-      };
-    } catch (e) {
-      debugPrint('Error fetching receivables: $e');
-      return {
-        'amount': 0,
-        'currency': 'CDF',
-        'change': 0.0,
-        'trend': 'neutral'
-      };
-    }
+    final rows = await _supabase.from('invoice_open_balances')
+        .select('outstanding_amount,currency');
+    return _currencyMetrics(rows, 'outstanding_amount');
   }
 
-  /// Fetch monthly expenses
   Future<Map<String, dynamic>> getMonthlyExpenses() async {
-    try {
-      final startOfMonth =
-          DateTime(DateTime.now().year, DateTime.now().month, 1);
-
-      final expensesResponse = await _supabase
-          .from('expenses')
-          .select('amount')
-          .gte('expense_date', startOfMonth.toIso8601String());
-
-      double totalExpenses = 0;
-      for (var expense in expensesResponse) {
-        totalExpenses += (expense['amount'] as num?)?.toDouble() ?? 0;
-      }
-
-      return {
-        'amount': totalExpenses,
-        'currency': 'CDF',
-        'change': 0.0, // Calculate actual change
-        'trend': 'up',
-      };
-    } catch (e) {
-      debugPrint('Error fetching expenses: $e');
-      return {
-        'amount': 0,
-        'currency': 'CDF',
-        'change': 0.0,
-        'trend': 'neutral'
-      };
-    }
+    final now = DateTime.now();
+    final startOfMonth = DateTime(now.year, now.month, 1);
+    final rows = await _supabase.from('expenses')
+        .select('amount,currency')
+        .gte('paid_at', startOfMonth.toIso8601String())
+        .inFilter('status', ['paid', 'executed']);
+    return _currencyMetrics(rows, 'amount');
   }
 
   /// Fetch accounts receivable list
@@ -262,12 +186,15 @@ class FinancialDashboardService {
             invoice_number,
             total_amount,
             amount_paid,
+            currency,
+            item_amount_credited,
+            delivery_fee_credited,
             due_date,
             payment_status,
             customer_id,
             customers (
               company_name,
-              contact_person
+              email
             )
           ''').inFilter('payment_status', [
         'pending',
@@ -278,9 +205,10 @@ class FinancialDashboardService {
         final customer = invoice['customers'] as Map<String, dynamic>?;
         final totalAmount = (invoice['total_amount'] as num?)?.toDouble() ?? 0;
         final amountPaid = (invoice['amount_paid'] as num?)?.toDouble() ?? 0;
-        final dueDate = DateTime.parse(invoice['due_date'] as String);
-        final now = DateTime.now();
-        final daysOverdue = now.difference(dueDate).inDays;
+        final credit = (invoice['item_amount_credited'] as num? ?? 0) +
+            (invoice['delivery_fee_credited'] as num? ?? 0);
+        final dueDate = DateTime.tryParse(invoice['due_date'] as String? ?? '');
+        final daysOverdue = dueDate == null ? 0 : DateTime.now().difference(dueDate).inDays;
 
         String status = 'current';
         if (daysOverdue > 60) {
@@ -291,13 +219,14 @@ class FinancialDashboardService {
 
         return {
           'id': invoice['id'],
+          'customerEmail': customer?['email'],
           'customerName': customer?['company_name'] ?? 'Unknown',
           'customerAvatar':
               'https://ui-avatars.com/api/?name=${customer?['company_name']?.replaceAll(' ', '+') ?? 'U'}',
           'semanticLabel':
               'Avatar for ${customer?['company_name'] ?? 'Unknown'}',
-          'amount': totalAmount - amountPaid,
-          'currency': 'CDF',
+          'amount': (totalAmount - amountPaid - credit).clamp(0, double.infinity),
+          'currency': invoice['currency'],
           'dueDate': invoice['due_date'],
           'status': status,
           'invoiceNumber': invoice['invoice_number'],

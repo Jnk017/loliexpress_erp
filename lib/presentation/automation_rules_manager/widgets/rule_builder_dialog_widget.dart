@@ -84,7 +84,7 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save rule: $e')),
+          SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
         );
       }
     } finally {
@@ -270,7 +270,7 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
             ElevatedButton.icon(
               onPressed: _addCondition,
               icon: const Icon(Icons.add, size: 18),
-              label: const Text('Add'),
+              label: const Text('Ajouter'),
             ),
           ],
         ),
@@ -398,7 +398,7 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
             ElevatedButton.icon(
               onPressed: _addAction,
               icon: const Icon(Icons.add, size: 18),
-              label: const Text('Add'),
+              label: const Text('Ajouter'),
             ),
           ],
         ),
@@ -486,7 +486,7 @@ class _RuleBuilderDialogWidgetState extends State<RuleBuilderDialogWidget> {
         children: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Annuler'),
           ),
           SizedBox(width: 2.w),
           ElevatedButton(

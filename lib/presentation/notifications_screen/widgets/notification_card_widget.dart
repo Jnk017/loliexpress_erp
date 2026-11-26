@@ -51,10 +51,9 @@ class NotificationCardWidget extends StatelessWidget {
     final notificationType = notification['notification_type'] as String;
     final subject = notification['subject'] as String;
     final message = notification['message'] as String;
-    final status = notification['status'] as String;
     final createdAt = DateTime.parse(notification['created_at'] as String);
 
-    final isPending = status == 'pending';
+    final isPending = notification['read_at'] == null;
     final iconColor = _getNotificationColor(notificationType);
 
     return Card(

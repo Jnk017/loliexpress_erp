@@ -27,6 +27,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final Widget? leading;
   final bool showBackButton;
+  final bool root;
   final VoidCallback? onBackPressed;
   final TextEditingController? searchController;
   final ValueChanged<String>? onSearchChanged;
@@ -46,6 +47,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.actions,
     this.leading,
     this.showBackButton = false,
+    this.root = false,
     this.onBackPressed,
     this.searchController,
     this.onSearchChanged,
@@ -77,6 +79,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: backgroundColor ?? theme.appBarTheme.backgroundColor,
       elevation: variant == CustomAppBarVariant.transparent ? 0 : elevation,
       centerTitle: centerTitle,
+      automaticallyImplyLeading: !root,
       leading: _buildLeading(context),
       title: _buildTitle(context),
       actions: _buildActions(context),
@@ -86,11 +89,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget? _buildLeading(BuildContext context) {
     if (leading != null) return leading;
 
-    if (showBackButton) {
+    if (showBackButton && (onBackPressed != null || Navigator.canPop(context))) {
       return IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: onBackPressed ?? () => Navigator.of(context).pop(),
-        tooltip: 'Back',
+        tooltip: 'Retour',
       );
     }
 
@@ -203,7 +206,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            'Syncing...',
+            'Synchronisation…',
             style: theme.textTheme.labelSmall?.copyWith(
               color: colorScheme.primary,
             ),
@@ -218,13 +221,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       String timeAgo;
 
       if (difference.inMinutes < 1) {
-        timeAgo = 'Just now';
+        timeAgo = 'à l’instant';
       } else if (difference.inMinutes < 60) {
-        timeAgo = '${difference.inMinutes}m ago';
+        timeAgo = '${difference.inMinutes} min';
       } else if (difference.inHours < 24) {
-        timeAgo = '${difference.inHours}h ago';
+        timeAgo = '${difference.inHours} h';
       } else {
-        timeAgo = '${difference.inDays}d ago';
+        timeAgo = '${difference.inDays} j';
       }
 
       return Row(
@@ -237,7 +240,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            'Synced $timeAgo',
+            'Synchronisé $timeAgo',
             style: theme.textTheme.labelSmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
@@ -292,6 +295,7 @@ class CustomSliverAppBar extends StatelessWidget {
   final List<Widget>? actions;
   final Widget? leading;
   final bool showBackButton;
+  final bool root;
   final VoidCallback? onBackPressed;
   final bool pinned;
   final bool floating;
@@ -308,6 +312,7 @@ class CustomSliverAppBar extends StatelessWidget {
     this.actions,
     this.leading,
     this.showBackButton = false,
+    this.root = false,
     this.onBackPressed,
     this.pinned = true,
     this.floating = false,
@@ -337,6 +342,7 @@ class CustomSliverAppBar extends StatelessWidget {
       snap: snap,
       expandedHeight: expandedHeight,
       centerTitle: centerTitle,
+      automaticallyImplyLeading: !root,
       leading: _buildLeading(context),
       title: title != null
           ? Text(
@@ -352,11 +358,11 @@ class CustomSliverAppBar extends StatelessWidget {
   Widget? _buildLeading(BuildContext context) {
     if (leading != null) return leading;
 
-    if (showBackButton) {
+    if (showBackButton && (onBackPressed != null || Navigator.canPop(context))) {
       return IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: onBackPressed ?? () => Navigator.of(context).pop(),
-        tooltip: 'Back',
+        tooltip: 'Retour',
       );
     }
 

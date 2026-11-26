@@ -1,0 +1,36 @@
+# Index des preuves
+
+- [Audit initial](../../docs/gate_audit_2026-11-25.md) à `6a98532`.
+- [Assertions SQL ciblées](../../gate_state/current/sql-assertions.json) et [connexions Web](../../gate_state/current/web-login-routes.json) du lot `9ff342b`.
+- [Résultats Edge](../../gate_state/current/edge-browser.json) et [rapport du gate](../../FINAL_VERIFICATION.md).
+- [Collecteur de drift](collect_drift.py) et [requête du catalogue](catalog.sql). Exécution avec `SUPABASE_PAT` injecté dans l’environnement et un chemin de sortie. Les deux projets sont contrôlés par nom et référence. Le SQL utilise une transaction en lecture seule.
+- [Résumé de collecte Gate](gate_catalog_summary.json) et [Advisors Gate après 025](gate_advisors.json). La collecte comparative s’arrête au refus HTTP 403 de Production. L’option `--gate-only` collecte le côté autorisé.
+- Migration 025 appliquée sur Gate. [Droits de la file](verify_notification_grants.sql), [lecture et envoi indépendants](../verify_notification_read.sql), [préférences isolées](../verify_notification_center_preferences.sql), [rapprochement](../verify_operational_treasury.sql) et [quatre tables sans accès direct](verify_rpc_only_tables.sql) passés par API HTTPS.
+- Flutter 3.35.7, Dart 3.9.2. Analyse sans erreur ni avertissement, quatre remarques antérieures. Tests Flutter 18/18.
+- Candidat `ed4b52d`. [Rapport du gate local](release_gate_results.json) et [matrice de trésorerie](RPC_SECURITY_MATRIX.md). Migration 026 appliquée sur Gate. Huit suites SQL, analyse sans remarque, 18 tests Flutter, build Web et 7 tests Deno passés. Sept vérifications restent indiquées `NOT_RUN`.
+- Quatre tables protégées. [12 lectures REST](rest_rpc_only.json) sans exposition de données et [inventaire des vues dépendantes](rpc_only_views.json) vide. [Requête reproductible](rpc_only_view_inventory.sql).
+- [Rejeu de baseline](replay_baseline.py). Garde testée contre la référence du Gate existant, qui est refusée avant toute connexion. Rejeu réel en attente d’un projet vierge autorisé.
+- [Test multisession du transfert](test_concurrent_transfer.py) et [preuve](concurrent_transfer.json) sur le même code applicatif que `ed4b52d`. Deux sessions distinctes et chevauchantes, un refus faute de stock et stock total conservé. Les fixtures du premier essai et du rejeu ont été retirées.
+- Migration 027 appliquée au projet Gate. [Frontière livreur](verify_delivery_client_boundary.sql) et [20 assertions ciblées, remise, commande et stock](delivery_boundary_results.json).
+- [Double confirmation concurrente](concurrent_handover.json) sur Gate. Deux sessions PostgreSQL distinctes et chevauchantes, deux réponses positives, une seule remise, une sortie de stock, fixturation retirée.
+- [Lot 028, file de réception](warehouse_receipt_results.json) et [contrôle SQL reproductible](verify_warehouse_receipt_queue.sql). La file n’expose pas les coûts et vérifie le rôle en base. Les assertions achats, réception et brouillons ont été rejouées sur Gate.
+- [Réception fournisseur concurrente](concurrent_receipt.json) à `7350ad2`. Rejouable via `test_concurrent_receipt.py` et le paramètre `--with-gate-fixtures` du gate.
+- [Réception réelle depuis Flutter Web](warehouse-web.json), [capture](warehouse_web.png), [script](test_warehouse_receipt_web.py). Compiler le Web en configuration Gate avant le test. Fournir le PAT dans l’environnement, le fichier local ignoré `cloud.env`, et lancer le script avec `--evidence-dir` depuis la racine. Le script crée puis retire un compte et les références jetables sur Gate.
+- [Encaissements concurrents](concurrent_payment.json) et [ventes concurrentes](concurrent_sales.json) sur Gate. Sessions distinctes, chevauchement, un succès et un refus par scénario, journaux rapprochés et données jetables retirées.
+- [Périmètre commandes et facturation](order_invoice_scope_results.json). Quatre refus attendus et émission par le comptable au tarif du client. La transaction de test est annulée.
+- [Rejeu du gate après 028](release_gate_028_results.json) sur `f7d70c3` avec les scénarios multisessions. 22 contrôles PASS, 7 NOT_RUN. Les 18 tests Flutter, les 7 tests Deno, les 11 suites SQL ciblées et les cinq scénarios multisessions sont inclus.
+- [Régression HTTP Edge après 028](edge_http_post028.json), 4 réponses attendues sur Gate. [Empreintes du build Web](web_artifact_post028.json) pour le candidat `f7d70c3`.
+- Migration 029 appliquée à Gate. [Choix du produit et régression de réception](procurement_choices_results.json), [contrôle SQL reproductible](verify_procurement_product_choices.sql). [Création et réception Chromium](purchase-web.json) sur le build corrigé à `308435a`. [Scénario reproductible](test_purchase_receipt_web.py).
+- [Prédicats RLS](role_predicates_results.json), [réglages et reporting](admin_reporting_results.json) et [grants et refus supplémentaires](remaining_rpc_grants_results.json), exécutés sur Gate après 029.
+- [Suivi RPC stock et annulation](rpc_boundary_followup.json). 21 assertions sur cinq suites Gate, incluant les refus supplémentaires du livreur et les trois états d’annulation fournisseur. Fixtures annulées.
+- [Régressions achats et retours](purchase_return_rpc_regression.json), 19 résultats réussis. La [matrice RPC](RPC_SECURITY_MATRIX.md) relie les signatures à leurs cas positifs, refus et contrôles restant ouverts.
+- Migration 030 appliquée sur Gate. [Six requêtes REST](product_catalog_rest_results.json) couvrent la lecture publique et le refus de la colonne `cost_price` avec les comptes commercial, admin et client A. [Régressions SQL](product_catalog_boundary_results.json), analyse Flutter sans remarque, 18 tests Flutter et build Web réussis.
+- [Régression acheteur → magasinier après 030](purchase-web-post030.json) sur `7c3d723`. Création et réception HTTP 200, un mouvement et deux unités, données de test retirées.
+- [Retour magasinier](warehouse_return_lookup_results.json) sur Gate. L’article d’une commande remise est retrouvé avec un numéro normalisé. Le reliquat décroît après réception et la déclaration de revendabilité non autorisée est refusée. Transaction annulée.
+- [Commande et confirmation réelles dans Flutter Web](sales-web.json), [scénario reproductible](test_sales_order_web.py). Le navigateur affiche le stock réel, le serveur applique 6 CDF au lieu du catalogue à 10 CDF, puis la commande passe à confirmé. PostgreSQL conserve les trois unités et l’unique mouvement initial. Fixtures retirées.
+
+- Migration 031 appliquée à Gate. [Tests de planification, accès livreur et 13 assertions de remise et retours](delivery_planning_results.json). Analyse Flutter et 19 tests réussis. Voir la preuve Chromium ci-dessous.
+
+- [Planification et remise Flutter Web sur Gate](delivery-web.json) pour `e7650ef`. Planification et remise HTTP 200, commande et livraison livrées, stock de 3 à 2 et un seul mouvement de remise. Build Web release réussi et 19 tests Flutter réussis.
+
+- [Menus des tableaux de bord](dashboard-menu-results.json) et [scénario Chromium](test_dashboard_menus_web.py). 8 connexions, 37 ouvertures et trois familles de mutations vérifiées sur Gate. [Contrôle SQL de la politique magasinier](verify_warehouse_product_lookup.sql).

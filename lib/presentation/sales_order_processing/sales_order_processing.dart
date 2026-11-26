@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+
+import '../../widgets/screen_state_view.dart';
 import 'package:flutter/services.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
+import '../../services/company_settings_service.dart';
 import '../../services/customer_service.dart';
+import '../../services/delivery_service.dart';
 import '../../services/order_service.dart';
 import '../../services/product_service.dart';
+import '../../services/role_service.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_icon_widget.dart';
 import './widgets/customer_info_section.dart';
@@ -49,8 +54,11 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
     try {
       final results = await Future.wait([
         CustomerService.instance.getCustomers(),
-        ProductService.instance.getProducts(),
+        ProductService.instance.getProducts(
+          includeStock: RoleService.instance.canViewAllOrders,
+        ),
       ]);
+      final settings = await const CompanySettingsService().load();
 
       if (!mounted) return;
 
@@ -60,6 +68,9 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
       setState(() {
         _customers = rawCustomers.map(_mapCustomerForUi).toList();
         _products = rawProducts.map(_mapProductForUi).toList();
+        if (_orderItems.isEmpty) {
+          _orderCurrency = settings['default_currency'] as String;
+        }
         if (_customers.isNotEmpty) {
           _selectedCustomer = _customers.first;
         }
@@ -101,23 +112,21 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
 
   Map<String, dynamic> _mapProductForUi(Map<String, dynamic> raw) {
     final unitPrice = (raw['unit_price'] as num?)?.toDouble() ?? 0;
+    final stockRows = raw['inventory_stock'] as List?;
+    final stock = stockRows?.fold<int>(
+      0,
+      (sum, row) => sum + ((row['quantity'] as num?)?.toInt() ?? 0),
+    );
     return {
       'id': raw['id'] as String,
       'code': raw['sku'] ?? '',
       'name': raw['name'] ?? '',
       'price': unitPrice,
-      'stock': 999,
+      'currency': raw['currency'] ?? 'CDF',
+      'stock': stock,
       'image': raw['image_url'] ??
           'https://images.unsplash.com/photo-1633288485223-84bafb2a1e2d',
       'semanticLabel': raw['name'] ?? 'Product image',
-      // Discounts must come from a server-side pricing rule. No client-only
-      // tier reduction is applied to the authoritative product price.
-      'tierDiscounts': <String, double>{
-        'Premium': 0.0,
-        'Gold': 0.0,
-        'Silver': 0.0,
-        'Standard': 0.0,
-      },
     };
   }
 
@@ -133,19 +142,33 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
     return buffer.toString();
   }
 
-  double _getCustomPrice(Map<String, dynamic> product) {
-    final basePrice = product['price'] as double;
-    final tier = _selectedCustomer?['tier'] as String? ?? 'Standard';
-    final discounts = product['tierDiscounts'] as Map<String, double>?;
-    final discount = discounts?[tier] ?? 0.0;
-    return basePrice * (1 - discount);
-  }
+  Future<void> _handleProductAdd(Map<String, dynamic> product) async {
+    final customerId = _selectedCustomer?['id'] as String?;
+    if (customerId == null || _isProcessing) return;
+    final stock = product['stock'] as int?;
 
-  void _handleProductAdd(Map<String, dynamic> product) {
-    final stock = product['stock'] as int;
-
-    if (stock < 1) {
+    if (stock != null && stock < 1) {
       _showStockAlert(product['name'] as String, 0);
+      return;
+    }
+
+    final double unitPrice;
+    final currency = _orderCurrency;
+    try {
+      unitPrice = await OrderService.instance.getOrderUnitPrice(
+        customerId: customerId,
+        productId: product['id'] as String,
+        currency: currency,
+      );
+    } catch (_) {
+      if (!mounted || _selectedCustomer?['id'] != customerId) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tarif client indisponible. Réessayez.')),
+      );
+      return;
+    }
+    if (!mounted || _selectedCustomer?['id'] != customerId ||
+        _orderCurrency != currency || _isProcessing) {
       return;
     }
 
@@ -156,17 +179,18 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
     setState(() {
       if (existingIndex >= 0) {
         final currentQty = _orderItems[existingIndex]['quantity'] as int;
-        if (currentQty + 1 > stock) {
+        if (stock != null && currentQty + 1 > stock) {
           _showStockAlert(product['name'] as String, stock);
           return;
         }
         _orderItems[existingIndex]['quantity'] = currentQty + 1;
+        _orderItems[existingIndex]['unitPrice'] = unitPrice;
       } else {
         _orderItems.add({
           'productId': product['id'],
           'name': product['name'],
           'code': product['code'],
-          'unitPrice': _getCustomPrice(product),
+          'unitPrice': unitPrice,
           'quantity': 1,
           'image': product['image'],
           'semanticLabel': product['semanticLabel'],
@@ -179,9 +203,9 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
   }
 
   void _handleQuantityChange(int index, int newQuantity) {
-    final maxStock = _orderItems[index]['maxStock'] as int;
+    final maxStock = _orderItems[index]['maxStock'] as int?;
 
-    if (newQuantity > maxStock) {
+    if (maxStock != null && newQuantity > maxStock) {
       _showStockAlert(_orderItems[index]['name'] as String, maxStock);
       return;
     }
@@ -201,10 +225,10 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
   void _handleEditItem(int index) {
     final item = _orderItems[index];
     _showQuantityDialog(
-        index, item['quantity'] as int, item['maxStock'] as int);
+        index, item['quantity'] as int, item['maxStock'] as int?);
   }
 
-  void _showQuantityDialog(int index, int currentQty, int maxStock) {
+  void _showQuantityDialog(int index, int currentQty, int? maxStock) {
     final theme = Theme.of(context);
     final controller = TextEditingController(text: currentQty.toString());
 
@@ -220,7 +244,7 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
             labelText: 'Quantité',
-            hintText: 'Max: $maxStock',
+            hintText: maxStock == null ? null : 'Max: $maxStock',
             border: const OutlineInputBorder(),
           ),
           inputFormatters: [
@@ -238,10 +262,10 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
           ElevatedButton(
             onPressed: () {
               final newQty = int.tryParse(controller.text) ?? currentQty;
-              if (newQty > 0 && newQty <= maxStock) {
+              if (newQty > 0 && (maxStock == null || newQty <= maxStock)) {
                 _handleQuantityChange(index, newQty);
                 Navigator.pop(context);
-              } else {
+              } else if (maxStock != null) {
                 _showStockAlert(_orderItems[index]['name'] as String, maxStock);
               }
             },
@@ -282,6 +306,8 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
     Navigator.pushNamed(context, '/barcode-scanner');
   }
 
+  String _orderCurrency = 'CDF';
+
   double _calculateSubtotal() {
     return _orderItems.fold(0.0, (sum, item) {
       final quantity = item['quantity'] as int;
@@ -307,6 +333,189 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
     final discount = _calculateDiscount();
     final tax = _calculateTax();
     return subtotal - discount + tax;
+  }
+
+  static const _orderNextStatus = {
+    'pending': ('confirmed', 'Confirmer'),
+    'confirmed': ('processing', 'Mettre en préparation'),
+    'processing': ('shipped', 'Marquer expédiée'),
+  };
+
+  Future<void> _showOrderFollowup() async {
+    final service = OrderService.instance;
+    try {
+      final orders = await service.getOrders();
+      if (!mounted) return;
+      final selected = await showDialog<Map<String, dynamic>>(
+        context: context,
+        builder: (context) => SimpleDialog(
+          title: const Text('Suivre les commandes'),
+          children: [
+            if (orders.isEmpty)
+              const ListTile(title: Text('Aucune commande à afficher.')),
+            for (final order in orders)
+              ListTile(
+                title: Text(order['order_number'] as String),
+                subtitle: Text(
+                  (order['customers'] as Map?)?['company_name'] as String? ??
+                      'Client non renseigné',
+                ),
+                trailing: Text(
+                  _canPlanDelivery(order)
+                      ? 'Planifier la livraison'
+                      : _orderNextStatus[order['order_status']]?.$2 ?? 'Consulter',
+                ),
+                onTap: () => Navigator.pop(context, order),
+              ),
+          ],
+        ),
+      );
+      if (!mounted || selected == null) return;
+      if (_canPlanDelivery(selected)) {
+        await _planDelivery(selected);
+        return;
+      }
+      final next = _orderNextStatus[selected['order_status']];
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Commande ${selected['order_number']}'),
+          content: Text(next?.$2 ??
+              'Cette commande a atteint une étape gérée par la livraison ou est clôturée.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Fermer'),
+            ),
+            if (next != null)
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(next.$2),
+              ),
+          ],
+        ),
+      );
+      if (confirmed != true || next == null || !mounted) return;
+      await service.updateOrderStatus(selected['id'] as String, next.$1);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Statut de la commande mis à jour.')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Impossible de suivre cette commande.')),
+      );
+    }
+  }
+
+  bool _canPlanDelivery(Map<String, dynamic> order) =>
+      RoleService.instance.currentRole == UserRole.admin &&
+      order['order_status'] == 'shipped';
+
+  Future<void> _planDelivery(Map<String, dynamic> order) async {
+    final service = DeliveryService.instance;
+    final choices = await Future.wait([
+      service.getActiveDrivers(),
+      service.getActiveWarehouses(),
+    ]);
+    if (!mounted) return;
+    final drivers = choices[0];
+    final warehouses = choices[1];
+    if (drivers.isEmpty || warehouses.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Un livreur et un entrepôt actifs sont requis.')),
+      );
+      return;
+    }
+
+    String? driverId;
+    String? warehouseId;
+    var address = '';
+    var routeDate = DateUtils.dateOnly(DateTime.now());
+    final planned = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (dialogContext, update) => AlertDialog(
+          title: Text('Planifier ${order['order_number']}'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(labelText: 'Livreur'),
+                  isExpanded: true,
+                  items: [
+                    for (final driver in drivers)
+                      DropdownMenuItem(
+                        value: driver['id'] as String,
+                        child: Text(driver['full_name'] as String? ?? 'Livreur'),
+                      ),
+                  ],
+                  onChanged: (value) => update(() => driverId = value),
+                ),
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(labelText: 'Entrepôt'),
+                  isExpanded: true,
+                  items: [
+                    for (final warehouse in warehouses)
+                      DropdownMenuItem(
+                        value: warehouse['id'] as String,
+                        child: Text(warehouse['name'] as String),
+                      ),
+                  ],
+                  onChanged: (value) => update(() => warehouseId = value),
+                ),
+                TextField(
+                  decoration: const InputDecoration(labelText: 'Adresse de livraison'),
+                  maxLength: 500,
+                  onChanged: (value) => update(() => address = value.trim()),
+                ),
+                TextButton.icon(
+                  icon: const Icon(Icons.calendar_today),
+                  label: Text(MaterialLocalizations.of(dialogContext).formatShortDate(routeDate)),
+                  onPressed: () async {
+                    final date = await showDatePicker(
+                      context: dialogContext,
+                      initialDate: routeDate,
+                      firstDate: DateUtils.dateOnly(DateTime.now()),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                    );
+                    if (date != null && dialogContext.mounted) {
+                      update(() => routeDate = date);
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Fermer'),
+            ),
+            FilledButton(
+              onPressed: driverId == null || warehouseId == null || address.isEmpty
+                  ? null
+                  : () => Navigator.pop(dialogContext, true),
+              child: const Text('Planifier la livraison'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (planned != true || !mounted) return;
+    await service.planOrderDelivery(
+      orderId: order['id'] as String,
+      driverId: driverId!,
+      warehouseId: warehouseId!,
+      address: address,
+      routeDate: routeDate.toIso8601String().substring(0, 10),
+    );
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Livraison planifiée.')),
+    );
   }
 
   void _showCustomerSelector() {
@@ -362,6 +571,9 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
                             : null,
                         onTap: () {
                           setState(() {
+                            if (_selectedCustomer?['id'] != customer['id']) {
+                              _orderItems.clear();
+                            }
                             _selectedCustomer = customer;
                             _orderItems.clear();
                           });
@@ -413,11 +625,10 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
               })
           .toList();
 
-      final discount = _calculateDiscount();
       final order = await OrderService.instance.createOrder(
         customerId: _selectedCustomer!['id'] as String,
         items: items,
-        discount: discount > 0 ? discount : null,
+        currency: _orderCurrency,
       );
 
       if (!mounted) return;
@@ -461,13 +672,14 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
             ],
           ),
           actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/invoice-generation');
-              },
-              child: const Text('Créer facture'),
-            ),
+            if (RoleService.instance.canViewAllOrders)
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _showOrderFollowup();
+                },
+                child: const Text('Suivre les commandes'),
+              ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
@@ -523,45 +735,9 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
           variant: CustomAppBarVariant.detail,
           showBackButton: true,
         ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CustomIconWidget(
-                  iconName: 'error_outline',
-                  size: 64,
-                  color: theme.colorScheme.error,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Erreur de chargement',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  _loadError!,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton.icon(
-                  onPressed: _loadInitialData,
-                  icon: CustomIconWidget(
-                    iconName: 'refresh',
-                    size: 20,
-                    color: theme.colorScheme.onPrimary,
-                  ),
-                  label: const Text('Réessayer'),
-                ),
-              ],
-            ),
-          ),
+        body: ScreenStateView.error(
+          message: 'Impossible de charger les données de la commande.',
+          onAction: _loadInitialData,
         ),
       );
     }
@@ -589,6 +765,12 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
         variant: CustomAppBarVariant.detail,
         showBackButton: true,
         actions: [
+          if (RoleService.instance.canViewAllOrders)
+            IconButton(
+              icon: const Icon(Icons.list_alt),
+              tooltip: 'Suivre les commandes',
+              onPressed: _showOrderFollowup,
+            ),
           IconButton(
             icon: CustomIconWidget(
               iconName: 'swap_horiz',
@@ -596,16 +778,7 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
               size: 24,
             ),
             onPressed: _customers.length > 1 ? _showCustomerSelector : null,
-            tooltip: 'Changer client',
-          ),
-          IconButton(
-            icon: CustomIconWidget(
-              iconName: 'history',
-              color: theme.colorScheme.primary,
-              size: 24,
-            ),
-            onPressed: () {},
-            tooltip: 'Historique',
+            tooltip: 'Changer de client',
           ),
         ],
       ),
@@ -624,8 +797,26 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
                     },
                     isExpanded: _isCustomerInfoExpanded,
                   ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: DropdownButton<String>(
+                      value: _orderCurrency,
+                      items: const [
+                        DropdownMenuItem(value: 'CDF', child: Text('Commande en CDF')),
+                        DropdownMenuItem(value: 'USD', child: Text('Commande en USD')),
+                      ],
+                      onChanged: _isProcessing ? null : (currency) {
+                        if (currency == null || currency == _orderCurrency) return;
+                        setState(() {
+                          _orderCurrency = currency;
+                          _orderItems.clear();
+                        });
+                      },
+                    ),
+                  ),
                   OrderItemsList(
                     orderItems: _orderItems,
+                    currency: _orderCurrency,
                     onQuantityChange: _handleQuantityChange,
                     onRemove: _handleRemoveItem,
                     onEdit: _handleEditItem,
@@ -634,9 +825,8 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
                     products: _products,
                     onProductAdd: _handleProductAdd,
                     onBarcodeScan: _handleBarcodeScan,
-                    customerTier: customerData['tier'] as String,
                   ),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 16 + MediaQuery.paddingOf(context).bottom),
                 ],
               ),
             ),
@@ -647,6 +837,7 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
               discount: discount,
               tax: tax,
               total: total,
+              currency: _orderCurrency,
               onCreateOrder: _handleCreateOrder,
               isProcessing: _isProcessing,
             ),

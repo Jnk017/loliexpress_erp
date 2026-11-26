@@ -1,0 +1,66 @@
+[
+  {
+    "script": "verify_p0b.sql",
+    "http": "201",
+    "body": [
+      {
+        "scenario": "b2b_a_scope_and_role",
+        "passed": true
+      },
+      {
+        "scenario": "b2b_b_scope",
+        "passed": true
+      },
+      {
+        "scenario": "driver_a_scope",
+        "passed": true
+      },
+      {
+        "scenario": "driver_b_scope",
+        "passed": true
+      },
+      {
+        "scenario": "empty_demo_data",
+        "passed": true
+      },
+      {
+        "scenario": "private_document_bucket",
+        "passed": true
+      },
+      {
+        "scenario": "storage_a_scope",
+        "passed": true
+      },
+      {
+        "scenario": "storage_b_scope",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "script": "verify_p0b_settings.sql",
+    "http": "201",
+    "body": [
+      {
+        "scenario": "client_cannot_read_internal_settings",
+        "passed": true
+      },
+      {
+        "scenario": "issued_pdf_keeps_persisted_template",
+        "passed": true
+      },
+      {
+        "scenario": "nonzero_tax_refused",
+        "passed": true
+      },
+      {
+        "scenario": "reader_cannot_change_settings",
+        "passed": true
+      },
+      {
+        "scenario": "reload_company_settings_after_session_change",
+        "passed": true
+      }
+    ]
+  }
+]

@@ -264,7 +264,7 @@ class _IncidentDetailsDialogWidgetState
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      child: const Text('Annuler'),
                     ),
                   ),
                   SizedBox(width: 3.w),

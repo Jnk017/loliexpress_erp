@@ -1,0 +1,248 @@
+{
+  "verify_p0a": [
+    {
+      "scenario": "order_and_admin_pricing",
+      "passed": true
+    },
+    {
+      "scenario": "password_flag_cleared",
+      "passed": true
+    },
+    {
+      "scenario": "password_setup",
+      "passed": true
+    },
+    {
+      "scenario": "stock_and_rollback",
+      "passed": true
+    },
+    {
+      "scenario": "transition_and_audit",
+      "passed": true
+    }
+  ],
+  "verify_p0b": [
+    {
+      "scenario": "empty_demo_data",
+      "passed": false
+    },
+    {
+      "scenario": "private_document_bucket",
+      "passed": true
+    },
+    {
+      "scenario": "b2b_a_scope_and_role",
+      "passed": true
+    },
+    {
+      "scenario": "storage_a_scope",
+      "passed": true
+    },
+    {
+      "scenario": "b2b_b_scope",
+      "passed": true
+    },
+    {
+      "scenario": "storage_b_scope",
+      "passed": true
+    },
+    {
+      "scenario": "driver_a_scope",
+      "passed": true
+    },
+    {
+      "scenario": "driver_b_scope",
+      "passed": true
+    }
+  ],
+  "verify_p0b_settings": [
+    {
+      "scenario": "client_cannot_read_internal_settings",
+      "passed": true
+    },
+    {
+      "scenario": "issued_pdf_keeps_persisted_template",
+      "passed": true
+    },
+    {
+      "scenario": "nonzero_tax_refused",
+      "passed": true
+    },
+    {
+      "scenario": "reader_cannot_change_settings",
+      "passed": true
+    },
+    {
+      "scenario": "reload_company_settings_after_session_change",
+      "passed": true
+    }
+  ],
+  "verify_p1a_invoice_delivery": [
+    {
+      "scenario": "delivery_fee_in_outstanding_balance",
+      "passed": true
+    },
+    {
+      "scenario": "issue_retry_returns_same_invoice",
+      "passed": true
+    },
+    {
+      "scenario": "optional_delivery_and_zero_tax",
+      "passed": true
+    }
+  ],
+  "verify_p1a_admin_delivery_credit": [
+    {
+      "scenario": "accountant_denied",
+      "passed": true
+    },
+    {
+      "scenario": "admin_credit_and_retry",
+      "passed": true
+    },
+    {
+      "scenario": "fee_cap",
+      "passed": true
+    },
+    {
+      "scenario": "paid_invoice_refund_due",
+      "passed": true
+    },
+    {
+      "scenario": "payment_uses_net_amount",
+      "passed": true
+    }
+  ],
+  "verify_p1a_handover": [
+    {
+      "scenario": "cdf_cycle_reconciled",
+      "passed": true
+    },
+    {
+      "scenario": "handover_decrements_once",
+      "passed": true
+    },
+    {
+      "scenario": "insufficient_stock_rolls_back",
+      "passed": true
+    },
+    {
+      "scenario": "mixed_return_credit_once_at_invoiced_price",
+      "passed": true
+    },
+    {
+      "scenario": "mixed_return_restocks_sellable_once",
+      "passed": true
+    },
+    {
+      "scenario": "return_quantity_ceiling",
+      "passed": true
+    },
+    {
+      "scenario": "return_requires_actual_handover",
+      "passed": true
+    },
+    {
+      "scenario": "shipment_does_not_decrement",
+      "passed": true
+    },
+    {
+      "scenario": "status_requires_handover",
+      "passed": true
+    },
+    {
+      "scenario": "unsellable_return_keeps_stock_and_accounts",
+      "passed": true
+    },
+    {
+      "scenario": "unsellable_units_never_credited",
+      "passed": true
+    },
+    {
+      "scenario": "usd_cycle_reconciled",
+      "passed": true
+    },
+    {
+      "scenario": "usd_handover_uses_same_stock_rule",
+      "passed": true
+    }
+  ],
+  "verify_p1a_drafts_and_purchases": [
+    {
+      "scenario": "atomic_purchase",
+      "passed": true
+    },
+    {
+      "scenario": "draft_persisted_and_updated",
+      "passed": true
+    },
+    {
+      "scenario": "draft_without_receivable",
+      "passed": true
+    },
+    {
+      "scenario": "invalid_line_rolls_back_header",
+      "passed": true
+    },
+    {
+      "scenario": "partial_receipt_and_idempotency",
+      "passed": true
+    },
+    {
+      "scenario": "supplier_balance_settled_without_stock_change",
+      "passed": true
+    },
+    {
+      "scenario": "supplier_bill_is_separate_from_receipt",
+      "passed": true
+    },
+    {
+      "scenario": "supplier_partial_payment_and_idempotency",
+      "passed": true
+    }
+  ],
+  "verify_p1a_ra": [
+    {
+      "scenario": "RA1_non_sellable_refused_P4101",
+      "passed": true
+    },
+    {
+      "scenario": "RA2_three_credited_two_traced",
+      "passed": true
+    },
+    {
+      "scenario": "RA3_original_net_line",
+      "passed": true
+    },
+    {
+      "scenario": "RA4_repeat_refused_P4104",
+      "passed": true
+    },
+    {
+      "scenario": "RA5_only_explicit_admin_delivery_credit",
+      "passed": true
+    }
+  ],
+  "verify_p1b": [
+    {
+      "scenario": "acheteur_progress_updates",
+      "passed": true
+    },
+    {
+      "scenario": "client_cannot_use_internal_progress",
+      "passed": true
+    },
+    {
+      "scenario": "commercial_empty_state",
+      "passed": true
+    },
+    {
+      "scenario": "commercial_progress_updates",
+      "passed": true
+    },
+    {
+      "scenario": "comptable_progress_is_role_specific",
+      "passed": true
+    }
+  ]
+}

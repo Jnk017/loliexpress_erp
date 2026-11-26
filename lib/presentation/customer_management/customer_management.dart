@@ -570,21 +570,7 @@ class _CustomerManagementState extends State<CustomerManagement> {
               ),
             )
           : null,
-      bottomNavigationBar: CustomBottomBar(
-        currentIndex: 3,
-        onTap: (index) {
-          final routes = [
-            '/main-dashboard',
-            '/inventory-management',
-            '/sales-order-processing',
-            '/customer-management',
-            '/financial-dashboard',
-          ];
-          if (index != 3) {
-            Navigator.pushReplacementNamed(context, routes[index]);
-          }
-        },
-      ),
+      bottomNavigationBar: const CustomBottomBar(currentIndex: -1),
     );
   }
 

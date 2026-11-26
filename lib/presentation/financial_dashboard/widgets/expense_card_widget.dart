@@ -20,6 +20,9 @@ class ExpenseCardWidget extends StatelessWidget {
     final currency = data["currency"] as String;
     final change = data["change"] as num;
     final trend = data["trend"] as String;
+    final isNeutral = change == 0 || trend == 'neutral';
+    final variationColor = isNeutral ? theme.colorScheme.onSurfaceVariant
+        : trend == 'up' ? theme.colorScheme.primary : theme.colorScheme.error;
 
     return GestureDetector(
       onTap: onTap,
@@ -59,29 +62,21 @@ class ExpenseCardWidget extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: trend == 'up'
-                        ? AppTheme.successLight.withValues(alpha: 0.1)
-                        : AppTheme.errorLight.withValues(alpha: 0.1),
+                    color: theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      CustomIconWidget(
-                        iconName:
-                            trend == 'up' ? 'arrow_upward' : 'arrow_downward',
-                        color: trend == 'up'
-                            ? AppTheme.successLight
-                            : AppTheme.errorLight,
-                        size: 12,
-                      ),
-                      const SizedBox(width: 2),
+                      if (!isNeutral) ...[
+                        Icon(trend == 'up' ? Icons.arrow_upward : Icons.arrow_downward,
+                            color: variationColor, size: 12),
+                        const SizedBox(width: 2),
+                      ],
                       Text(
-                        '${change.abs()}%',
+                        '${change.abs().toStringAsFixed(1).replaceAll('.', ',')} %',
                         style: theme.textTheme.labelSmall?.copyWith(
-                          color: trend == 'up'
-                              ? AppTheme.successLight
-                              : AppTheme.errorLight,
+                          color: variationColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -99,12 +94,15 @@ class ExpenseCardWidget extends StatelessWidget {
             ),
             SizedBox(height: 0.5.h),
             Text(
-              _formatCurrency(amount, currency),
+              [
+                _formatCurrency(amount, currency),
+                if (data['amountUsd'] case final num usd) _formatCurrency(usd, 'USD'),
+              ].join('\n'),
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
                 fontSize: 18.sp,
               ),
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
           ],
@@ -114,7 +112,7 @@ class ExpenseCardWidget extends StatelessWidget {
   }
 
   String _formatCurrency(num amount, String currency) {
-    final formatted = amount.toStringAsFixed(0).replaceAllMapped(
+    final formatted = amount.toStringAsFixed(currency == 'USD' ? 2 : 0).replaceAllMapped(
           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
           (Match m) => '${m[1]} ',
         );

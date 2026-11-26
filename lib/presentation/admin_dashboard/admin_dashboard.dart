@@ -1,8 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+
+import '../../widgets/screen_state_view.dart';
+import '../../widgets/custom_bottom_bar.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../services/admin_report_service.dart';
+import '../../widgets/role_workspace_panel.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -42,10 +46,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
         _insights = insights;
         _isLoading = false;
       });
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = 'Impossible de charger le rapport administrateur.';
         _isLoading = false;
       });
     }
@@ -83,17 +87,19 @@ class _AdminDashboardState extends State<AdminDashboard> {
     }
     if (_error != null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Dashboard admin')),
-        body: Center(
+        appBar: AppBar(title: const Text('Rapports administrateur')),
+        bottomNavigationBar: const CustomBottomBar(currentIndex: -1),
+        body: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.all(4.w),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(_error!, textAlign: TextAlign.center),
-                SizedBox(height: 2.h),
-                ElevatedButton(
-                    onPressed: _load, child: const Text('Réessayer')),
+                const RoleWorkspacePanel(),
+                ScreenStateView.error(
+                  message: 'Le rapport administrateur est indisponible.',
+                  onAction: _load,
+                ),
               ],
             ),
           ),
@@ -109,8 +115,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
         List<Map<String, dynamic>>.from(sales['daily'] as List? ?? []);
 
     return Scaffold(
+      bottomNavigationBar: const CustomBottomBar(currentIndex: -1),
       appBar: AppBar(
-        title: const Text('Dashboard admin'),
+        title: const Text('Rapports administrateur'),
         actions: [
           IconButton(
             onPressed: () =>
@@ -126,8 +133,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
       body: RefreshIndicator(
         onRefresh: _load,
         child: ListView(
-          padding: EdgeInsets.all(4.w),
+          padding: EdgeInsets.fromLTRB(4.w, 4.w, 4.w,
+            24 + MediaQuery.paddingOf(context).bottom),
           children: [
+            const RoleWorkspacePanel(),
             Wrap(
               spacing: 2.w,
               children: [
@@ -143,7 +152,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
             SizedBox(height: 2.h),
             GridView.count(
-              crossAxisCount: 2,
+              crossAxisCount: MediaQuery.sizeOf(context).width < 360 ? 1 : 2,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               childAspectRatio: 1.25,
@@ -209,7 +218,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   Widget _salesChart(List<Map<String, dynamic>> daily) {
-    if (daily.isEmpty) return const Center(child: Text('Aucune vente'));
+    if (daily.isEmpty) return const ScreenStateView(icon: Icons.point_of_sale_outlined, message: 'Aucune vente sur cette période.');
     return LineChart(
       LineChartData(
         gridData: const FlGridData(show: false),

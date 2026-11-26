@@ -13,7 +13,7 @@ class FakeOrderService extends OrderService {
     String? notes,
     double? discount,
     String currency = 'CDF',
-    double exchangeRate = 1,
+    double? exchangeRate,
     String paymentType = 'cash',
   }) async {
     receivedItem = items.single;

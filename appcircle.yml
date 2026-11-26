@@ -1,0 +1,90 @@
+---
+# Import in Appcircle > Workflows > New. Select gate/final-verification.
+directories:
+- AC_OUTPUT_DIR
+- AC_SOURCE
+steps:
+- componentType: appcircle_git_clone
+  componentVersion: 1.1.*
+  stepName: Git Clone
+  enabled: true
+  onError: $exit
+  webUrl: https://github.com/appcircleio/appcircle-git-clone-component
+  repoUrl: https://github.com/appcircleio/appcircle-git-clone-component.git
+  commit: 2f9d1f5
+  inputs:
+  - AC_GIT_URL: $AC_GIT_URL
+  - AC_GIT_COMMIT: $AC_GIT_COMMIT
+  - AC_GIT_BRANCH: $AC_GIT_BRANCH
+  - AC_GIT_TAG: ''
+  - AC_GIT_LFS: 'false'
+  - AC_GIT_SUBMODULE: ''
+  - AC_GIT_CACHE_CREDENTIALS: 'true'
+  - AC_GIT_EXTRA_PARAMS: $AC_GIT_EXTRA_PARAMS
+  outputs:
+  - AC_REPOSITORY_DIR: AC_REPOSITORY_DIR
+- componentType: appcircle_select_java_version
+  componentVersion: 1.0.*
+  stepName: Select Java Version
+  enabled: true
+  onError: $exit
+  webUrl: https://github.com/appcircleio/appcircle-select-java-version-component
+  repoUrl: https://github.com/appcircleio/appcircle-select-java-version-component.git
+  commit: 0c841de
+  inputs:
+  - AC_SELECTED_JAVA_VERSION: '17'
+- componentType: appcircle_custom_script
+  componentVersion: 1.0.*
+  stepName: Build Flutter Debug APK
+  enabled: true
+  onError: $exit
+  webUrl: https://github.com/appcircleio/appcircle-custom-script-component
+  repoUrl: https://github.com/appcircleio/appcircle-custom-script-component.git
+  commit: ed1b419
+  inputs:
+  - Execute: bash
+  - Script: |
+      set -euo pipefail
+      if [[ "${AC_GIT_BRANCH#refs/heads/}" != gate/final-verification ]]; then
+        echo "Select the gate/final-verification branch." >&2
+        exit 1
+      fi
+      : "${SUPABASE_URL:?Set SUPABASE_URL in the Appcircle configuration}"
+      : "${SUPABASE_ANON_KEY:?Set SUPABASE_ANON_KEY in the Appcircle configuration}"
+      if [[ "${SUPABASE_URL%/}" != https://muzbwqxvamcbfiuehxro.supabase.co ]]; then
+        echo "Select the dedicated Supabase gate project." >&2
+        exit 1
+      fi
+
+      cd "${AC_REPOSITORY_DIR:?Missing Appcircle checkout directory}"
+      flutter_version=3.35.7
+      flutter_dir=$(mktemp -d)
+      trap 'rm -rf "$flutter_dir"' EXIT
+      git clone --depth 1 --branch "$flutter_version" https://github.com/flutter/flutter.git "$flutter_dir/sdk"
+      flutter="$flutter_dir/sdk/bin/flutter"
+      installed_version=$("$flutter" --version --machine | python3 -c 'import json, sys; print(json.load(sys.stdin)["frameworkVersion"])')
+      if [[ "$installed_version" != "$flutter_version" ]]; then
+        echo "Expected Flutter $flutter_version, got $installed_version." >&2
+        exit 1
+      fi
+
+      echo "Gate SDK verified: Flutter $installed_version"
+      "$flutter" pub get
+      "$flutter" build apk --debug --no-pub \
+        --dart-define="SUPABASE_URL=$SUPABASE_URL" \
+        --dart-define="SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" \
+        --dart-define=ENV=test
+      apk=build/app/outputs/flutter-apk/app-debug.apk
+      test -s "$apk"
+      mkdir -p "${AC_OUTPUT_DIR:?Missing Appcircle artifact directory}"
+      cp "$apk" "$AC_OUTPUT_DIR/app-debug.apk"
+- componentType: appcircle_export_build_artifacts
+  componentVersion: 1.0.*
+  stepName: Export Build Artifacts
+  enabled: true
+  onError: $exit
+  webUrl: https://github.com/appcircleio/appcircle-export-build-artifacts
+  repoUrl: https://github.com/appcircleio/appcircle-export-build-artifacts.git
+  commit: f8aa050
+  inputs:
+  - AC_UPLOAD_DIR: $AC_OUTPUT_DIR

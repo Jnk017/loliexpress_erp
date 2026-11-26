@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../widgets/screen_state_view.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
@@ -96,7 +98,7 @@ class _SecurityAlertCenterState extends State<SecurityAlertCenter> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to resolve alert: $e')),
+            SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
           );
         }
       }
@@ -119,7 +121,7 @@ class _SecurityAlertCenterState extends State<SecurityAlertCenter> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to escalate alert: $e')),
+          SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
         );
       }
     }
@@ -153,7 +155,7 @@ class _SecurityAlertCenterState extends State<SecurityAlertCenter> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update alert: $e')),
+          SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
         );
       }
     }
@@ -176,11 +178,11 @@ class _SecurityAlertCenterState extends State<SecurityAlertCenter> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Annuler'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Confirm'),
+            child: const Text('Confirmer'),
           ),
         ],
       ),
@@ -198,7 +200,7 @@ class _SecurityAlertCenterState extends State<SecurityAlertCenter> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('Annuler'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -260,7 +262,10 @@ class _SecurityAlertCenterState extends State<SecurityAlertCenter> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _error != null
-                    ? Center(child: Text(_error!))
+                    ? ScreenStateView.error(
+                        message: 'Impossible de charger les alertes.',
+                        onAction: _loadAlerts,
+                      )
                     : _alerts.isEmpty
                         ? Center(
                             child: Column(

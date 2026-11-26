@@ -45,7 +45,7 @@ class _IpGeolocationMapWidgetState extends State<IpGeolocationMapWidget> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading geolocations: $e')),
+          SnackBar(content: Text('Impossible de terminer l’opération. Réessayez.')),
         );
       }
     }

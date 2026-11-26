@@ -46,9 +46,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     try {
       final all = await _notificationService.getUserNotifications();
       final pending =
-          await _notificationService.getUserNotifications(status: 'pending');
+          await _notificationService.getUserNotifications(read: false);
       final sent =
-          await _notificationService.getUserNotifications(status: 'sent');
+          await _notificationService.getUserNotifications(read: true);
 
       setState(() {
         _allNotifications = all;

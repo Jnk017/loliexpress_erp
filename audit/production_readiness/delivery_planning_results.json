@@ -1,0 +1,66 @@
+{
+  "verify_delivery_planning": [
+    {
+      "delivery_planning_pass": true
+    }
+  ],
+  "verify_delivery_client_boundary": [
+    {
+      "delivery_client_boundary_pass": true
+    }
+  ],
+  "verify_p1a_handover": [
+    {
+      "scenario": "cdf_cycle_reconciled",
+      "passed": true
+    },
+    {
+      "scenario": "handover_decrements_once",
+      "passed": true
+    },
+    {
+      "scenario": "insufficient_stock_rolls_back",
+      "passed": true
+    },
+    {
+      "scenario": "mixed_return_credit_once_at_invoiced_price",
+      "passed": true
+    },
+    {
+      "scenario": "mixed_return_restocks_sellable_once",
+      "passed": true
+    },
+    {
+      "scenario": "return_quantity_ceiling",
+      "passed": true
+    },
+    {
+      "scenario": "return_requires_actual_handover",
+      "passed": true
+    },
+    {
+      "scenario": "shipment_does_not_decrement",
+      "passed": true
+    },
+    {
+      "scenario": "status_requires_handover",
+      "passed": true
+    },
+    {
+      "scenario": "unsellable_return_keeps_stock_and_accounts",
+      "passed": true
+    },
+    {
+      "scenario": "unsellable_units_never_credited",
+      "passed": true
+    },
+    {
+      "scenario": "usd_cycle_reconciled",
+      "passed": true
+    },
+    {
+      "scenario": "usd_handover_uses_same_stock_rule",
+      "passed": true
+    }
+  ]
+}

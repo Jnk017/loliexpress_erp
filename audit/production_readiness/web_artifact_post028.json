@@ -1,0 +1,211 @@
+{
+  "sha": "f7d70c3177efee56df7fe6ad96332a9b5dded87a",
+  "environment": "loliexpress-gate-test",
+  "files": [
+    {
+      "path": ".last_build_id",
+      "bytes": 32,
+      "sha256": "04258ea9a86ae4b84d02573d4e200558126397a5162c37dbbf58a75ae5e589d8"
+    },
+    {
+      "path": "assets/AssetManifest.bin",
+      "bytes": 649,
+      "sha256": "c6017320ebc7306375f7cb784b65ff2c068a29a5345f50cea9503d039047d093"
+    },
+    {
+      "path": "assets/AssetManifest.bin.json",
+      "bytes": 870,
+      "sha256": "bb9b047505cd44e0ed57d6e3b264995f9d09f2924be6a3f826ed629ac2e6bb8a"
+    },
+    {
+      "path": "assets/AssetManifest.json",
+      "bytes": 585,
+      "sha256": "ef80161ac73858d470c361004da15859633ea2d7c4deaf395713e432ebf802e9"
+    },
+    {
+      "path": "assets/FontManifest.json",
+      "bytes": 262,
+      "sha256": "b4405b09e3fc25e12ceb4be273c9490df7d01d51de61e17c35b094618b75ec49"
+    },
+    {
+      "path": "assets/NOTICES",
+      "bytes": 1891738,
+      "sha256": "15563d3353bcbaccffe2afc26b29e668e6fe24979e33107d14da83449510ed63"
+    },
+    {
+      "path": "assets/assets/fonts/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "assets/assets/fonts/Inter-Bold.ttf",
+      "bytes": 344152,
+      "sha256": "30a5c45ec23a594af2effe8d3b589ad22c2dede27441050a1604d00ff82fd0dc"
+    },
+    {
+      "path": "assets/assets/fonts/Inter-Medium.ttf",
+      "bytes": 343200,
+      "sha256": "7c7206c451a89a8fa8f38f3c217f67e60b830db9e21645e36155cc62cd1f9903"
+    },
+    {
+      "path": "assets/assets/fonts/Inter-Regular.ttf",
+      "bytes": 342680,
+      "sha256": "3e5f90a0138b38de4cf4d779ad78391974ea1df776b9164842bdcbb60ce383c5"
+    },
+    {
+      "path": "assets/assets/images/1-1764550821958.png",
+      "bytes": 30149,
+      "sha256": "6e30cb7342173c96e52ceb612003707bb870f809388f6eb90ef7ac445fde5bbf"
+    },
+    {
+      "path": "assets/assets/images/img_app_logo.svg",
+      "bytes": 1361,
+      "sha256": "16193ed1f67477866e8d8f2cf40c2ac1a71d3965cd05db1a20dfaa18ba162d85"
+    },
+    {
+      "path": "assets/assets/images/logo_loliexpress.png",
+      "bytes": 2886,
+      "sha256": "140432e0ef61a54c58ef83de9fc1bcc087cb06b912d7f1fea435d8e3e0ba433b"
+    },
+    {
+      "path": "assets/assets/images/no-image.jpg",
+      "bytes": 20735,
+      "sha256": "11011ce05a033d158c97f29efceac3d578328de8ec1ef1149343575d2e655260"
+    },
+    {
+      "path": "assets/assets/images/sad_face.svg",
+      "bytes": 829,
+      "sha256": "2e6a8f2542e7fe85af352c39194f72a91377798e390f09f5cc7476912c8b630f"
+    },
+    {
+      "path": "assets/fonts/MaterialIcons-Regular.otf",
+      "bytes": 271688,
+      "sha256": "650993ae923bb695d23e6566977a6e15b676271ed92601c0275ee94ded7e0f92"
+    },
+    {
+      "path": "assets/shaders/ink_sparkle.frag",
+      "bytes": 8867,
+      "sha256": "e01b61b394cf66a641bea87e3b4fe3787d372f636c8bc8a2a67438cdc29da6f6"
+    },
+    {
+      "path": "canvaskit/canvaskit.js",
+      "bytes": 86619,
+      "sha256": "8bf473e4b3d5d3f3a14f5e0081b68ccf7194b8a04919b579099c90a662848df0"
+    },
+    {
+      "path": "canvaskit/canvaskit.js.symbols",
+      "bytes": 1337304,
+      "sha256": "d318dbf9a3c3a781579fa20ec3beddcdf9355b0f5c4376d76cf5ad6fe58cc2ef"
+    },
+    {
+      "path": "canvaskit/canvaskit.wasm",
+      "bytes": 7052864,
+      "sha256": "20e2f59919d514cc194444ec3b38adafcc898ba38e3283a4e525ecfbd2514117"
+    },
+    {
+      "path": "canvaskit/chromium/canvaskit.js",
+      "bytes": 86256,
+      "sha256": "c4513441303e717ea14bf60814727bc994ce4381188e4b4c0b02a003885d1df7"
+    },
+    {
+      "path": "canvaskit/chromium/canvaskit.js.symbols",
+      "bytes": 1259162,
+      "sha256": "eceb9c53341eca8fd2449b10049ce5f98d7b1aa8cd60dd168657591f5daac448"
+    },
+    {
+      "path": "canvaskit/chromium/canvaskit.wasm",
+      "bytes": 5678018,
+      "sha256": "5e1f801de136a593d29c555b3c8dea235e761e59a1b370a1a4dba684cb80278a"
+    },
+    {
+      "path": "canvaskit/skwasm.js",
+      "bytes": 60281,
+      "sha256": "9fdb1272529878ad8f2f56b4e435251204f84b1497e8f45c0b380516b4c5df2c"
+    },
+    {
+      "path": "canvaskit/skwasm.js.symbols",
+      "bytes": 1441359,
+      "sha256": "830b39ff018fe796b9d0ea83478ca2f15ff2736914b9727a9b6929314522bc36"
+    },
+    {
+      "path": "canvaskit/skwasm.wasm",
+      "bytes": 3443467,
+      "sha256": "eab8f0df5027670550425a66f06bf537d99032a50b2a2fb176e3f82ef50cce3c"
+    },
+    {
+      "path": "canvaskit/skwasm_heavy.js",
+      "bytes": 60394,
+      "sha256": "811359f46a22b5c1aab6667d167e1fa479275a09cb6eba9cbfbb548f4462313f"
+    },
+    {
+      "path": "canvaskit/skwasm_heavy.js.symbols",
+      "bytes": 1560177,
+      "sha256": "1418b55dbb2fc3172e36aca16c32437912acc9d3ae3b270cbc4c9080000d8bfb"
+    },
+    {
+      "path": "canvaskit/skwasm_heavy.wasm",
+      "bytes": 4933843,
+      "sha256": "4c9edc9a9bd8817c12ac650bd24a3e5a21fb1b857758728e9819f62c5c013a22"
+    },
+    {
+      "path": "favicon.png",
+      "bytes": 917,
+      "sha256": "7ab2525f4b86b65d3e4c70358a17e5a1aaf6f437f99cbcc046dad73d59bb9015"
+    },
+    {
+      "path": "flutter.js",
+      "bytes": 9262,
+      "sha256": "e3081edda6d2ee9064d700a98f7ba8bb634aea05d735980272ff8d2179e48016"
+    },
+    {
+      "path": "flutter_bootstrap.js",
+      "bytes": 9587,
+      "sha256": "bd191e9eb5a31c2d02e7e5420c244ca09882965c300dd685339c85362ab119c1"
+    },
+    {
+      "path": "flutter_service_worker.js",
+      "bytes": 8798,
+      "sha256": "5a15d781bfd6fc8501b1df3fb00092f35ab958a4a38986648c2a4a877fe8d338"
+    },
+    {
+      "path": "icons/Icon-192.png",
+      "bytes": 5292,
+      "sha256": "3dce99077602f70421c1c6b2a240bc9b83d64d86681d45f2154143310c980be3"
+    },
+    {
+      "path": "icons/Icon-512.png",
+      "bytes": 8252,
+      "sha256": "baccb205ae45f0b421be1657259b4943ac40c95094ab877f3bcbe12cd544dcbe"
+    },
+    {
+      "path": "icons/Icon-maskable-192.png",
+      "bytes": 5594,
+      "sha256": "d2c842e22a9f4ec9d996b23373a905c88d9a203b220c5c151885ad621f974b5c"
+    },
+    {
+      "path": "icons/Icon-maskable-512.png",
+      "bytes": 20998,
+      "sha256": "6aee06cdcab6b2aef74b1734c4778f4421d2da100b0ff9e52b21b55240202929"
+    },
+    {
+      "path": "index.html",
+      "bytes": 1211,
+      "sha256": "091002648616561655ea782586ab252cac40fdd363b1b1180050d2240189c1e8"
+    },
+    {
+      "path": "main.dart.js",
+      "bytes": 5550702,
+      "sha256": "61c4345d512cd92d38841e6ed63554e2c05bd6d7b452a9afd13f47b35a5d36cf"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 926,
+      "sha256": "68250a4d9ed5a2e5a24372f8b7fcfad998d70d957c063b8d0b65a5e4df4d2245"
+    },
+    {
+      "path": "version.json",
+      "bytes": 100,
+      "sha256": "b4302a5f3f10a4e82251e2f4625013be6c14b522661a8c0ec887d61ac0cda21c"
+    }
+  ]
+}

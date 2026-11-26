@@ -1,0 +1,33 @@
+{
+  "scenario": "two_transfers_on_limited_stock",
+  "sha": "f7d70c3177efee56df7fe6ad96332a9b5dded87a",
+  "environment": "loliexpress-gate-test",
+  "passed": true,
+  "fixture": {
+    "product": "2e7b4e04-01a6-4283-af0e-5581cf12bdfe",
+    "source": "766713b0-37f1-4a55-90fe-daeca7adc8d5",
+    "destination": "9bdaa11b-379a-4dce-a401-a3ff7d959ea4"
+  },
+  "workers": [
+    {
+      "backend": 189938,
+      "started": "2026-11-25 13:22:58.288762+00",
+      "finished": "2026-11-25 13:23:01.249466+00",
+      "status": "insufficient_stock"
+    },
+    {
+      "backend": 189939,
+      "started": "2026-11-25 13:22:58.233448+00",
+      "finished": "2026-11-25 13:23:01.245208+00",
+      "status": "committed"
+    }
+  ],
+  "overlap": true,
+  "ledger": {
+    "source": 4,
+    "destination": 6,
+    "movements": 3,
+    "ledger_total": 10
+  },
+  "cleanup": true
+}

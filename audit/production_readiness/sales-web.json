@@ -1,0 +1,21 @@
+{
+  "role": "sales_rep",
+  "passed": true,
+  "cleanup": true,
+  "sha": "c220a2b7bb5684276d9132eeaa0b221695146bc1",
+  "login_http": 200,
+  "phase": "confirm",
+  "order_http": 200,
+  "order_response_shape": "dict",
+  "transition_http": 200,
+  "database": {
+    "stock": 3,
+    "movements": 1,
+    "total": "6.00",
+    "order_status": "confirmed"
+  },
+  "screenshots": {
+    "sales_quote.png": "6bdf7970057d6e69e46d1a1cca046624f01ac8b7cf030c37b9ba05ee43030a45",
+    "sales_confirmed.png": "be7e9d679c2324dc7828f3989273ec53289f355f0e11281ff0c79eb3eca0a975"
+  }
+}

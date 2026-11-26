@@ -72,7 +72,7 @@ class _BarcodeScannerState extends State<BarcodeScanner>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur d\'initialisation de la caméra: $e'),
+            content: Text('Impossible de terminer l’opération. Réessayez.'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

@@ -9,14 +9,12 @@ class ProductSelectionSection extends StatefulWidget {
   final List<Map<String, dynamic>> products;
   final Function(Map<String, dynamic>) onProductAdd;
   final VoidCallback onBarcodeScan;
-  final String customerTier;
 
   const ProductSelectionSection({
     super.key,
     required this.products,
     required this.onProductAdd,
     required this.onBarcodeScan,
-    required this.customerTier,
   });
 
   @override
@@ -55,19 +53,6 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
     });
   }
 
-  double _getCustomPrice(Map<String, dynamic> product) {
-    final basePrice = product["price"] as double;
-    final discount =
-        product["tierDiscounts"][widget.customerTier] as double? ?? 0.0;
-    return basePrice * (1 - discount);
-  }
-
-  bool _hasDiscount(Map<String, dynamic> product) {
-    final discount =
-        product["tierDiscounts"][widget.customerTier] as double? ?? 0.0;
-    return discount > 0;
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -79,7 +64,7 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
         children: [
           // Header
           Padding(
-            padding: EdgeInsets.all(4.w),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             child: Row(
               children: [
                 Expanded(
@@ -109,7 +94,7 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
               controller: _searchController,
               onChanged: _filterProducts,
               decoration: InputDecoration(
-                hintText: 'Rechercher un produit...',
+                hintText: 'Rechercher un produit…',
                 prefixIcon: CustomIconWidget(
                   iconName: 'search',
                   color: theme.colorScheme.onSurfaceVariant,
@@ -138,10 +123,10 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
               ),
             ),
           ),
-          SizedBox(height: 2.h),
+          const SizedBox(height: 6),
           // Product list
           Container(
-            constraints: BoxConstraints(maxHeight: 40.h),
+            constraints: const BoxConstraints(maxHeight: 260),
             child: _filteredProducts.isEmpty
                 ? Center(
                     child: Padding(
@@ -155,7 +140,9 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
                     ),
                   )
                 : ListView.separated(
+                    primary: false,
                     shrinkWrap: true,
+                    padding: const EdgeInsets.only(bottom: 4),
                     itemCount: _filteredProducts.length,
                     separatorBuilder: (context, index) => Divider(
                       height: 1,
@@ -174,10 +161,9 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
 
   Widget _buildProductItem(BuildContext context, Map<String, dynamic> product) {
     final theme = Theme.of(context);
-    final customPrice = _getCustomPrice(product);
-    final hasDiscount = _hasDiscount(product);
-    final stock = product["stock"] as int;
-    final isLowStock = stock < 10;
+    final cataloguePrice = product["price"] as num;
+    final stock = product["stock"] as int?;
+    final isLowStock = stock != null && stock < 10;
 
     return InkWell(
       onTap: () => widget.onProductAdd(product),
@@ -229,28 +215,12 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
                     ),
                   ),
                   SizedBox(height: 0.5.h),
-                  Row(
-                    children: [
-                      if (hasDiscount) ...[
-                        Text(
-                          '${product["price"]} FC',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                            decoration: TextDecoration.lineThrough,
-                          ),
-                        ),
-                        SizedBox(width: 2.w),
-                      ],
-                      Text(
-                        '${customPrice.toStringAsFixed(0)} FC',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: hasDiscount
-                              ? theme.colorScheme.tertiary
-                              : theme.colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    'Catalogue ${cataloguePrice.toStringAsFixed(2)} ${product["currency"] ?? 'CDF'}',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   SizedBox(height: 0.5.h),
                   Row(
@@ -264,7 +234,7 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
                       ),
                       SizedBox(width: 1.w),
                       Text(
-                        '$stock en stock',
+                        stock == null ? 'Stock non communiqué' : '$stock en stock',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: isLowStock
                               ? theme.colorScheme.error

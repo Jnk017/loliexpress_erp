@@ -1,11 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
+import '../../core/request_id.dart';
 import '../../services/delivery_service.dart';
 import '../../widgets/custom_app_bar.dart';
+import '../../widgets/custom_bottom_bar.dart';
 import '../../widgets/custom_icon_widget.dart';
 import './widgets/delivery_list_item_widget.dart';
 import './widgets/delivery_map_view_widget.dart';
@@ -21,11 +24,14 @@ class DeliveryTracking extends StatefulWidget {
 class _DeliveryTrackingState extends State<DeliveryTracking> {
   GoogleMapController? _mapController;
   Position? _currentPosition;
-  bool _isMapView = true;
+  // The Web build has no Maps JavaScript configuration.
+  bool _isMapView = !kIsWeb;
   String _selectedRoute = 'Toutes les tournées';
   DateTime _selectedDate = DateTime.now();
   bool _isSyncing = false;
   bool _isLoading = true;
+  bool _canInspectReturns = false;
+  bool _canDeclareSellable = false;
   String? _error;
   final DraggableScrollableController _sheetController =
       DraggableScrollableController();
@@ -37,6 +43,168 @@ class _DeliveryTrackingState extends State<DeliveryTracking> {
     super.initState();
     _getCurrentLocation();
     _loadDeliveries();
+    _loadReturnPermission();
+  }
+
+  Future<void> _loadReturnPermission() async {
+    try {
+      final role = await DeliveryService.instance.getActiveRole();
+      if (mounted) {
+        setState(() {
+          _canInspectReturns = const ['admin', 'warehouse_staff'].contains(role);
+          _canDeclareSellable = role == 'admin';
+        });
+      }
+    } catch (_) {
+      // The action remains unavailable until permission can be checked.
+    }
+  }
+
+  Future<void> _inspectReturn() async {
+    var orderNumber = '';
+    final lookup = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Contrôler un retour client'),
+        content: TextField(
+          decoration: const InputDecoration(labelText: 'Numéro de commande'),
+          onChanged: (value) => orderNumber = value,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, orderNumber.trim()),
+            child: const Text('Rechercher'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || lookup == null || lookup.isEmpty) return;
+    try {
+      final service = DeliveryService.instance;
+      final lines = await service.getReturnLines(lookup);
+      if (!mounted) return;
+      if (lines.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Aucun article remis et encore retournable.')),
+        );
+        return;
+      }
+      final line = await showDialog<Map<String, dynamic>>(
+        context: context,
+        builder: (context) => SimpleDialog(
+          title: const Text('Article retourné'),
+          children: [
+            for (final line in lines)
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(context, line),
+                child: Text('${line['product_name']} · ${line['sku']} · ${line['remaining_quantity']} restant(s)'),
+              ),
+          ],
+        ),
+      );
+      if (!mounted || line == null) return;
+      final max = line['remaining_quantity'] as int;
+      final requestId = newRequestId();
+      var returnedText = '';
+      var sellableText = _canDeclareSellable ? '' : '0';
+      var note = '';
+      var busy = false;
+      var submitted = false;
+      String? error;
+      final saved = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => StatefulBuilder(
+          builder: (dialogContext, update) => PopScope(
+            canPop: !busy,
+            child: AlertDialog(
+              title: const Text('Résultat du contrôle'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Dépôt : ${line['warehouse_name']}'),
+                    TextField(
+                      enabled: !submitted,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: 'Quantité contrôlée'),
+                      onChanged: (value) => returnedText = value,
+                    ),
+                    if (_canDeclareSellable)
+                      TextField(
+                        enabled: !submitted,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(labelText: 'Quantité déclarée revendable'),
+                        onChanged: (value) => sellableText = value,
+                      )
+                    else
+                      const Text('Enregistrez ici uniquement un retour entièrement non revendable. Pour les unités revendables, demandez le contrôle d’un admin.'),
+                    TextField(
+                      enabled: !submitted,
+                      decoration: const InputDecoration(labelText: 'Constat du contrôle'),
+                      onChanged: (value) => note = value,
+                    ),
+                    if (error != null) Text(error!),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: busy ? null : () => Navigator.pop(dialogContext),
+                  child: const Text('Fermer'),
+                ),
+                FilledButton(
+                  onPressed: busy ? null : () async {
+                    final returned = int.tryParse(returnedText.trim());
+                    final sellable = int.tryParse(sellableText.trim());
+                    if (returned == null || returned < 1 || returned > max ||
+                        sellable == null || sellable < 0 || sellable > returned ||
+                        note.trim().isEmpty || note.trim().length > 1000) {
+                      update(() => error = 'Vérifiez les quantités et le constat.');
+                      return;
+                    }
+                    update(() {
+                      submitted = true;
+                      busy = true;
+                      error = null;
+                    });
+                    try {
+                      await service.inspectCustomerReturn(
+                        orderItemId: line['order_item_id'] as String,
+                        returnedQuantity: returned,
+                        sellableQuantity: sellable,
+                        inspectionNote: note.trim(),
+                        requestId: requestId,
+                      );
+                      if (dialogContext.mounted) Navigator.pop(dialogContext, true);
+                    } catch (_) {
+                      if (dialogContext.mounted) {
+                        update(() {
+                          busy = false;
+                          error = 'Enregistrement non confirmé. Réessayez ou vérifiez le retour.';
+                        });
+                      }
+                    }
+                  },
+                  child: Text(submitted ? 'Réessayer' : 'Enregistrer le contrôle'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      if (mounted && saved == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Contrôle enregistré. Seules les unités revendables sont en stock.')),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Impossible de rechercher le retour.')),
+        );
+      }
+    }
   }
 
   @override
@@ -106,6 +274,7 @@ class _DeliveryTrackingState extends State<DeliveryTracking> {
     final status = row['status'] as String? ?? 'pending';
     return {
       "id": row['id'] as String? ?? '',
+      "warehouseId": row['warehouse_id'] as String?,
       "customerName": customer?['company_name'] as String? ?? 'Client inconnu',
       "address": row['delivery_address'] as String? ?? '',
       "timeWindow": _formatTimeWindow(row['estimated_time'] as String?),
@@ -159,8 +328,65 @@ class _DeliveryTrackingState extends State<DeliveryTracking> {
   }
 
   Future<void> _markDelivered(String deliveryId) async {
-    await DeliveryService.instance
-        .updateDeliveryStatus(deliveryId, 'delivered');
+    final service = DeliveryService.instance;
+    final index = _deliveries.indexWhere((item) => item['id'] == deliveryId);
+    if (index < 0) return;
+    try {
+      if (_deliveries[index]['warehouseId'] == null) {
+        final canAssign = await service.canAssignDeliveryWarehouse();
+        if (!mounted) return;
+        if (!canAssign) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Demandez au dépôt d’attribuer un entrepôt à cette livraison.')),
+          );
+          return;
+        }
+        final warehouses = await service.getActiveWarehouses();
+        if (!mounted) return;
+        if (warehouses.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Aucun entrepôt actif disponible.')),
+          );
+          return;
+        }
+        final warehouse = await showDialog<String>(
+          context: context,
+          builder: (context) => SimpleDialog(
+            title: const Text('Dépôt de départ'),
+            children: [
+              for (final entry in warehouses)
+                SimpleDialogOption(
+                  onPressed: () => Navigator.pop(context, entry['id'] as String),
+                  child: Text(entry['name'] as String),
+                ),
+            ],
+          ),
+        );
+        if (!mounted || warehouse == null) return;
+        await service.assignDeliveryWarehouse(deliveryId, warehouse);
+        await _loadDeliveries();
+        return;
+      }
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Confirmer la remise au client'),
+          content: const Text('Validez uniquement après avoir remis les articles au client.'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Annuler')),
+            FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Confirmer')),
+          ],
+        ),
+      );
+      if (!mounted || confirmed != true) return;
+      await service.updateDeliveryStatus(deliveryId, 'delivered');
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Remise impossible. Vérifiez la commande, le dépôt et le stock.')),
+      );
+      return;
+    }
     if (!mounted) return;
     setState(() {
       final index = _deliveries.indexWhere((d) => d["id"] == deliveryId);
@@ -212,6 +438,7 @@ class _DeliveryTrackingState extends State<DeliveryTracking> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
+      bottomNavigationBar: const CustomBottomBar(currentIndex: 0),
       appBar: CustomAppBar(
         title: 'Suivi des Livraisons',
         variant: CustomAppBarVariant.sync,
@@ -219,6 +446,12 @@ class _DeliveryTrackingState extends State<DeliveryTracking> {
         isSyncing: _isSyncing,
         lastSyncTime: DateTime.now().subtract(const Duration(minutes: 5)),
         actions: [
+          if (_canInspectReturns)
+            IconButton(
+              icon: const Icon(Icons.assignment_return_outlined),
+              onPressed: _inspectReturn,
+              tooltip: 'Contrôler un retour',
+            ),
           IconButton(
             icon: CustomIconWidget(
               iconName: 'refresh',
@@ -245,7 +478,6 @@ class _DeliveryTrackingState extends State<DeliveryTracking> {
                         Text('Erreur de chargement des livraisons',
                             style: theme.textTheme.titleMedium),
                         SizedBox(height: 1.h),
-                        Text(_error!, textAlign: TextAlign.center),
                         SizedBox(height: 2.h),
                         ElevatedButton(
                           onPressed: _loadDeliveries,
@@ -407,7 +639,7 @@ class _DeliveryTrackingState extends State<DeliveryTracking> {
                       ),
                   ],
                 ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: kIsWeb ? null : FloatingActionButton.extended(
         onPressed: () {
           setState(() {
             _isMapView = !_isMapView;

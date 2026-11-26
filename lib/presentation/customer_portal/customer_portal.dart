@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
+import '../../widgets/custom_bottom_bar.dart';
 import './widgets/account_tab_widget.dart';
 import './widgets/documents_tab_widget.dart';
 import './widgets/orders_tab_widget.dart';
@@ -53,6 +54,7 @@ class _CustomerPortalState extends State<CustomerPortal>
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
+      bottomNavigationBar: const CustomBottomBar(currentIndex: 1),
       appBar: AppBar(
         backgroundColor: theme.colorScheme.primary,
         elevation: 0,
@@ -81,9 +83,7 @@ class _CustomerPortalState extends State<CustomerPortal>
               color: theme.colorScheme.onPrimary,
               size: 24,
             ),
-            onPressed: () {
-              _showNotifications(context);
-            },
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.notificationsScreen),
             tooltip: 'Notifications',
           ),
           SizedBox(width: 2.w),
@@ -131,131 +131,4 @@ class _CustomerPortalState extends State<CustomerPortal>
     );
   }
 
-  void _showNotifications(BuildContext context) {
-    final theme = Theme.of(context);
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: theme.colorScheme.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Container(
-          padding: EdgeInsets.all(4.w),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Notifications',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  IconButton(
-                    icon: CustomIconWidget(
-                      iconName: 'close',
-                      color: theme.colorScheme.onSurface,
-                      size: 24,
-                    ),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              SizedBox(height: 2.h),
-              _buildNotificationItem(
-                context,
-                'Commande #CMD-2024-1156 expédiée',
-                'Votre commande a été expédiée et sera livrée demain',
-                'Il y a 2 heures',
-                Icons.local_shipping,
-                theme.colorScheme.primary,
-              ),
-              Divider(height: 3.h),
-              _buildNotificationItem(
-                context,
-                'Nouvelle facture disponible',
-                'Facture #FAC-2024-0892 est maintenant disponible',
-                'Il y a 5 heures',
-                Icons.receipt_long,
-                AppTheme.warningLight,
-              ),
-              Divider(height: 3.h),
-              _buildNotificationItem(
-                context,
-                'Rappel de paiement',
-                'Paiement de 125 000 CDF dû le 30/11/2025',
-                'Hier',
-                Icons.payment,
-                AppTheme.errorLight,
-              ),
-              SizedBox(height: 2.h),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildNotificationItem(
-    BuildContext context,
-    String title,
-    String message,
-    String time,
-    IconData icon,
-    Color iconColor,
-  ) {
-    final theme = Theme.of(context);
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: EdgeInsets.all(2.w),
-          decoration: BoxDecoration(
-            color: iconColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            icon,
-            color: iconColor,
-            size: 20,
-          ),
-        ),
-        SizedBox(width: 3.w),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: 0.5.h),
-              Text(
-                message,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              SizedBox(height: 0.5.h),
-              Text(
-                time,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color:
-                      theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
 }

@@ -1,0 +1,168 @@
+[
+  {
+    "script": "verify_p1a_invoice_delivery.sql",
+    "http": "201",
+    "body": [
+      {
+        "scenario": "delivery_fee_in_outstanding_balance",
+        "passed": true
+      },
+      {
+        "scenario": "issue_retry_returns_same_invoice",
+        "passed": true
+      },
+      {
+        "scenario": "optional_delivery_and_zero_tax",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "script": "verify_p1a_admin_delivery_credit.sql",
+    "http": "201",
+    "body": [
+      {
+        "scenario": "accountant_denied",
+        "passed": true
+      },
+      {
+        "scenario": "admin_credit_and_retry",
+        "passed": true
+      },
+      {
+        "scenario": "fee_cap",
+        "passed": true
+      },
+      {
+        "scenario": "paid_invoice_refund_due",
+        "passed": true
+      },
+      {
+        "scenario": "payment_uses_net_amount",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "script": "verify_p1a_handover.sql",
+    "http": "201",
+    "body": [
+      {
+        "scenario": "cdf_cycle_reconciled",
+        "passed": true
+      },
+      {
+        "scenario": "handover_decrements_once",
+        "passed": true
+      },
+      {
+        "scenario": "insufficient_stock_rolls_back",
+        "passed": true
+      },
+      {
+        "scenario": "mixed_return_credit_once_at_invoiced_price",
+        "passed": true
+      },
+      {
+        "scenario": "mixed_return_restocks_sellable_once",
+        "passed": true
+      },
+      {
+        "scenario": "return_quantity_ceiling",
+        "passed": true
+      },
+      {
+        "scenario": "return_requires_actual_handover",
+        "passed": true
+      },
+      {
+        "scenario": "shipment_does_not_decrement",
+        "passed": true
+      },
+      {
+        "scenario": "status_requires_handover",
+        "passed": true
+      },
+      {
+        "scenario": "unsellable_return_keeps_stock_and_accounts",
+        "passed": true
+      },
+      {
+        "scenario": "unsellable_units_never_credited",
+        "passed": true
+      },
+      {
+        "scenario": "usd_cycle_reconciled",
+        "passed": true
+      },
+      {
+        "scenario": "usd_handover_uses_same_stock_rule",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "script": "verify_p1a_drafts_and_purchases.sql",
+    "http": "201",
+    "body": [
+      {
+        "scenario": "atomic_purchase",
+        "passed": true
+      },
+      {
+        "scenario": "draft_persisted_and_updated",
+        "passed": true
+      },
+      {
+        "scenario": "draft_without_receivable",
+        "passed": true
+      },
+      {
+        "scenario": "invalid_line_rolls_back_header",
+        "passed": true
+      },
+      {
+        "scenario": "partial_receipt_and_idempotency",
+        "passed": true
+      },
+      {
+        "scenario": "supplier_balance_settled_without_stock_change",
+        "passed": true
+      },
+      {
+        "scenario": "supplier_bill_is_separate_from_receipt",
+        "passed": true
+      },
+      {
+        "scenario": "supplier_partial_payment_and_idempotency",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "script": "verify_p1a_ra.sql",
+    "http": "201",
+    "body": [
+      {
+        "scenario": "RA1_non_sellable_refused_P4101",
+        "passed": true
+      },
+      {
+        "scenario": "RA2_three_credited_two_traced",
+        "passed": true
+      },
+      {
+        "scenario": "RA3_original_net_line",
+        "passed": true
+      },
+      {
+        "scenario": "RA4_repeat_refused_P4104",
+        "passed": true
+      },
+      {
+        "scenario": "RA5_only_explicit_admin_delivery_credit",
+        "passed": true
+      }
+    ]
+  }
+]

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:sizer/sizer.dart';
@@ -285,6 +286,15 @@ class DeliveryListItemWidget extends StatelessWidget {
                     ),
                 ],
               ),
+
+              if (kIsWeb && !isCompleted)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: onMarkDelivered,
+                    child: const Text('Confirmer la remise'),
+                  ),
+                ),
 
               // Notes Section
               if (delivery["notes"] != null &&

@@ -77,10 +77,9 @@ class NotificationSwipeCardWidget extends StatelessWidget {
     final notificationType = notification['notification_type'] as String;
     final subject = notification['subject'] as String;
     final message = notification['message'] as String;
-    final status = notification['status'] as String;
     final createdAt = DateTime.parse(notification['created_at'] as String);
 
-    final isUnread = status == 'pending';
+    final isUnread = notification['read_at'] == null;
     final iconColor = _getNotificationColor(notificationType);
     final priorityColor = _getPriorityColor(priority);
 

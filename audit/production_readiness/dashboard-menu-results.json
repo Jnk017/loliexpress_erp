@@ -1,0 +1,1655 @@
+{
+  "environment": "Supabase Gate",
+  "date": "2026-11-26",
+  "account_logins": {
+    "pass": 8,
+    "total": 8
+  },
+  "menu_checks": {
+    "PASS": 37
+  },
+  "runs": {
+    "menus_and_b2b_notifications": {
+      "sha": "16ecc096afb71f7edd34b893689b70890c5018db",
+      "scope": "navigation and HTTP observations; B2B read mutation only when notification fixtures are provided",
+      "results": [
+        {
+          "role": "commercial",
+          "home": "/main-dashboard",
+          "checks": [
+            {
+              "surface": "menu",
+              "label": "Nouvelle commande",
+              "target": "/sales-order-processing",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_company_settings",
+                  "method": "POST",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "menu",
+              "label": "Clients",
+              "target": "/customer-management",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "menu",
+              "label": "Catalogue",
+              "target": "/product-catalog",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "menu",
+              "label": "Scanner",
+              "target": "/barcode-scanner",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "menu",
+              "label": "Paramètres",
+              "target": "/settings-configuration",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/user_profiles",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_company_settings",
+                  "method": "POST",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "shortcut",
+              "label": "Livraisons",
+              "target": "/delivery-tracking",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/user_profiles",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/deliveries",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            }
+          ],
+          "auth_http": 200,
+          "login": "PASS"
+        },
+        {
+          "role": "magasinier",
+          "home": "/inventory-management",
+          "checks": [
+            {
+              "surface": "shortcut",
+              "label": "Scanner",
+              "target": "/barcode-scanner",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/warehouse_locations",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            }
+          ],
+          "auth_http": 200,
+          "login": "PASS"
+        },
+        {
+          "role": "livreur",
+          "home": "/delivery-tracking",
+          "checks": [
+            {
+              "surface": "shortcut",
+              "label": "Alertes",
+              "target": "/notifications-center",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/deliveries",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/user_profiles",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/notification_center_preferences",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/notification_queue",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            }
+          ],
+          "auth_http": 200,
+          "login": "PASS"
+        },
+        {
+          "role": "b2b_a",
+          "home": "/customer-portal",
+          "checks": [
+            {
+              "surface": "tab",
+              "label": "Commandes",
+              "target": "tab",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "tab",
+              "label": "Documents",
+              "target": "tab",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/document_attachments",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "tab",
+              "label": "Compte",
+              "target": "tab",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/user_profiles",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "tab",
+              "label": "Support",
+              "target": "tab",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/support_tickets",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "shortcut",
+              "label": "Catalogue",
+              "target": "/product-catalog",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "notification",
+              "label": "Notifications",
+              "target": "/notifications-screen",
+              "own_fixture_visible": true,
+              "foreign_fixture_hidden": true,
+              "mark_read_http": 204,
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/notification_center_preferences",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/notification_queue",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/notification_queue",
+                  "method": "PATCH",
+                  "http": 204
+                },
+                {
+                  "path": "/rest/v1/notification_center_preferences",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/notification_queue",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            }
+          ],
+          "auth_http": 200,
+          "login": "PASS"
+        },
+        {
+          "role": "b2b_b",
+          "home": "/customer-portal",
+          "checks": [
+            {
+              "surface": "tab",
+              "label": "Commandes",
+              "target": "tab",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "tab",
+              "label": "Documents",
+              "target": "tab",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/document_attachments",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "tab",
+              "label": "Compte",
+              "target": "tab",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/user_profiles",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "tab",
+              "label": "Support",
+              "target": "tab",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/support_tickets",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "shortcut",
+              "label": "Catalogue",
+              "target": "/product-catalog",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "notification",
+              "label": "Notifications",
+              "target": "/notifications-screen",
+              "own_fixture_visible": true,
+              "foreign_fixture_hidden": true,
+              "mark_read_http": 204,
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/notification_center_preferences",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/notification_queue",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/notification_queue",
+                  "method": "PATCH",
+                  "http": 204
+                },
+                {
+                  "path": "/rest/v1/notification_center_preferences",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/notification_queue",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            }
+          ],
+          "auth_http": 200,
+          "login": "PASS"
+        }
+      ]
+    },
+    "admin_and_accounting_recheck": {
+      "sha": "21e975828b6157b1e8da13b51fea3047541a3b1a",
+      "scope": "navigation and HTTP observations; optional Gate B2B notifications and support actions",
+      "results": [
+        {
+          "role": "admin",
+          "home": "/admin-dashboard",
+          "checks": [
+            {
+              "surface": "menu",
+              "label": "Ventes",
+              "target": "/sales-order-processing",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/rpc/get_admin_total_report",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/ai_insights",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_company_settings",
+                  "method": "POST",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "menu",
+              "label": "Factures et encaissements",
+              "target": "/invoice-generation",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/rpc/get_admin_total_report",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/ai_insights",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/user_profiles",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_company_settings",
+                  "method": "POST",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "menu",
+              "label": "Achats",
+              "target": "/purchases",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/rpc/get_admin_total_report",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/ai_insights",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/purchases",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "menu",
+              "label": "Stock",
+              "target": "/inventory-management",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/rpc/get_admin_total_report",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/ai_insights",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/warehouse_locations",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "menu",
+              "label": "Paramètres",
+              "target": "/settings-configuration",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/rpc/get_admin_total_report",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/ai_insights",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_company_settings",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/user_profiles",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "shortcut",
+              "label": "Dépenses",
+              "target": "/expenses",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/rpc/get_admin_total_report",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/ai_insights",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/expenses",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/expenses",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "shortcut",
+              "label": "Rapports",
+              "target": "/reports-analytics",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/expenses",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_admin_total_report",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/ai_insights",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/invoices",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/order_items",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/expenses",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            }
+          ],
+          "auth_http": 200,
+          "login": "PASS"
+        },
+        {
+          "role": "comptable",
+          "home": "/main-dashboard",
+          "checks": [
+            {
+              "surface": "menu",
+              "label": "Factures et encaissements",
+              "target": "/invoice-generation",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/expenses",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/purchases",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_company_settings",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/user_profiles",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "menu",
+              "label": "Dépenses",
+              "target": "/expenses",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/purchases",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/expenses",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/expenses",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/expenses",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "menu",
+              "label": "Rapports",
+              "target": "/reports-analytics",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/expenses",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/expenses",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/purchases",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/invoices",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/order_items",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/expenses",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "menu",
+              "label": "Achats",
+              "target": "/purchases",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/expenses",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/purchases",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/purchases",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "menu",
+              "label": "Paramètres",
+              "target": "/settings-configuration",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/purchases",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/expenses",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_company_settings",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/user_profiles",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "shortcut",
+              "label": "Stock",
+              "target": "/inventory-management",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/customers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/purchases",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/expenses",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/warehouse_locations",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            }
+          ],
+          "auth_http": 200,
+          "login": "PASS"
+        }
+      ]
+    },
+    "buyer_recheck": {
+      "sha": "21e975828b6157b1e8da13b51fea3047541a3b1a",
+      "scope": "navigation and HTTP observations; optional Gate B2B notifications and support actions",
+      "results": [
+        {
+          "role": "acheteur",
+          "home": "/purchases",
+          "checks": [
+            {
+              "surface": "menu",
+              "label": "Catalogue",
+              "target": "/product-catalog",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/purchases",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "menu",
+              "label": "Stock",
+              "target": "/inventory-management",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/purchases",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/warehouse_locations",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "menu",
+              "label": "Paramètres",
+              "target": "/settings-configuration",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/purchases",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/user_profiles",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_company_settings",
+                  "method": "POST",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "menu",
+              "label": "Nouvel achat",
+              "target": "dialog",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/purchases",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/list_procurement_product_choices",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/suppliers",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_company_settings",
+                  "method": "POST",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/rpc/get_workspace_setup_progress",
+                  "method": "POST",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            }
+          ],
+          "auth_http": 200,
+          "login": "PASS"
+        }
+      ]
+    },
+    "b2b_support": {
+      "sha": "16ecc096afb71f7edd34b893689b70890c5018db",
+      "scope": "navigation and HTTP observations; optional Gate B2B notifications and support actions",
+      "results": [
+        {
+          "role": "b2b_a",
+          "home": "/customer-portal",
+          "checks": [
+            {
+              "surface": "tab",
+              "label": "Commandes",
+              "target": "tab",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "tab",
+              "label": "Documents",
+              "target": "tab",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/document_attachments",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "tab",
+              "label": "Compte",
+              "target": "tab",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/user_profiles",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "tab",
+              "label": "Support",
+              "target": "tab",
+              "support_ticket_http": 201,
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/support_tickets",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/support_tickets",
+                  "method": "POST",
+                  "http": 201
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "shortcut",
+              "label": "Catalogue",
+              "target": "/product-catalog",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "notification",
+              "label": "Notifications",
+              "target": "/notifications-screen",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/notification_center_preferences",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/notification_queue",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            }
+          ],
+          "auth_http": 200,
+          "login": "PASS"
+        },
+        {
+          "role": "b2b_b",
+          "home": "/customer-portal",
+          "checks": [
+            {
+              "surface": "tab",
+              "label": "Commandes",
+              "target": "tab",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "tab",
+              "label": "Documents",
+              "target": "tab",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/document_attachments",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "tab",
+              "label": "Compte",
+              "target": "tab",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/user_profiles",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "tab",
+              "label": "Support",
+              "target": "tab",
+              "support_ticket_http": 201,
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/support_tickets",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/support_tickets",
+                  "method": "POST",
+                  "http": 201
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "shortcut",
+              "label": "Catalogue",
+              "target": "/product-catalog",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            },
+            {
+              "surface": "notification",
+              "label": "Notifications",
+              "target": "/notifications-screen",
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/sales_orders",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/notification_center_preferences",
+                  "method": "GET",
+                  "http": 200
+                }
+              ],
+              "http_errors": []
+            }
+          ],
+          "auth_http": 200,
+          "login": "PASS"
+        }
+      ]
+    },
+    "warehouse_manual_scan": {
+      "sha": "16ecc096afb71f7edd34b893689b70890c5018db",
+      "scope": "navigation and HTTP observations; optional Gate B2B notifications and support actions",
+      "results": [
+        {
+          "role": "magasinier",
+          "home": "/inventory-management",
+          "checks": [
+            {
+              "surface": "shortcut",
+              "label": "Scanner",
+              "target": "/barcode-scanner",
+              "barcode_scan_http": 201,
+              "status": "PASS",
+              "gate_requests": [
+                {
+                  "path": "/rest/v1/inventory_stock",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/warehouse_locations",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/products",
+                  "method": "GET",
+                  "http": 200
+                },
+                {
+                  "path": "/rest/v1/barcode_scans",
+                  "method": "POST",
+                  "http": 201
+                }
+              ],
+              "http_errors": []
+            }
+          ],
+          "auth_http": 200,
+          "login": "PASS"
+        }
+      ]
+    }
+  },
+  "database_verified": {
+    "notifications_read_status_preserved": 2,
+    "notifications_cleaned": 2,
+    "support_ticket_owner_matches": 2,
+    "support_tickets_cleaned": 2,
+    "warehouse_manual_scans": 1,
+    "scanner_fixture_product_removed": true,
+    "warehouse_test_account_removed": true,
+    "warehouse_active_only_and_cost_not_granted": true
+  }
+}

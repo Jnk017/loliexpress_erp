@@ -1,6 +1,8 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+import { corsHeaders } from "../_shared/cors.ts";
+
 export const allowedRoles = new Set([
   "sales_rep", "warehouse_staff", "b2b_customer", "comptable", "acheteur", "delivery_agent",
 ]);
@@ -16,11 +18,12 @@ export function validateCreateUserPayload(body: Record<string, unknown> | null):
 
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), {
   status,
-  headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+  headers: { ...corsHeaders, "Content-Type": "application/json", "Cache-Control": "no-store" },
 });
 
 export function createUserHandler(serviceClient: SupabaseClient, supabaseUrl: string, anonKey: string) {
   return async (req: Request): Promise<Response> => {
+    if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: corsHeaders });
     if (req.method !== "POST") {
       console.warn(JSON.stringify({ event: "create_user_rejected", reason: "method_not_allowed" }));
       return json({ error: "Method not allowed" }, 405);

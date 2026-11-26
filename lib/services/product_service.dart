@@ -16,9 +16,13 @@ class ProductService {
       {String? categoryId,
       String? search,
       int limit = 50,
-      int offset = 0}) async {
+      int offset = 0,
+      bool includeStock = false}) async {
     try {
-      var query = _client.from('products').select(_productSelection);
+      final selection = includeStock
+          ? '$_productSelection, inventory_stock(quantity)'
+          : _productSelection;
+      var query = _client.from('products').select(selection);
       if (categoryId != null) query = query.eq('category_id', categoryId);
       if (search != null && search.isNotEmpty) {
         query = query.or(
