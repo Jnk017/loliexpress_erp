@@ -71,7 +71,7 @@ Les cinq refus du livreur couvrent l’affectation d’entrepôt, la transition 
 |---|---|
 | `complete_password_setup` | Écrit uniquement le profil actif de l’appelant avec un mot de passe Auth. Les assertions `password_setup` et `password_flag_cleared` repassent dans le suivi P0.a. |
 | `create_purchase_with_items` | Admin ou acheteur. Écrit en une transaction l’achat et les lignes. Les cas d’achat valide et d’annulation de la transaction à la ligne invalide repassent. |
-| `get_customer_return_lines` | Admin ou magasinier. Retourne les lignes ayant fait l’objet d’une remise et dont le reliquat est non nul. Le test sur un retour épuisé repasse. La liste positive par magasinier reste à documenter séparément. |
+| `get_customer_return_lines` | Admin ou magasinier. Retourne les lignes ayant fait l’objet d’une remise et dont le reliquat est non nul. Le test sur un retour épuisé repasse. La liste positive est vérifiée sous session magasinier, avec mise à jour du reliquat après inspection. [Preuve](warehouse_return_lookup_results.json) |
 | `inspect_customer_return` | Admin ou magasinier. Borne la quantité à celle remise, enregistre le retour et ne réintègre que les unités revendables. Retours mixtes, plafond et répétition repassent. |
 | `receive_purchase_item` | Admin, acheteur ou magasinier. Verrouille achat et ligne, exige un entrepôt actif, trace une réception idempotente et met à jour le stock. La réception partielle et le test Web magasinier couvrent les cas positifs. |
 | `record_delivery_fee_credit` | Admin. Plafonne l’avoir aux frais facturés, sous verrou. Refus du comptable, répétition et plafond repassent. |

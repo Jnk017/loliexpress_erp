@@ -13,6 +13,7 @@ from collect_drift import PROJECTS, request
 
 ROOT = Path(__file__).resolve().parents[2]
 SQL_TESTS = {
+    "verify_warehouse_return_lookup.sql": ("warehouse_return_lookup_pass",),
     "verify_product_catalog_boundary.sql": ("product_catalog_boundary_pass",),
     "verify_purchase_cancellation.sql": ("purchase_cancellation_pass",),
     "verify_role_predicates.sql": ("role_predicates_pass",),

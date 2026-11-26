@@ -41,3 +41,4 @@
 | SEC-001-B1 | P0 | Limiter les opérations de stock et de transition du livreur | Cinq refus et régression du parcours de remise |
 | SEC-004-A | P0 | Exclure le coût du catalogue REST | Projections publiques acceptées et coût refusé sous les rôles clients |
 | WEB-001-C | P0 | Commande commerciale avec tarif et stock réels | Stock lu et tarif appliqué depuis Flutter, commande persistée sans sortie avant remise |
+| SEC-001-F2 | P0 | Recherche de retour avec le rôle magasinier | Positif après remise, reliquat mis à jour, déclaration de revendabilité refusée |

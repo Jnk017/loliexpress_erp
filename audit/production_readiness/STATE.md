@@ -95,3 +95,7 @@ Le groupe SEC-001-F dispose maintenant de la [correspondance des signatures aux 
 Le catalogue du formulaire vente ne dépend plus d’une ancienne structure de remises absente des produits. Analyse Flutter propre et 19 tests réussis, dont la régression stock masqué/visible et absence de remise obsolète. Le tarif est toujours résolu par l’appel serveur à l’ajout. Le scénario navigateur de vente reste en cours.
 
 Le formulaire de vente propose le suivi des commandes au commercial et à l’administrateur. Il utilise le service de transition existant pour la confirmation, la préparation et l’expédition. La remise reste traitée dans le module livraison. Analyse, 19 tests Flutter, build Web et 7 tests Deno passent. Le test Web de confirmation reste en cours.
+
+| ID | Priorité | État | Correction et preuve |
+|---|---|---|---|
+| SEC-001-F2 | P0 | DONE | Le magasinier retrouve deux unités sur la commande remise et voit le reliquat ramené à une après son inspection. Le magasinier ne peut pas déclarer une unité revendable. [Résultat](warehouse_return_lookup_results.json). |
