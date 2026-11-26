@@ -334,6 +334,74 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
     return subtotal - discount + tax;
   }
 
+  static const _orderNextStatus = {
+    'pending': ('confirmed', 'Confirmer'),
+    'confirmed': ('processing', 'Mettre en préparation'),
+    'processing': ('shipped', 'Marquer expédiée'),
+  };
+
+  Future<void> _showOrderFollowup() async {
+    final service = OrderService.instance;
+    try {
+      final orders = await service.getOrders();
+      if (!mounted) return;
+      final selected = await showDialog<Map<String, dynamic>>(
+        context: context,
+        builder: (context) => SimpleDialog(
+          title: const Text('Suivre les commandes'),
+          children: [
+            if (orders.isEmpty)
+              const ListTile(title: Text('Aucune commande à afficher.')),
+            for (final order in orders)
+              ListTile(
+                title: Text(order['order_number'] as String),
+                subtitle: Text(
+                  (order['customers'] as Map?)?['company_name'] as String? ??
+                      'Client non renseigné',
+                ),
+                trailing: Text(
+                  _orderNextStatus[order['order_status']]?.$2 ?? 'Consulter',
+                ),
+                onTap: () => Navigator.pop(context, order),
+              ),
+          ],
+        ),
+      );
+      if (!mounted || selected == null) return;
+      final next = _orderNextStatus[selected['order_status']];
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Commande ${selected['order_number']}'),
+          content: Text(next?.$2 ??
+              'Cette commande a atteint une étape gérée par la livraison ou est clôturée.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Fermer'),
+            ),
+            if (next != null)
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(next.$2),
+              ),
+          ],
+        ),
+      );
+      if (confirmed != true || next == null || !mounted) return;
+      await service.updateOrderStatus(selected['id'] as String, next.$1);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Statut de la commande mis à jour.')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Impossible de suivre cette commande.')),
+      );
+    }
+  }
+
   void _showCustomerSelector() {
     showModalBottomSheet(
       context: context,
@@ -488,13 +556,14 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
             ],
           ),
           actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/invoice-generation');
-              },
-              child: const Text('Créer facture'),
-            ),
+            if (RoleService.instance.canViewAllOrders)
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _showOrderFollowup();
+                },
+                child: const Text('Suivre les commandes'),
+              ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
@@ -580,6 +649,12 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
         variant: CustomAppBarVariant.detail,
         showBackButton: true,
         actions: [
+          if (RoleService.instance.canViewAllOrders)
+            IconButton(
+              icon: const Icon(Icons.list_alt),
+              tooltip: 'Suivre les commandes',
+              onPressed: _showOrderFollowup,
+            ),
           IconButton(
             icon: CustomIconWidget(
               iconName: 'swap_horiz',
