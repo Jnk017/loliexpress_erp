@@ -134,23 +134,15 @@ class ReportsAnalyticsService {
       }
 
       // Sales by category
-      final categoryResponse =
-          await _supabase.rpc('get_sales_by_category', params: {
-        'start_date': startDate,
-      }).catchError((e) async {
-        debugPrint('RPC call failed, using fallback query: $e');
-        return await _supabase.from('order_items').select('''
-              quantity,
-              line_total,
-              products!inner (
-                name,
-                category_id,
-                product_categories!inner (
-                  name
-                )
-              )
-            ''').gte('created_at', startDate);
-      });
+      final categoryResponse = await _supabase.from('order_items').select('''
+        quantity,
+        line_total,
+        products!inner (
+          name,
+          category_id,
+          product_categories!inner (name)
+        )
+      ''').gte('created_at', startDate);
 
       return {
         'totalRevenue': totalRevenue,
@@ -284,30 +276,19 @@ class ReportsAnalyticsService {
   Future<Map<String, dynamic>> getCustomerMetrics() async {
     try {
       // Top customers by revenue
-      final customersResponse = await _supabase.rpc(
-        'get_top_customers',
-        params: {'limit_count': 10},
-      ).catchError((e) async {
-        debugPrint('RPC call failed, using fallback query: $e');
-        return await _supabase.from('sales_orders').select('''
-              customer_id,
-              total_amount,
-              customers!inner (
-                company_name
-              )
-            ''').order('total_amount', ascending: false).limit(10);
-      });
+      final customersResponse = await _supabase.from('sales_orders').select('''
+        customer_id,
+        total_amount,
+        customers!inner (company_name)
+      ''').order('total_amount', ascending: false).limit(10);
 
-      List<Map<String, dynamic>> topCustomers = [];
-      if (customersResponse is List) {
-        for (var item in customersResponse) {
-          final customer = item['customers'] as Map<String, dynamic>?;
-          topCustomers.add({
-            'name': customer?['company_name'] ?? 'Unknown',
-            'revenue': item['total_amount'] ?? 0,
-          });
-        }
-      }
+      final topCustomers = customersResponse.map((item) {
+        final customer = item['customers'] as Map<String, dynamic>?;
+        return {
+          'name': customer?['company_name'] ?? 'Client inconnu',
+          'revenue': item['total_amount'] ?? 0,
+        };
+      }).toList();
 
       // Total active customers
       final activeCustomersResponse =
@@ -383,7 +364,7 @@ class ReportsAnalyticsService {
 
         final invoiceData = {
           'invoiceNumber': invoice['invoice_number'],
-          'customer': customer?['company_name'] ?? 'Unknown',
+          'customer': customer?['company_name'] ?? 'Client inconnu',
           'amount': outstanding,
           'daysOverdue': daysOverdue > 0 ? daysOverdue : 0,
           'dueDate': invoice['due_date'],
