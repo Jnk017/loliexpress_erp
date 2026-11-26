@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -22,7 +23,8 @@ class DeliveryTracking extends StatefulWidget {
 class _DeliveryTrackingState extends State<DeliveryTracking> {
   GoogleMapController? _mapController;
   Position? _currentPosition;
-  bool _isMapView = true;
+  // The Web build has no Maps JavaScript configuration.
+  bool _isMapView = !kIsWeb;
   String _selectedRoute = 'Toutes les tournées';
   DateTime _selectedDate = DateTime.now();
   bool _isSyncing = false;
@@ -635,7 +637,7 @@ class _DeliveryTrackingState extends State<DeliveryTracking> {
                       ),
                   ],
                 ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: kIsWeb ? null : FloatingActionButton.extended(
         onPressed: () {
           setState(() {
             _isMapView = !_isMapView;
