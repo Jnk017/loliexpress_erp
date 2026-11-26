@@ -12,6 +12,7 @@ from playwright.sync_api import sync_playwright
 from collect_drift import PROJECTS, request
 
 parser = argparse.ArgumentParser(description="Create a sales order from Flutter Web on Gate")
+parser.add_argument("--plan-delivery", action="store_true")
 parser.add_argument("--evidence-dir", required=True, type=Path)
 args = parser.parse_args()
 ref, name = PROJECTS["gate"]
@@ -103,6 +104,52 @@ try:
         result["transition_http"] = transition.value.status
         assert transition.value.ok
         page.screenshot(path=out / "sales_confirmed.png")
+        if args.plan_delivery:
+            def open_order(screen):
+                step = result["phase"]
+                result["phase"] = step + ":open_followup"
+                screen.get_by_role("button", name="Suivre les commandes").or_(
+                    screen.get_by_label("Suivre les commandes")
+                ).first.click()
+                result["phase"] = step + ":select_order"
+                screen.get_by_role("button", name=order_number).or_(
+                    screen.get_by_text(order_number, exact=True)
+                ).or_(screen.locator(f'[aria-label*="{order_number}"]')).first.click()
+                result["phase"] = step + ":order_detail"
+
+            for action in ("Mettre en préparation", "Marquer expédiée"):
+                result["phase"] = action
+                open_order(page)
+                with page.expect_response(lambda response: "/rpc/transition_order_status" in response.url) as updated:
+                    page.get_by_role("alertdialog").get_by_role("button", name=action, exact=True).click()
+                assert updated.value.ok
+
+            result["phase"] = "admin_login"
+            admin = browser.new_context(ignore_https_errors=True, service_workers="block", viewport={"width": 920, "height": 950})
+            admin.route("https://www.gstatic.com/flutter-canvaskit/**", lambda route: route.fulfill(
+                path="build/web/canvaskit/chromium/" + route.request.url.rsplit("/", 1)[-1]))
+            admin_page = admin.new_page()
+            admin_page.set_default_timeout(22000)
+            login_as(admin_page, credentials["ADMIN_EMAIL"], credentials["ADMIN_PASSWORD"], "/admin-dashboard")
+            result["phase"] = "admin_sales"
+            admin_page.get_by_role("button",name="Ventes").or_(admin_page.get_by_text("Ventes",exact=True)).first.click()
+            admin_page.wait_for_url("**/#/sales-order-processing")
+            result["phase"] = "plan_form"
+            open_order(admin_page)
+            dialog = admin_page.get_by_role("alertdialog")
+            driver = sql("SELECT full_name FROM public.user_profiles WHERE email='livreur@loliexpress.test'")[0]["full_name"]
+            dialog.get_by_text("Livreur", exact=True).click()
+            admin_page.get_by_text(driver, exact=True).last.click()
+            dialog.get_by_text("Entrepôt", exact=True).click()
+            admin_page.get_by_text(marker, exact=True).last.click()
+            dialog.get_by_role("textbox", name="Adresse de livraison").click()
+            admin_page.keyboard.type(marker)
+            with admin_page.expect_response(lambda response: "/rpc/plan_order_delivery" in response.url) as planned:
+                dialog.get_by_role("button", name="Planifier la livraison").click()
+            result["planning_http"] = planned.value.status
+            assert planned.value.ok
+            admin_page.get_by_text("Livraison planifiée.").wait_for()
+            admin_page.screenshot(path=out / "delivery_planned.png")
         browser.close()
     check = sql(f"""
     SELECT
@@ -112,7 +159,22 @@ try:
       (SELECT o.order_status FROM public.sales_orders o WHERE o.customer_id='{customer}') AS order_status
     """)[0]
     result["database"] = check
-    result["passed"] = check == {"stock": 3, "movements": 1, "total": "6.00", "order_status": "confirmed"}
+    expected_status = "shipped" if args.plan_delivery else "confirmed"
+    result["passed"] = check == {"stock": 3, "movements": 1, "total": "6.00", "order_status": expected_status}
+    if args.plan_delivery:
+        delivery = sql(f"""
+        SELECT d.delivery_address, d.status, d.warehouse_id = '{warehouse}' AS correct_warehouse,
+               p.email = 'livreur@loliexpress.test' AS correct_driver
+        FROM public.deliveries d
+        JOIN public.sales_orders o ON o.id = d.order_id
+        JOIN public.delivery_routes r ON r.id = d.route_id
+        JOIN public.user_profiles p ON p.id = r.driver_id
+        WHERE o.customer_id = '{customer}'
+        """)
+        result["delivery"] = delivery
+        result["passed"] = result["passed"] and delivery == [
+            {"delivery_address": marker, "status": "pending", "correct_warehouse": True, "correct_driver": True}
+        ]
 except Exception as error:
     result["error"] = type(error).__name__
 finally:
@@ -124,6 +186,10 @@ finally:
         CREATE TEMP TABLE sales_web_inventory AS SELECT id FROM public.inventory_stock WHERE product_id='{product}';
         DELETE FROM public.notification_queue WHERE related_entity_type='order'
           AND related_entity_id IN (SELECT id FROM sales_web_orders);
+        CREATE TEMP TABLE sales_web_deliveries AS
+          SELECT id,route_id FROM public.deliveries WHERE order_id IN (SELECT id FROM sales_web_orders);
+        DELETE FROM public.deliveries WHERE id IN (SELECT id FROM sales_web_deliveries);
+        DELETE FROM public.delivery_routes WHERE id IN (SELECT route_id FROM sales_web_deliveries);
         DELETE FROM public.sales_orders WHERE id IN (SELECT id FROM sales_web_orders);
         DELETE FROM public.customer_product_prices WHERE customer_id='{customer}' AND product_id='{product}';
         DELETE FROM public.stock_movements WHERE product_id='{product}';
@@ -134,6 +200,7 @@ finally:
         DELETE FROM public.audit_logs WHERE (table_name='products' AND record_id='{product}')
           OR (table_name IN ('customers','customer_product_prices') AND record_id='{customer}')
           OR (table_name='inventory_stock' AND record_id IN (SELECT id FROM sales_web_inventory))
+          OR (table_name='deliveries' AND record_id IN (SELECT id FROM sales_web_deliveries))
           OR (table_name='sales_orders' AND record_id IN (SELECT id FROM sales_web_orders));
         SELECT NOT EXISTS (SELECT FROM public.products WHERE id='{product}')
           AND NOT EXISTS (SELECT FROM public.customers WHERE id='{customer}') AS complete;
