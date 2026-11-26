@@ -1,0 +1,44 @@
+{
+  "role": "sales_rep",
+  "passed": true,
+  "cleanup": true,
+  "sha": "e7650ef19131c1601fd64fe20079d3b4d84f96ae",
+  "login_http": 200,
+  "phase": "driver_handover",
+  "order_http": 200,
+  "order_response_shape": "dict",
+  "transition_http": 200,
+  "planning_http": 200,
+  "before_handover": {
+    "stock": 3,
+    "delivery_status": "pending"
+  },
+  "driver_deliveries_http": 200,
+  "driver_pending_count": 1,
+  "driver_fixture_count": 1,
+  "handover_http": 200,
+  "database": {
+    "stock": 2,
+    "movements": 2,
+    "total": "6.00",
+    "order_status": "delivered"
+  },
+  "delivery": [
+    {
+      "delivery_address": "Gate vente 07fc8153",
+      "status": "delivered",
+      "correct_warehouse": true,
+      "correct_driver": true,
+      "handovers": 1,
+      "handover_movements": 1
+    }
+  ],
+  "date_utc": "2026-11-26",
+  "chromium": "Chromium 156.0.8078.79 built on Debian GNU/Linux 13 (trixie)",
+  "web_main_sha256": "e07ccb8c348e20e4a3fdf97779f1692940ae7ece790d7db8173e1e9b0cc5112d",
+  "scenario_sha256": "f7c902de37b833821c7f1e1c267698d585b2ac02950200e9e78044a51324db73",
+  "capture_sha256": {
+    "delivery_handed_over.png": "932bc54d71c9a96489d90adc5bc89ba137e25609469cecb751a04dfd1c5f99c6",
+    "delivery_planned.png": "eb0c230bcbb4a2cfac65871774d1636282eeefc660fd950be1bff4cf37e71399"
+  }
+}

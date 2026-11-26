@@ -29,4 +29,6 @@
 - [Retour magasinier](warehouse_return_lookup_results.json) sur Gate. L’article d’une commande remise est retrouvé avec un numéro normalisé. Le reliquat décroît après réception et la déclaration de revendabilité non autorisée est refusée. Transaction annulée.
 - [Commande et confirmation réelles dans Flutter Web](sales-web.json), [scénario reproductible](test_sales_order_web.py). Le navigateur affiche le stock réel, le serveur applique 6 CDF au lieu du catalogue à 10 CDF, puis la commande passe à confirmé. PostgreSQL conserve les trois unités et l’unique mouvement initial. Fixtures retirées.
 
-- Migration 031 appliquée à Gate. [Tests de planification, accès livreur et 13 assertions de remise et retours](delivery_planning_results.json). Analyse Flutter et 19 tests réussis. Recette UI de planification à exécuter.
+- Migration 031 appliquée à Gate. [Tests de planification, accès livreur et 13 assertions de remise et retours](delivery_planning_results.json). Analyse Flutter et 19 tests réussis. Voir la preuve Chromium ci-dessous.
+
+- [Planification et remise Flutter Web sur Gate](delivery-web.json) pour `e7650ef`. Planification et remise HTTP 200, commande et livraison livrées, stock de 3 à 2 et un seul mouvement de remise. Build Web release réussi et 19 tests Flutter réussis.
