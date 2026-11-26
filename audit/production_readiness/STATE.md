@@ -91,3 +91,5 @@ Le groupe SEC-001-F dispose maintenant de la [correspondance des signatures aux 
 |---|---|---|---|
 | SEC-004-A | P0 | DONE | Migration 030. Limite la lecture REST des produits aux colonnes publiques du catalogue. Six requêtes réelles, trois suites SQL et 18 tests Flutter. [REST](product_catalog_rest_results.json) · [SQL](product_catalog_boundary_results.json). |
 | WEB-001-C | P0 | TEST_PASSED | Le formulaire de vente lit le stock visible par le rôle commercial au lieu d’afficher 999. Client B2B : stock non communiqué. Analyse, tests et build Web réussis. Test navigateur de la commande à confirmer. |
+
+Le catalogue du formulaire vente ne dépend plus d’une ancienne structure de remises absente des produits. Analyse Flutter propre et 19 tests réussis, dont la régression stock masqué/visible et absence de remise obsolète. Le tarif est toujours résolu par l’appel serveur à l’ajout. Le scénario navigateur de vente reste en cours.

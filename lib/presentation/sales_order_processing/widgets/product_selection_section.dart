@@ -9,14 +9,12 @@ class ProductSelectionSection extends StatefulWidget {
   final List<Map<String, dynamic>> products;
   final Function(Map<String, dynamic>) onProductAdd;
   final VoidCallback onBarcodeScan;
-  final String customerTier;
 
   const ProductSelectionSection({
     super.key,
     required this.products,
     required this.onProductAdd,
     required this.onBarcodeScan,
-    required this.customerTier,
   });
 
   @override
@@ -53,19 +51,6 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
         }).toList();
       }
     });
-  }
-
-  double _getCustomPrice(Map<String, dynamic> product) {
-    final basePrice = product["price"] as double;
-    final discount =
-        product["tierDiscounts"][widget.customerTier] as double? ?? 0.0;
-    return basePrice * (1 - discount);
-  }
-
-  bool _hasDiscount(Map<String, dynamic> product) {
-    final discount =
-        product["tierDiscounts"][widget.customerTier] as double? ?? 0.0;
-    return discount > 0;
   }
 
   @override
@@ -176,8 +161,7 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
 
   Widget _buildProductItem(BuildContext context, Map<String, dynamic> product) {
     final theme = Theme.of(context);
-    final customPrice = _getCustomPrice(product);
-    final hasDiscount = _hasDiscount(product);
+    final cataloguePrice = product["price"] as num;
     final stock = product["stock"] as int?;
     final isLowStock = stock != null && stock < 10;
 
@@ -231,28 +215,12 @@ class _ProductSelectionSectionState extends State<ProductSelectionSection> {
                     ),
                   ),
                   SizedBox(height: 0.5.h),
-                  Row(
-                    children: [
-                      if (hasDiscount) ...[
-                        Text(
-                          '${product["price"]} ${product["currency"] ?? 'CDF'}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                            decoration: TextDecoration.lineThrough,
-                          ),
-                        ),
-                        SizedBox(width: 2.w),
-                      ],
-                      Text(
-                        'Catalogue ${customPrice.toStringAsFixed(2)} ${product["currency"] ?? 'CDF'}',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: hasDiscount
-                              ? theme.colorScheme.tertiary
-                              : theme.colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    'Catalogue ${cataloguePrice.toStringAsFixed(2)} ${product["currency"] ?? 'CDF'}',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   SizedBox(height: 0.5.h),
                   Row(

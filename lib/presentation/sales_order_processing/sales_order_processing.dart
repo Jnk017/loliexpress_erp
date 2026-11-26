@@ -634,7 +634,6 @@ class _SalesOrderProcessingState extends State<SalesOrderProcessing> {
                     products: _products,
                     onProductAdd: _handleProductAdd,
                     onBarcodeScan: _handleBarcodeScan,
-                    customerTier: customerData['tier'] as String,
                   ),
                   SizedBox(height: 16 + MediaQuery.paddingOf(context).bottom),
                 ],

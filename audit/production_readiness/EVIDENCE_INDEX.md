@@ -25,3 +25,4 @@
 - [Suivi RPC stock et annulation](rpc_boundary_followup.json). 21 assertions sur cinq suites Gate, incluant les refus supplémentaires du livreur et les trois états d’annulation fournisseur. Fixtures annulées.
 - [Régressions achats et retours](purchase_return_rpc_regression.json), 19 résultats réussis. La [matrice RPC](RPC_SECURITY_MATRIX.md) relie les signatures à leurs cas positifs, refus et contrôles restant ouverts.
 - Migration 030 appliquée sur Gate. [Six requêtes REST](product_catalog_rest_results.json) couvrent la lecture publique et le refus de la colonne `cost_price` avec les comptes commercial, admin et client A. [Régressions SQL](product_catalog_boundary_results.json), analyse Flutter sans remarque, 18 tests Flutter et build Web réussis.
+- [Régression acheteur → magasinier après 030](purchase-web-post030.json) sur `7c3d723`. Création et réception HTTP 200, un mouvement et deux unités, données de test retirées.
