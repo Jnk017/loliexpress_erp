@@ -52,10 +52,12 @@ class CustomBottomBar extends StatelessWidget {
     }
 
     final route = ModalRoute.of(context)?.settings.name;
+    final routeIndex = items.indexWhere((item) => item.route == route);
     final indexForRoute = route == null
         ? currentIndex
-        : items.indexWhere((item) => item.route == route ||
-            (route == '/product-catalog' && item.route == '/inventory-management'));
+        : routeIndex == -1 && route == '/product-catalog'
+            ? items.indexWhere((item) => item.route == '/inventory-management')
+            : routeIndex;
 
     return Container(
       decoration: BoxDecoration(

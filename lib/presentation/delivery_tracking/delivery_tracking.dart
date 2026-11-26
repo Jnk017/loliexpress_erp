@@ -8,6 +8,7 @@ import '../../core/app_export.dart';
 import '../../core/request_id.dart';
 import '../../services/delivery_service.dart';
 import '../../widgets/custom_app_bar.dart';
+import '../../widgets/custom_bottom_bar.dart';
 import '../../widgets/custom_icon_widget.dart';
 import './widgets/delivery_list_item_widget.dart';
 import './widgets/delivery_map_view_widget.dart';
@@ -437,6 +438,7 @@ class _DeliveryTrackingState extends State<DeliveryTracking> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
+      bottomNavigationBar: const CustomBottomBar(currentIndex: 0),
       appBar: CustomAppBar(
         title: 'Suivi des Livraisons',
         variant: CustomAppBarVariant.sync,
