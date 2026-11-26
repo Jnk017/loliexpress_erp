@@ -32,3 +32,5 @@
 - Migration 031 appliquée à Gate. [Tests de planification, accès livreur et 13 assertions de remise et retours](delivery_planning_results.json). Analyse Flutter et 19 tests réussis. Voir la preuve Chromium ci-dessous.
 
 - [Planification et remise Flutter Web sur Gate](delivery-web.json) pour `e7650ef`. Planification et remise HTTP 200, commande et livraison livrées, stock de 3 à 2 et un seul mouvement de remise. Build Web release réussi et 19 tests Flutter réussis.
+
+- [Menus des tableaux de bord](dashboard-menu-results.json) et [scénario Chromium](test_dashboard_menus_web.py). 8 connexions, 37 ouvertures et trois familles de mutations vérifiées sur Gate. [Contrôle SQL de la politique magasinier](verify_warehouse_product_lookup.sql).

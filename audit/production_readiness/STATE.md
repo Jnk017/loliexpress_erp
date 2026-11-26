@@ -105,3 +105,11 @@ La [preuve vente → confirmation](sales-web.json) utilise le code applicatif `5
 La tentative Chromium de planification sur `1bfc616` a confirmé la commande sur Gate (HTTP 200), puis a expiré avant la mise en préparation. Le nettoyage des fixtures a réussi. La compilation Web Release a réussi. [Tentative](delivery-planning-web-attempt.json). Reprise depuis la racine avec `python3 audit/production_readiness/test_sales_order_web.py --plan-delivery --evidence-dir /tmp/loli-plan-next` et un accès SQL Gate autorisé via `SUPABASE_PAT`. Le scénario distingue désormais l’ouverture du suivi, la sélection de la commande et la confirmation du statut.
 
 Le scénario Chromium étendu a réussi sur le code `e7650ef` avec trois sessions isolées, commerciale, administrateur et livreur. Le navigateur ouvre la liste des livraisons sans la carte et propose un bouton de remise. Les données de test ont été nettoyées. [Résultats et empreintes](delivery-web.json).
+
+### Recette Web des menus
+
+Les menus testés couvrent l’administrateur, le commercial, le comptable, l’acheteur, le magasinier, le livreur et deux comptes B2B. [Résultats](dashboard-menu-results.json). Les 37 contrôles couvrent les entrées listées dans le scénario et leurs réponses HTTP observées. Ils ne clôturent pas les formulaires et opérations internes de chaque écran.
+
+La migration 032 autorise la lecture des articles actifs par le magasinier. Le prix d’achat reste exclu par la migration 030. Le code-barres saisi depuis Flutter produit HTTP 201 et un scan rattaché à l’article et à l’opérateur. Les essais B2B ont persisté deux lectures isolées et deux tickets privés. Les fixtures actives ont été retirées.
+
+Restent notamment à vérifier les opérations de facturation, d’encaissement, de dépenses, de stock hors scan et les téléchargements B2B à partir de fixtures dédiées. Le contrôle caméra Android reste ouvert. L’historique visuel du scanner contient encore des exemples statiques. Les preuves antérieures d’achat, de commande commerciale et de remise restent référencées séparément.
