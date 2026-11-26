@@ -90,12 +90,14 @@ Le groupe SEC-001-F dispose maintenant de la [correspondance des signatures aux 
 | ID | Priorité | État | Correction et preuve |
 |---|---|---|---|
 | SEC-004-A | P0 | DONE | Migration 030. Limite la lecture REST des produits aux colonnes publiques du catalogue. Six requêtes réelles, trois suites SQL et 18 tests Flutter. [REST](product_catalog_rest_results.json) · [SQL](product_catalog_boundary_results.json). |
-| WEB-001-C | P0 | TEST_PASSED | Le formulaire de vente lit le stock visible par le rôle commercial au lieu d’afficher 999. Client B2B : stock non communiqué. Analyse, tests et build Web réussis. Test navigateur de la commande à confirmer. |
+| WEB-001-C | P0 | DONE | Le formulaire de vente lit le stock visible par le rôle commercial au lieu d’afficher 999. Client B2B : stock non communiqué. Analyse, tests et build Web réussis. [Création et confirmation vérifiées](sales-web.json) dans Chromium. |
 
-Le catalogue du formulaire vente ne dépend plus d’une ancienne structure de remises absente des produits. Analyse Flutter propre et 19 tests réussis, dont la régression stock masqué/visible et absence de remise obsolète. Le tarif est toujours résolu par l’appel serveur à l’ajout. Le scénario navigateur de vente reste en cours.
+Le catalogue du formulaire vente ne dépend plus d’une ancienne structure de remises absente des produits. Analyse Flutter propre et 19 tests réussis, dont la régression stock masqué/visible et absence de remise obsolète. Le tarif est toujours résolu par l’appel serveur à l’ajout. Le scénario navigateur de vente est documenté ci-dessous.
 
-Le formulaire de vente propose le suivi des commandes au commercial et à l’administrateur. Il utilise le service de transition existant pour la confirmation, la préparation et l’expédition. La remise reste traitée dans le module livraison. Analyse, 19 tests Flutter, build Web et 7 tests Deno passent. Le test Web de confirmation reste en cours.
+Le formulaire de vente propose le suivi des commandes au commercial et à l’administrateur. Il utilise le service de transition existant pour la confirmation, la préparation et l’expédition. La remise reste traitée dans le module livraison. Analyse, 19 tests Flutter, build Web et 7 tests Deno passent. Le test Web de confirmation est réussi.
 
 | ID | Priorité | État | Correction et preuve |
 |---|---|---|---|
 | SEC-001-F2 | P0 | DONE | Le magasinier retrouve deux unités sur la commande remise et voit le reliquat ramené à une après son inspection. Le magasinier ne peut pas déclarer une unité revendable. [Résultat](warehouse_return_lookup_results.json). |
+
+La [preuve vente → confirmation](sales-web.json) utilise le code applicatif `58d76e2`, vérifié dans Chromium sur une filiation documentaire à `c220a2b`. Les références du scénario proviennent de fixtures. La suite requiert l’émission et l’encaissement depuis Flutter, puis l’affectation et la remise dans les rôles correspondants. La planification d’une livraison n’a actuellement aucun parcours d’écriture Flutter. L’émission de factures de test avec lignes immuables doit être vérifiée sur une cible jetable pour éviter de laisser des fixtures non nettoyables sur Gate.
